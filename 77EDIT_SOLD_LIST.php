@@ -1,26 +1,26 @@
 <?php 
 session_start();
 require_once('../../tryconnection.php');
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 
 // in case they have already selected the delete box in other items.
 
 	foreach ($_POST['deleted'] as $deleted){
 	$delete_INVSOLD = "DELETE FROM INVSOLD WHERE INVVPC=$deleted";
-	$delete_INVSOLD = mysql_query($delete_INVSOLD) or die(mysql_error());
+	$delete_INVSOLD = mysqli_query($mysqli_link, $delete_INVSOLD) or die(mysqli_error($mysqli_link));
 	}
 	
 $select_INVSOLD = "SELECT *, SUM(INVUNITS) AS INVUNITS FROM INVSOLD WHERE INVVPC='$_GET[soldid]'";
-$INVSOLD = mysql_query($select_INVSOLD) or die(mysql_error());
-$row_INVSOLD = mysql_fetch_assoc($INVSOLD);
+$INVSOLD = mysqli_query($mysqli_link, $select_INVSOLD) or die(mysqli_error($mysqli_link));
+$row_INVSOLD = mysqli_fetch_assoc($INVSOLD);
 
 if (isset($_POST['save'])){
 
 $delete_INVSOLD = "DELETE FROM INVSOLD WHERE INVVPC='$_GET[soldid]'";
-$delete_INVSOLD = mysql_query($delete_INVSOLD) or die(mysql_error());
+$delete_INVSOLD = mysqli_query($mysqli_link, $delete_INVSOLD) or die(mysqli_error($mysqli_link));
 
 $insert_INVSOLD = "INSERT INTO INVSOLD (INVVPC, INVDESC, INVUNITS) VALUES ('$_GET[soldid]', '$row_INVSOLD[INVDESC]', '$_POST[invunits]')";
-$insert_INVSOLD = mysql_query($insert_INVSOLD) or die(mysql_error());
+$insert_INVSOLD = mysqli_query($mysqli_link, $insert_INVSOLD) or die(mysqli_error($mysqli_link));
 
 $closewin = "opener.document.location.reload(); self.close();";
 }

@@ -10,24 +10,24 @@ $pettype=$_GET['pettype'];
 
 $closewindow = "window.self.close();" ;
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $query_ESTHOLD = "SELECT DISTINCT INVHYPE, DATE_FORMAT(ESTEXP, '%m/%d/%Y') AS ESTEXP FROM ESTHOLD WHERE INVCUST=$_SESSION[client]";
-$ESTHOLD = mysql_query($query_ESTHOLD, $tryconnection) or die(mysql_error());
-$row_ESTHOLD = mysql_fetch_assoc($ESTHOLD);
-$totalRows_ESTHOLD = mysql_num_rows($ESTHOLD);
+$ESTHOLD = mysqli_query($tryconnection, $query_ESTHOLD) or die(mysqli_error($mysqli_link));
+$row_ESTHOLD = mysqli_fetch_assoc($ESTHOLD);
+$totalRows_ESTHOLD = mysqli_num_rows($ESTHOLD);
 
 $query_INVHOLD = "SELECT INVNO, INVHYPE, DATE_FORMAT(DATETIME, '%m/%d/%Y') AS DATETIME FROM INVHOLD WHERE INVCUST=$_SESSION[client]";
-$INVHOLD = mysql_query($query_INVHOLD, $tryconnection) or die(mysql_error());
-$row_INVHOLD = mysql_fetch_assoc($INVHOLD);
-$totalRows_INVHOLD = mysql_num_rows($INVHOLD);
+$INVHOLD = mysqli_query($tryconnection, $query_INVHOLD) or die(mysqli_error($mysqli_link));
+$row_INVHOLD = mysqli_fetch_assoc($INVHOLD);
+$totalRows_INVHOLD = mysqli_num_rows($INVHOLD);
 
 if (isset($_POST['view'])){
 $_SESSION['view'] = array();
 	foreach ($_POST['estres'] as $value){
 	if ($value!='0'){
-	$query_ESTHOLD = "SELECT *, DATE_FORMAT(ESTEXP, '%m/%d/%Y') AS ESTEXP FROM ESTHOLD WHERE INVCUST=$_SESSION[client] AND INVHYPE='".mysql_real_escape_string($value)."' ";
-	$ESTHOLD = mysql_query($query_ESTHOLD, $tryconnection) or die(mysql_error());
-	$row_ESTHOLD = mysql_fetch_assoc($ESTHOLD);
+	$query_ESTHOLD = "SELECT *, DATE_FORMAT(ESTEXP, '%m/%d/%Y') AS ESTEXP FROM ESTHOLD WHERE INVCUST=$_SESSION[client] AND INVHYPE='".mysqli_real_escape_string($mysqli_link, $value)."' ";
+	$ESTHOLD = mysqli_query($tryconnection, $query_ESTHOLD) or die(mysqli_error($mysqli_link));
+	$row_ESTHOLD = mysqli_fetch_assoc($ESTHOLD);
 		do {
 		$_SESSION['view'][]=array('INVNO' => $row_ESTHOLD['INVNO'],
 								'INVCUST' => $row_ESTHOLD['INVCUST'],
@@ -48,13 +48,13 @@ $_SESSION['view'] = array();
 								'ESTEXP' => $row_ESTHOLD['ESTEXP']
 								);
 			}
-		while ($row_ESTHOLD = mysql_fetch_assoc($ESTHOLD));
+		while ($row_ESTHOLD = mysqli_fetch_assoc($ESTHOLD));
 		}
 	
 		else if ($value=='0'){
 		$query_INVHOLD = "SELECT *, DATE_FORMAT(DATETIME, '%m/%d/%Y') AS DATETIME FROM INVHOLD WHERE INVCUST=$_SESSION[client]";
-		$INVHOLD = mysql_query($query_INVHOLD, $tryconnection) or die(mysql_error());
-		$row_INVHOLD = mysql_fetch_assoc($INVHOLD);
+		$INVHOLD = mysqli_query($tryconnection, $query_INVHOLD) or die(mysqli_error($mysqli_link));
+		$row_INVHOLD = mysqli_fetch_assoc($INVHOLD);
 		do {
 		$_SESSION['view'][]=array('INVNO' => $row_INVHOLD['INVNO'],
 								'INVCUST' => $row_INVHOLD['INVCUST'],
@@ -75,7 +75,7 @@ $_SESSION['view'] = array();
 								'ESTEXP' => $row_INVHOLD['ESTEXP']
 								);
 			}
-		while ($row_INVHOLD = mysql_fetch_assoc($INVHOLD));
+		while ($row_INVHOLD = mysqli_fetch_assoc($INVHOLD));
 		}
 		}
 $openview="window.open('EST_RES_VIEW.php','_blank','width=600,height=600');";
@@ -90,9 +90,9 @@ $_SESSION['invline'] = array();
 if (!isset($_POST['ignore'])){
 	foreach ($_POST['estres'] as $value){
 	if ($value!='0'){
-	$query_ESTHOLD = "SELECT *, DATE_FORMAT(ESTEXP, '%m/%d/%Y') AS ESTEXP FROM ESTHOLD WHERE INVCUST=$_SESSION[client] AND INVHYPE='".mysql_real_escape_string($value)."' AND (INVDESCR!='0' AND INVDESCR!='GST' AND INVDESCR!='HST' AND INVDESCR!='PST' AND INVDESCR!='TOTAL' AND INVDESCR!='Subtotal') ORDER BY PETNAME ASC";
-	$ESTHOLD = mysql_query($query_ESTHOLD, $tryconnection) or die(mysql_error());
-	$row_ESTHOLD = mysql_fetch_assoc($ESTHOLD);
+	$query_ESTHOLD = "SELECT *, DATE_FORMAT(ESTEXP, '%m/%d/%Y') AS ESTEXP FROM ESTHOLD WHERE INVCUST=$_SESSION[client] AND INVHYPE='".mysqli_real_escape_string($mysqli_link, $value)."' AND (INVDESCR!='0' AND INVDESCR!='GST' AND INVDESCR!='HST' AND INVDESCR!='PST' AND INVDESCR!='TOTAL' AND INVDESCR!='Subtotal') ORDER BY PETNAME ASC";
+	$ESTHOLD = mysqli_query($tryconnection, $query_ESTHOLD) or die(mysqli_error($mysqli_link));
+	$row_ESTHOLD = mysqli_fetch_assoc($ESTHOLD);
 	if ($_SESSION['refID']=='EST'){$invest='1';}else {$invest='0';}
 	$_SESSION['invhype']=$row_ESTHOLD['INVHYPE'];
 		do {
@@ -155,18 +155,18 @@ if ($row_ESTHOLD['INVDESC']!='0' && $row_ESTHOLD['INVDESC']!='GST' && $row_ESTHO
 			   }
 			
 			}
-		while ($row_ESTHOLD = mysql_fetch_assoc($ESTHOLD));
-$deleteSQL = "DELETE QUICK FROM ESTHOLD WHERE INVCUST='$_SESSION[client]' AND INVHYPE='".mysql_real_escape_string($value)."' ";;
-mysql_query($deleteSQL, $tryconnection);
+		while ($row_ESTHOLD = mysqli_fetch_assoc($ESTHOLD));
+$deleteSQL = "DELETE QUICK FROM ESTHOLD WHERE INVCUST='$_SESSION[client]' AND INVHYPE='".mysqli_real_escape_string($mysqli_link, $value)."' ";;
+mysqli_query($tryconnection, $deleteSQL);
 $optimize = "OPTIMIZE TABLE ESTHOLD";
-mysql_query($optimize, $tryconnection);
+mysqli_query($tryconnection, $optimize);
 		}
 	}
 	}
 	if ($_SESSION['refID']!='EST'){
 		$query_INVHOLD = "SELECT *, DATE_FORMAT(DATETIME, '%m/%d/%Y') AS DATETIME FROM INVHOLD WHERE INVCUST=$_SESSION[client] AND (INVDESCR!='1' AND INVDESCR!='GST' AND INVDESCR!='HST' AND INVDESCR!='PST' AND INVDESCR!='TOTAL' AND INVDESCR!='Subtotal') ORDER BY PETNAME ASC";
-		$INVHOLD = mysql_query($query_INVHOLD, $tryconnection) or die(mysql_error());
-		$row_INVHOLD = mysql_fetch_assoc($INVHOLD);
+		$INVHOLD = mysqli_query($tryconnection, $query_INVHOLD) or die(mysqli_error($mysqli_link));
+		$row_INVHOLD = mysqli_fetch_assoc($INVHOLD);
 		
 		if ($totalRows_INVHOLD!=0 && !isset($_SESSION['round'])){
 			do {
@@ -224,7 +224,7 @@ mysql_query($optimize, $tryconnection);
 									 'LCOMMENT' => $row_INVHOLD['LCOMMENT']
 									);
 			}
-		while ($row_INVHOLD = mysql_fetch_assoc($INVHOLD));
+		while ($row_INVHOLD = mysqli_fetch_assoc($INVHOLD));
 
 //$deleteSQL = "DELETE QUICK FROM INVHOLD WHERE INVCUST='$_SESSION[client]'";
 //mysql_query($deleteSQL, $tryconnection);
@@ -350,7 +350,7 @@ else if (document.forms[0].selall.value="Select All"){
     <label><input type="checkbox" name="estres[]" id="checkbox" value="<?php echo $row_ESTHOLD['INVHYPE']; ?>" <?php echo $checked; ?>/>&nbsp;<?php echo $row_ESTHOLD['INVHYPE']; ?></label>    </td>
     <td width="156" title="Estimate expiry date"><?php echo $row_ESTHOLD['ESTEXP']; ?></td>
   </tr>
-  <?php } while ($row_ESTHOLD = mysql_fetch_assoc($ESTHOLD));?>
+  <?php } while ($row_ESTHOLD = mysqli_fetch_assoc($ESTHOLD));?>
   <tr class="Verdana12Red" height="20" <?php if ($totalRows_INVHOLD==0){echo "style='display:none;'";} ?>>
     <td width="78">&nbsp;</td>
     <td width="166">

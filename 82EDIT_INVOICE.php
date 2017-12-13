@@ -106,10 +106,10 @@ if (isset($_POST['ok']) || isset($_POST['save'])){
 
 		
 }
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $query_DOCTOR = sprintf("SELECT DOCTOR FROM DOCTOR ORDER BY DOCTOR ASC");
-$DOCTOR = mysql_query($query_DOCTOR, $tryconnection) or die(mysql_error());
-$row_DOCTOR = mysql_fetch_assoc($DOCTOR);
+$DOCTOR = mysqli_query($tryconnection, $query_DOCTOR) or die(mysqli_error($mysqli_link));
+$row_DOCTOR = mysqli_fetch_assoc($DOCTOR);
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/POP UP WINDOWS TEMPLATE.dwt" codeOutsideHTMLIsLocked="false" -->
@@ -326,7 +326,7 @@ self.location="EDIT_INVOICE.php?reference=" + x;
        <select name="invdoc">
             <?php do { ?>
         <option value="<?php echo $row_DOCTOR['DOCTOR']; ?>" <?php if ($_SESSION['invline'][$keyupdate]['INVDOC']==$row_DOCTOR['DOCTOR']){echo "selected='selected'";} ?>><?php echo $row_DOCTOR['DOCTOR']; ?></option>
-            <?php } while ($row_DOCTOR = mysql_fetch_assoc($DOCTOR)); ?>
+            <?php } while ($row_DOCTOR = mysqli_fetch_assoc($DOCTOR)); ?>
         </select>        </td>
       </tr>
       <tr <?php //if ($_SESSION['invline'][$keyupdate]['MEMO']=='2'){echo "title='If you need to modify the label, please delete the drug from the invoice and enter again.'";} ?>>

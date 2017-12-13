@@ -4,22 +4,22 @@ require_once('../../tryconnection.php');
 include("../../ASSETS/age.php");
 //unset($_SESSION);
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $spec=$_GET['species'];
 
 function categ($tryconnection,$spec)
 {
 $query_SPECIES = "SELECT DISTINCT `PROCEDURE`, PROCODE FROM PROCEDUR WHERE FEEFILE='$spec' ORDER BY PROCODE ASC";
-$SPECIES = mysql_query($query_SPECIES, $tryconnection) or die(mysql_error());
-$row_SPECIES = mysql_fetch_assoc($SPECIES);
-$totalRows_SPECIES = mysql_num_rows($SPECIES);
+$SPECIES = mysqli_query($tryconnection, $query_SPECIES) or die(mysqli_error($mysqli_link));
+$row_SPECIES = mysqli_fetch_assoc($SPECIES);
+$totalRows_SPECIES = mysqli_num_rows($SPECIES);
 
 echo"<select name='category1' class='SelectList' id='category1' multiple='multiple' onchange='category();' ondblclick='updte_procedure()'>";
 do {
 echo"<option value='".$row_SPECIES['PROCODE']."'>";
 echo $row_SPECIES['PROCODE']."&nbsp;&nbsp;&nbsp;&nbsp;".$row_SPECIES['PROCEDURE'];
 echo"</option>";
-} while ($row_SPECIES = mysql_fetch_assoc($SPECIES));
+} while ($row_SPECIES = mysqli_fetch_assoc($SPECIES));
 echo"</select>";		 
 }
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

@@ -1,20 +1,20 @@
 <?php 
 session_start();
 require_once('../../tryconnection.php');
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $select_INVENTOR = "SELECT *, SUM(`UNITS`) AS `UNITS` FROM INVENTOR WHERE VPCCODE=$_GET[soldid]";
-$INVENTOR = mysql_query($select_INVENTOR) or die(mysql_error());
-$row_INVENTOR = mysql_fetch_assoc($INVENTOR);
+$INVENTOR = mysqli_query($mysqli_link, $select_INVENTOR) or die(mysqli_error($mysqli_link));
+$row_INVENTOR = mysqli_fetch_assoc($INVENTOR);
 
 if (isset($_POST['save'])){
 
 $delete_INVENTOR = "DELETE FROM INVENTOR WHERE VPCCODE=$_GET[soldid]";
-$delete_INVENTOR = mysql_query($delete_INVENTOR) or die(mysql_error());
+$delete_INVENTOR = mysqli_query($mysqli_link, $delete_INVENTOR) or die(mysqli_error($mysqli_link));
 
 $backorder = !empty($_POST['backorder']) ? 1 : 0;
 
 $insert_INVENTOR = "INSERT INTO INVENTOR (`UNITS`, `CODE`, `DESCRIP`, VPCCODE, BACKORDER, SUPPLIER, DRUGCOST, PACKAGE) VALUES ('$_POST[units]',  '$row_INVENTOR[CODE]', '$row_INVENTOR[DESCRIP]', '$_GET[soldid]', '$backorder', '$_SESSION[supplier]','$_POST[drugcost]', '$_POST[package]')";
-$insert_INVENTOR = mysql_query($insert_INVENTOR) or die(mysql_error());
+$insert_INVENTOR = mysqli_query($mysqli_link, $insert_INVENTOR) or die(mysqli_error($mysqli_link));
 
 $closewin = "opener.document.location.reload(); self.close();";
 }

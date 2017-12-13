@@ -2,29 +2,29 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $spec=$_GET['species'];
 $POSTcategory=$_POST['category'];
 $GETcategory=$_GET['category'];
 
 $query_SPECIES = "SELECT DISTINCT TCATGRY, TTYPE FROM VETCAN WHERE TSPECIES='$spec' ORDER BY TCATGRY ASC";
-$SPECIES = mysql_query($query_SPECIES, $tryconnection) or die(mysql_error());
-$row_SPECIES = mysql_fetch_assoc($SPECIES);
+$SPECIES = mysqli_query($tryconnection, $query_SPECIES) or die(mysqli_error($mysqli_link));
+$row_SPECIES = mysqli_fetch_assoc($SPECIES);
 
 $query_NAME = "SELECT TTYPE, THXCAT FROM VETCAN WHERE TSPECIES='$spec' AND TCATGRY='$GETcategory' ORDER BY TCATGRY ASC";
-$NAME = mysql_query($query_NAME, $tryconnection) or die(mysql_error());
-$row_NAME = mysql_fetch_assoc($NAME);
+$NAME = mysqli_query($tryconnection, $query_NAME) or die(mysqli_error($mysqli_link));
+$row_NAME = mysqli_fetch_assoc($NAME);
 
 $query_HXFILTER = "SELECT * FROM HXFILTER WHERE HXCNAME!='Diagnostics'";
-$HXFILTER = mysql_query($query_HXFILTER, $tryconnection) or die(mysql_error());
-$row_HXFILTER = mysql_fetch_assoc($HXFILTER);
+$HXFILTER = mysqli_query($tryconnection, $query_HXFILTER) or die(mysqli_error($mysqli_link));
+$row_HXFILTER = mysqli_fetch_assoc($HXFILTER);
 
 
 //UPDATE
 if (isset($_POST['save']))
 {
 $query_UPDATEVETCAN = "UPDATE VETCAN SET TCATGRY='0', TTYPE='$_POST[ttype]', THXCAT='$_POST[thxfil]' WHERE TCATGRY='$GETcategory' AND TSPECIES='$spec'";
-$UPDATEVETCAN = mysql_query($query_UPDATEVETCAN, $tryconnection) or die(mysql_error());
+$UPDATEVETCAN = mysqli_query($tryconnection, $query_UPDATEVETCAN) or die(mysqli_error($mysqli_link));
 
 	if ($POSTcategory<$GETcategory){
 	$query_UPDATESEQ = "UPDATE VETCAN SET TCATGRY=TCATGRY+1 WHERE TCATGRY>='$POSTcategory' AND TCATGRY<'$GETcategory'  AND TSPECIES='$spec'";
@@ -32,10 +32,10 @@ $UPDATEVETCAN = mysql_query($query_UPDATEVETCAN, $tryconnection) or die(mysql_er
 	else {
 	$query_UPDATESEQ = "UPDATE VETCAN SET TCATGRY=TCATGRY-1 WHERE TCATGRY<='$POSTcategory' AND TCATGRY>'$GETcategory' AND TSPECIES='$spec'";
 	}
-$UPDATESEQ = mysql_query($query_UPDATESEQ, $tryconnection) or die(mysql_error());
+$UPDATESEQ = mysqli_query($tryconnection, $query_UPDATESEQ) or die(mysqli_error($mysqli_link));
 
 $query_UPDATEVETCAN = "UPDATE VETCAN SET TCATGRY='$POSTcategory' WHERE TCATGRY='0'";
-$UPDATEVETCAN = mysql_query($query_UPDATEVETCAN, $tryconnection) or die(mysql_error());
+$UPDATEVETCAN = mysqli_query($tryconnection, $query_UPDATEVETCAN) or die(mysqli_error($mysqli_link));
 $refreshwindow="self.location.reload();";
 }
 
@@ -43,12 +43,12 @@ $refreshwindow="self.location.reload();";
 elseif (isset($_POST['delete']))
 {
 $query_UPDATEVETCAN = "UPDATE VETCAN SET TCATGRY='0' WHERE TCATGRY='$GETcategory'  AND TSPECIES='$spec'";
-$UPDATEVETCAN = mysql_query($query_UPDATEVETCAN, $tryconnection) or die(mysql_error());
+$UPDATEVETCAN = mysqli_query($tryconnection, $query_UPDATEVETCAN) or die(mysqli_error($mysqli_link));
 
 $query_UPDATESEQ = "UPDATE VETCAN SET TCATGRY=TCATGRY-1 WHERE TCATGRY>'$GETcategory' AND TSPECIES='$spec'";
-$UPDATESEQ = mysql_query($query_UPDATESEQ, $tryconnection) or die(mysql_error());
+$UPDATESEQ = mysqli_query($tryconnection, $query_UPDATESEQ) or die(mysqli_error($mysqli_link));
 $query_DELETEVETCAN = "DELETE FROM VETCAN WHERE TCATGRY='0'";
-$DELETEVETCAN = mysql_query($query_DELETEVETCAN, $tryconnection) or die(mysql_error());
+$DELETEVETCAN = mysqli_query($tryconnection, $query_DELETEVETCAN) or die(mysqli_error($mysqli_link));
 $refreshwindow="self.location.reload();";
 }
 
@@ -144,7 +144,7 @@ self.location='RENUMBER_CATEGORY.php?species=<?php echo $_GET['species']; ?>&cat
       <option value=""></option>
        	<?php do {
 		echo '<option id="'.$row_HXFILTER['HXCAT'],'" value="'.$row_HXFILTER['HXCAT'],'">'.$row_HXFILTER['HXCNAME'].'</option>';
-		} while ($row_HXFILTER = mysql_fetch_assoc($HXFILTER));
+		} while ($row_HXFILTER = mysqli_fetch_assoc($HXFILTER));
 		 ?>
       </select>
      </td>
@@ -153,7 +153,7 @@ self.location='RENUMBER_CATEGORY.php?species=<?php echo $_GET['species']; ?>&cat
      <?php do { ?>
      <option value="<?php echo $row_SPECIES['TCATGRY']; ?>">&nbsp;<?php if ($row_SPECIES['TCATGRY']<10){echo "&nbsp;&nbsp;";} echo $row_SPECIES['TCATGRY']." ".$row_SPECIES['TTYPE']; ?></option>
    
-    <?php } while ($row_SPECIES = mysql_fetch_assoc($SPECIES)); ?>
+    <?php } while ($row_SPECIES = mysqli_fetch_assoc($SPECIES)); ?>
     </select>    </td>
   </tr>
   <tr>

@@ -3,15 +3,15 @@ session_start();
 require_once('../../tryconnection.php');
 include("../../ASSETS/age.php");
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $spec=$_GET['species'];
 
 function categ($tryconnection,$spec)
 {
 $query_SPECIES = "SELECT DISTINCT TCATGRY, TTYPE FROM VETCAN WHERE TSPECIES='$spec' ORDER BY TCATGRY";
-$SPECIES = mysql_query($query_SPECIES, $tryconnection) or die(mysql_error());
-$row_SPECIES = mysql_fetch_assoc($SPECIES);
-$totalRows_SPECIES = mysql_num_rows($SPECIES);
+$SPECIES = mysqli_query($tryconnection, $query_SPECIES) or die(mysqli_error($mysqli_link));
+$row_SPECIES = mysqli_fetch_assoc($SPECIES);
+$totalRows_SPECIES = mysqli_num_rows($SPECIES);
 
 echo"<select name='category1' class='SelectList' id='category1' multiple='multiple' onchange='category();'>";
 do {
@@ -19,7 +19,7 @@ echo"<option value='".$row_SPECIES['TCATGRY']."'>";
 if ($row_SPECIES['TCATGRY']<10){echo "&nbsp;&nbsp;";}
 echo $row_SPECIES['TCATGRY']."&nbsp;".$row_SPECIES['TTYPE'];
 echo"</option>";
-} while ($row_SPECIES = mysql_fetch_assoc($SPECIES));
+} while ($row_SPECIES = mysqli_fetch_assoc($SPECIES));
 echo"</select>";		 
 }
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

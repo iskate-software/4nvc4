@@ -6,8 +6,8 @@ include("../../ASSETS/tax.php");
 
 ////////// One-timer for the tracker for BBAH
     $query_invdatetime="SELECT STR_TO_DATE('$_SESSION[minvdte]','%m/%d/%Y')";
-	$invdatetime= mysql_query($query_invdatetime, $tryconnection) or die(mysql_error());
-	$row_invdatetime=mysql_fetch_array($invdatetime);
+	$invdatetime= mysqli_query($tryconnection, $query_invdatetime) or die(mysqli_error($mysqli_link));
+	$row_invdatetime=mysqli_fetch_array($invdatetime);
 /////////////////////CLIENT + PATIENT INFO/////////////////////////
 if (isset($_GET['patient'])){
 $patient=$_GET['patient'];
@@ -36,10 +36,10 @@ $ps = "j";
 
 
 /////////////////////CLIENT + PATIENT INFO/////////////////////////
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $query_PATIENT_CLIENT = "SELECT *, DATE_FORMAT(PDOB,'%m/%d/%Y') AS PDOB FROM PETMAST JOIN ARCUSTO ON (ARCUSTO.CUSTNO=PETMAST.CUSTNO) WHERE PETID = '$patient' LIMIT 1";
-$PATIENT_CLIENT = mysql_query($query_PATIENT_CLIENT, $tryconnection) or die(mysql_error());
-$row_PATIENT_CLIENT = mysql_fetch_assoc($PATIENT_CLIENT);
+$PATIENT_CLIENT = mysqli_query($tryconnection, $query_PATIENT_CLIENT) or die(mysqli_error($mysqli_link));
+$row_PATIENT_CLIENT = mysqli_fetch_assoc($PATIENT_CLIENT);
 
 $pettype=$row_PATIENT_CLIENT['PETTYPE'];
 $_SESSION['pettype'] = $pettype ;
@@ -58,16 +58,16 @@ $_SESSION['PTAX']=$row_PATIENT_CLIENT['PTAX'];
 function categ($tryconnection,$pettype)
 {
 $query_CATEGORY ="SELECT DISTINCT TCATGRY, TTYPE FROM VETCAN WHERE TSPECIES='$pettype' ORDER BY TCATGRY ASC";
-$CATEGORY = mysql_query($query_CATEGORY, $tryconnection) or die(mysql_error());
-$row_CATEGORY = mysql_fetch_assoc($CATEGORY);
-$totalRows_CATEGORY = mysql_num_rows($CATEGORY);
+$CATEGORY = mysqli_query($tryconnection, $query_CATEGORY) or die(mysqli_error($mysqli_link));
+$row_CATEGORY = mysqli_fetch_assoc($CATEGORY);
+$totalRows_CATEGORY = mysqli_num_rows($CATEGORY);
 
 echo"<select name='category1' class='SelectList' id='category1' multiple='multiple' onchange='category();' >";
 do {
 echo"<option value='".$row_CATEGORY['TCATGRY']."'>";
 echo $row_CATEGORY['TTYPE'];
 echo"</option>\n";
-} while ($row_CATEGORY = mysql_fetch_assoc($CATEGORY));
+} while ($row_CATEGORY = mysqli_fetch_assoc($CATEGORY));
 echo"</select>";		 
 
 }
@@ -75,17 +75,17 @@ echo"</select>";
 //////////////////////////LIST PRODUCT SERVICE FROM TREATMENT FEE FILE////////////////////
 function subcateg($tryconnection,$cat, $pettype)
 {
-$query_PRODUCTSERVICE = sprintf("SELECT TFFID, TNO, TDESCR, TTYPE, TFEE, TCATGRY, TDISCOUNT, TSTAT, TNOHST FROM VETCAN WHERE TCATGRY = '%s' AND  TSPECIES='$pettype' ORDER BY TNO ASC",mysql_real_escape_string($cat));
-$PRODUCTSERVICE = mysql_query($query_PRODUCTSERVICE, $tryconnection) or die(mysql_error());
-$row_PRODUCTSERVICE = mysql_fetch_assoc($PRODUCTSERVICE);
-$totalRows_PRODUCTSERVICE = mysql_num_rows($PRODUCTSERVICE);
+$query_PRODUCTSERVICE = sprintf("SELECT TFFID, TNO, TDESCR, TTYPE, TFEE, TCATGRY, TDISCOUNT, TSTAT, TNOHST FROM VETCAN WHERE TCATGRY = '%s' AND  TSPECIES='$pettype' ORDER BY TNO ASC",mysqli_real_escape_string($mysqli_link, $cat));
+$PRODUCTSERVICE = mysqli_query($tryconnection, $query_PRODUCTSERVICE) or die(mysqli_error($mysqli_link));
+$row_PRODUCTSERVICE = mysqli_fetch_assoc($PRODUCTSERVICE);
+$totalRows_PRODUCTSERVICE = mysqli_num_rows($PRODUCTSERVICE);
 
 echo"<select name='prodser' id='prodser' multiple='multiple' class='SelectList' onchange='modifyitem()' >";
 do {
 echo"<option value='".$row_PRODUCTSERVICE['TFFID']."' id='".$row_PRODUCTSERVICE['TFFID']."'>";
 echo $row_PRODUCTSERVICE['TDESCR'];
 echo"</option>";
-} while ($row_PRODUCTSERVICE = mysql_fetch_assoc($PRODUCTSERVICE));
+} while ($row_PRODUCTSERVICE = mysqli_fetch_assoc($PRODUCTSERVICE));
 echo"</select>";		 
 
 }
@@ -93,15 +93,15 @@ echo"</select>";
 //////////////////////SELECTED ITEM FROM TREATMENT FEE FILE/////////////////
 
 $query_SELECTEDITEM = sprintf("SELECT * FROM VETCAN WHERE TFFID = '%s' LIMIT 1",$ps);
-$SELECTEDITEM = mysql_query($query_SELECTEDITEM, $tryconnection) or die(mysql_error());
-$row_SELECTEDITEM = mysql_fetch_assoc($SELECTEDITEM);
+$SELECTEDITEM = mysqli_query($tryconnection, $query_SELECTEDITEM) or die(mysqli_error($mysqli_link));
+$row_SELECTEDITEM = mysqli_fetch_assoc($SELECTEDITEM);
 
 
 
 if (!empty($row_SELECTEDITEM['TAUTOCOMM'])){
 $query_TAUTOCOMM = "SELECT * FROM ARSYSCOMM WHERE COMMCODE='$row_SELECTEDITEM[TAUTOCOMM]'";
-$TAUTOCOMM = mysql_query($query_TAUTOCOMM, $tryconnection) or die(mysql_error());
-$row_TAUTOCOMM = mysql_fetch_assoc($TAUTOCOMM);
+$TAUTOCOMM = mysqli_query($tryconnection, $query_TAUTOCOMM) or die(mysqli_error($mysqli_link));
+$row_TAUTOCOMM = mysqli_fetch_assoc($TAUTOCOMM);
 }
 
 
@@ -135,15 +135,15 @@ $row_TAUTOCOMM = mysql_fetch_assoc($TAUTOCOMM);
 							
 							$lcode=$dosage.$_POST['xtype'];
 $query_TAUTOCOMM = "SELECT * FROM ARSYSCOMM WHERE COMMCODE='$lcode'";
-$TAUTOCOMM = mysql_query($query_TAUTOCOMM, $tryconnection) or die(mysql_error());
-$row_TAUTOCOMM = mysql_fetch_assoc($TAUTOCOMM);
+$TAUTOCOMM = mysqli_query($tryconnection, $query_TAUTOCOMM) or die(mysqli_error($mysqli_link));
+$row_TAUTOCOMM = mysqli_fetch_assoc($TAUTOCOMM);
 							$lcomment=$row_TAUTOCOMM['COMMENT'];
 							$lcomment=str_replace('XXX', $invunits/$_POST['dosage']/$_POST['days'], $lcomment);
 							$lcomment=str_replace('YYY', $_POST['days'], $lcomment);
 							$autcomm=$_POST['autocomm'];
 $query_TAUTOCOMM = "SELECT * FROM ARSYSCOMM WHERE COMMCODE='$autcomm'";
-$TAUTOCOMM = mysql_query($query_TAUTOCOMM, $tryconnection) or die(mysql_error());
-$row_TAUTOCOMM = mysql_fetch_assoc($TAUTOCOMM);
+$TAUTOCOMM = mysqli_query($tryconnection, $query_TAUTOCOMM) or die(mysqli_error($mysqli_link));
+$row_TAUTOCOMM = mysqli_fetch_assoc($TAUTOCOMM);
 							$invoicecomment=str_replace('$PETNAME', $_SESSION['petname'], $row_TAUTOCOMM['COMMENT']);
 							if (!empty($invoicecomment)){$memo='3';}
 						   }
@@ -340,10 +340,10 @@ if ($_POST['invdescr'] != '') {
 							  $row_invdatetime[0],
 							  $value2['INVMAJ'],
 							  $value2['INVMIN'],
-							  mysql_real_escape_string($value2['INVDOC']),
-							  mysql_real_escape_string($value2['staff']),
+							  mysqli_real_escape_string($mysqli_link, $value2['INVDOC']),
+							  mysqli_real_escape_string($mysqli_link, $value2['staff']),
 							  $value2['INVUNITS'],
-							  mysql_real_escape_string($value2['INVDESCR']),
+							  mysqli_real_escape_string($mysqli_link, $value2['INVDESCR']),
 							  $value2['INVPRICE'],
 							  $value2['INVTOT'],
 							  $value2['INVREVCAT'],
@@ -351,7 +351,7 @@ if ($_POST['invdescr'] != '') {
 							  $value2['INVVPC']
 							  );
 				}
-  mysql_query($insertSQL2, $tryconnection);
+  mysqli_query($tryconnection, $insertSQL2);
 }
 ///////////							
 			}//if (isset($_POST['ok']))
@@ -362,28 +362,28 @@ if (isset($_POST['cancel']))
 {
 
 $lock_it = "LOCK TABLES INVHOLD WRITE, RECEP WRITE, REJECTIN WRITE, ARCUSTO WRITE" ;  
-$Qlock = mysql_query($lock_it, $tryconnection) or die(mysql_error()) ;
+$Qlock = mysqli_query($tryconnection, $lock_it) or die(mysqli_error($mysqli_link)) ;
 
-$insertSQL="INSERT INTO REJECTIN (REJINV, REJDATE, DATETIME, CUSTNO, PETID, ITOTAL, STAFF, COMPANY) VALUES ($_SESSION[minvno], NOW(), NOW(),'$_SESSION[client]','$_SESSION[patient]','$_POST[itotal]','$_SESSION[staff]','".mysql_real_escape_string($_POST['company'])."')";
-mysql_query($insertSQL, $tryconnection);
+$insertSQL="INSERT INTO REJECTIN (REJINV, REJDATE, DATETIME, CUSTNO, PETID, ITOTAL, STAFF, COMPANY) VALUES ($_SESSION[minvno], NOW(), NOW(),'$_SESSION[client]','$_SESSION[patient]','$_POST[itotal]','$_SESSION[staff]','".mysqli_real_escape_string($mysqli_link, $_POST['company'])."')";
+mysqli_query($tryconnection, $insertSQL);
 
 //delete from INVHOLD
 $deleteSQL = "DELETE FROM INVHOLD WHERE INVCUST='$_SESSION[client]'";
-mysql_query($deleteSQL, $tryconnection);
+mysqli_query($tryconnection, $deleteSQL);
 $optimize = "OPTIMIZE TABLE INVHOLD";
-mysql_query($optimize, $tryconnection);
+mysqli_query($tryconnection, $optimize);
 
 //DELETE FROM RECEP FILE
 $query_discharge="DELETE FROM RECEP WHERE RFPETID='$_SESSION[patient]' LIMIT 1";
-$discharge=mysql_query($query_discharge,$tryconnection) or die(mysql_error());
+$discharge=mysqli_query($tryconnection, $query_discharge) or die(mysqli_error($mysqli_link));
 $query_optimize="OPTIMIZE TABLE RECEP ";
-$optimize=mysql_query($query_optimize, $tryconnection) or die(mysql_error());
+$optimize=mysqli_query($tryconnection, $query_optimize) or die(mysqli_error($mysqli_link));
 
 $query_LOCK = "UPDATE ARCUSTO SET LOCKED='0' WHERE CUSTNO = '$client' LIMIT 1";
-$LOCK = mysql_query($query_LOCK, $tryconnection) or die(mysql_error());
+$LOCK = mysqli_query($tryconnection, $query_LOCK) or die(mysqli_error($mysqli_link));
 
 $unlock_it = "UNLOCK TABLES" ;
-$Qunlock = mysql_query($unlock_it, $tryconnection) or die(mysql_error()) ;
+$Qunlock = mysqli_query($tryconnection, $unlock_it) or die(mysqli_error($mysqli_link)) ;
 
 //$gobackwin="history.go(-4);";
 header("Location:../../CLIENT/CLIENT_PATIENT_FILE.php");
@@ -393,7 +393,7 @@ header("Location:../../CLIENT/CLIENT_PATIENT_FILE.php");
 else if (isset($_POST['finish'])){
 	if(substr($_POST['iwrite'],0,3)!='...'){
 	$update_PETHOLD="UPDATE PETHOLD SET WRITEIN='$_POST[iwrite]', PHINVNO='$_SESSION[minvno]' WHERE PHPETID='$_POST[patient]'";
-	$PETHOLD=mysql_query($update_PETHOLD, $tryconnection) or die (mysql_error());
+	$PETHOLD=mysqli_query($tryconnection, $update_PETHOLD) or die (mysqli_error($mysqli_link));
 	}
 
 header("Location:FINISH_INVOICE.php?psex=$_SESSION[psex]");
@@ -419,11 +419,11 @@ document.getElementById('title').innerText=sessionStorage.refID;
 
 
 function labelx(){
-var drug=<?php if (isset($_POST['ok'])){echo "'".mysql_real_escape_string($_POST['invdescr'])."'";} else {echo "document.forms[0].invdescr.value";}?>;
+var drug=<?php if (isset($_POST['ok'])){echo "'".mysqli_real_escape_string($mysqli_link, $_POST['invdescr'])."'";} else {echo "document.forms[0].invdescr.value";}?>;
 //var labelunits=<?php if (isset($_POST['ok'])){echo "'".$invunits."'";} else {echo "' '";}?>;
 var labelunits=<?php echo "'".$invunits."'" ;?> ;
 var expdate=<?php if (isset($_POST['ok'])){echo "'".$_POST['expdate']."'";} else {echo "document.forms[0].expdate.value";}?>;
-window.open('LABEL.php?pet=<?php echo mysql_real_escape_string($row_PATIENT_CLIENT['PETNAME']).". Client: ".mysql_real_escape_string($row_PATIENT_CLIENT['CONTACT']).' ' .mysql_real_escape_string($row_PATIENT_CLIENT['COMPANY']); ?>&labelunits='+labelunits+'&drug='+drug+'&expdate='+expdate,'_blank','width=500,height=252');
+window.open('LABEL.php?pet=<?php echo mysqli_real_escape_string($mysqli_link, $row_PATIENT_CLIENT['PETNAME']).". Client: ".mysqli_real_escape_string($mysqli_link, $row_PATIENT_CLIENT['CONTACT']).' ' .mysqli_real_escape_string($mysqli_link, $row_PATIENT_CLIENT['COMPANY']); ?>&labelunits='+labelunits+'&drug='+drug+'&expdate='+expdate,'_blank','width=500,height=252');
 }
 
 
@@ -889,8 +889,8 @@ sessionStorage.setItem('iwrite',iwrite);
 		foreach ($vacc as $value ){
 		
 		$query_VACCINES = "SELECT * FROM VACCINES WHERE NAME='$value'";
-		$VACCINES = mysql_query($query_VACCINES, $tryconnection) or die(mysql_error());
-		$row_VACCINES = mysql_fetch_assoc($VACCINES);
+		$VACCINES = mysqli_query($tryconnection, $query_VACCINES) or die(mysqli_error($mysqli_link));
+		$row_VACCINES = mysqli_fetch_assoc($VACCINES);
 		$isitkitpup = strpos($row_SELECTEDITEM['TTYPE'],' WK ') ;
 		$isitlast = strpos($row_SELECTEDITEM['TTYPE'],'16 ') ;
 		$isit3yr = strpos($row_SELECTEDITEM['TDESCR'],'3 year') ;
@@ -925,8 +925,8 @@ sessionStorage.setItem('iwrite',iwrite);
          
          <?php if ($row_SELECTEDITEM['TSERUM']=='1' && substr($row_SELECTEDITEM['TFLAGS'],0,1) == '1'){
 		 	$q_critdata="SELECT HRABTAG FROM CRITDATA LIMIT 1";
-			$critdata=mysql_query($q_critdata, $tryconnection) or die (mysql_error());
-			$row_critdata=mysql_fetch_array($critdata);
+			$critdata=mysqli_query($tryconnection, $q_critdata) or die (mysqli_error($mysqli_link));
+			$row_critdata=mysqli_fetch_array($critdata);
 		 		if ($row_critdata[0]=='0'){
 				echo "<label>&nbsp;Rabies tag&nbsp;<input type='text' class='Input' name='xrabtag' id='xrabtag' size='14' onfocus='InputOnFocus(this.id)' onblur='InputOnBlur(this.id)' /></label>";
 				}
@@ -1286,7 +1286,7 @@ if ($value['INVPET']==$_SESSION['patient']){
 <input type="hidden" name="itotal" value="<?php $INVtotal = array();foreach ($_SESSION['invline'] as $invtot){$INVtotal[]=$invtot['INVTOT'];}echo array_sum($INVtotal);?>" /> 
 <!-- OTHER FOR REJECTED INVOICE -->
 <input type="hidden" name="rejdate" value="<?php echo date("Y/m/d"); ?>"/>
-<input type="hidden" name="company" value="<?php echo $row_PATIENT_CLIENT['TITLE'].' '.$row_PATIENT_CLIENT['CONTACT'].' '.mysql_real_escape_string($row_PATIENT_CLIENT['COMPANY']); ?>"/>
+<input type="hidden" name="company" value="<?php echo $row_PATIENT_CLIENT['TITLE'].' '.$row_PATIENT_CLIENT['CONTACT'].' '.mysqli_real_escape_string($mysqli_link, $row_PATIENT_CLIENT['COMPANY']); ?>"/>
 </form>
 <!-- InstanceEndEditable --></div>
 </body>

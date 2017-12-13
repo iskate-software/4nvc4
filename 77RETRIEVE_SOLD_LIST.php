@@ -2,7 +2,7 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 
 if (!empty($_POST['startdate'])){
 $startdate=$_POST['startdate'];
@@ -11,10 +11,10 @@ else {
 $startdate='00/00/0000';
 }
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $startdate="SELECT STR_TO_DATE('$startdate','%m/%d/%Y')";
-$startdate=mysql_query($startdate, $tryconnection) or die(mysql_error());
-$startdate=mysql_fetch_array($startdate);
+$startdate=mysqli_query($tryconnection, $startdate) or die(mysqli_error($mysqli_link));
+$startdate=mysqli_fetch_array($startdate);
 
 if (!empty($_POST['enddate'])){
 $enddate=$_POST['enddate'];
@@ -24,8 +24,8 @@ $enddate=date('m/d/Y');
 }
 
 $enddate="SELECT STR_TO_DATE('$enddate','%m/%d/%Y')";
-$enddate=mysql_query($enddate, $tryconnection) or die(mysql_error());
-$enddate=mysql_fetch_array($enddate);
+$enddate=mysqli_query($tryconnection, $enddate) or die(mysqli_error($mysqli_link));
+$enddate=mysqli_fetch_array($enddate);
 
 // This code examines the detailed invoicing files to determine which clients were
 // sold a particular inventory item. It uses the variable minvvpc as a key.
@@ -40,25 +40,25 @@ $enddate=mysql_fetch_array($enddate);
 //
 
 $Setup_1 = "DROP TEMPORARY TABLE IF EXISTS SALESEARCH " ;
-$Setup_1 = mysql_query($Setup_1, $tryconnection ) or die(mysql_error()) ;
+$Setup_1 = mysqli_query($tryconnection, $Setup_1) or die(mysqli_error($mysqli_link)) ;
 
 $Setup_2 = "CREATE TEMPORARY TABLE SALESEARCH (INVCUST CHAR(7), INVPET INT(6), INVDATETIME DATETIME, INVUNITS FLOAT(8,2), INVPRICE FLOAT(8,2), INVTOT FLOAT(8,2))";
-$Setup_2 = mysql_query($Setup_2, $tryconnection ) or die(mysql_error()) ;
+$Setup_2 = mysqli_query($tryconnection, $Setup_2) or die(mysqli_error($mysqli_link)) ;
 
 $Setup_3 = "INSERT INTO SALESEARCH (INVCUST, INVPET, INVDATETIME, INVUNITS, INVPRICE, INVTOT) SELECT INVCUST, INVPET, INVDATETIME, INVUNITS, INVPRICE, INVTOT FROM DVMINV WHERE INVDATETIME >= '$startdate[0]' AND INVDATETIME <= '$enddate[0]' AND INVVPC = $_POST[invvpc]" ;
-$Setup_3 = mysql_query($Setup_3, $tryconnection ) or die(mysql_error()) ;
+$Setup_3 = mysqli_query($tryconnection, $Setup_3) or die(mysqli_error($mysqli_link)) ;
 
 $Setup_4 = "INSERT INTO SALESEARCH (INVCUST, INVPET, INVDATETIME, INVUNITS, INVPRICE, INVTOT) SELECT INVCUST, INVPET, INVDATETIME, INVUNITS, INVPRICE, INVTOT FROM DVMILAST WHERE INVDATETIME >= '$startdate[0]' AND INVDATETIME <= '$enddate[0]' AND INVVPC = $_POST[invvpc]" ;
-$Setup_4 = mysql_query($Setup_4, $tryconnection ) or die(mysql_error()) ;
+$Setup_4 = mysqli_query($tryconnection, $Setup_4) or die(mysqli_error($mysqli_link)) ;
 
 $Get_History = "SELECT LASTCLOSE FROM PRACTICE WHERE LASTCLOSE > $startdate[0]" ;
-$Is_History = mysql_query($Get_History, $tryconnection ) or die(mysql_error()) ;
-$row_Is_History = mysql_fetch_array($Is_History);
+$Is_History = mysqli_query($tryconnection, $Get_History) or die(mysqli_error($mysqli_link)) ;
+$row_Is_History = mysqli_fetch_array($Is_History);
 
 $i=1;
 $Use_Hist = 0 ;
 
-while($i<=3 && $row_Is_History = mysql_fetch_array($Is_History)){
+while($i<=3 && $row_Is_History = mysqli_fetch_array($Is_History)){
 
   if ( $row_Is_History['LASTCLOSE'] > $startdate[0] ) {
     $Use_Hist = 1 ;
@@ -68,17 +68,17 @@ $i++;
 }
   if ($i > 2 && $Use_Hist = 1) {
    $Setup_5 = "INSERT INTO SALESEARCH (INVCUST, INVPET, INVDATETIME, INVUNITS, INVPRICE, INVTOT) SELECT INVCUST, INVPET, INVDATETIME, INVUNITS, INVPRICE, INVTOT FROM ARYDVMI WHERE INVDATETIME >= '$startdate[0]' AND INVDATETIME <= '$enddate[0]' AND INVVPC = $_POST[invvpc]" ;
-   $Setup_5 = mysql_query($Setup_5, $tryconnection ) or die(mysql_error()) ;
+   $Setup_5 = mysqli_query($tryconnection, $Setup_5) or die(mysqli_error($mysqli_link)) ;
   }
 
 
 $select_SALESEARCH = "SELECT *, DATE_FORMAT(INVDATETIME, '%m/%d/%Y') AS INVDATETIME  FROM SALESEARCH JOIN ARCUSTO ON (ARCUSTO.CUSTNO=SALESEARCH.INVCUST)";
-$SALESEARCH = mysql_query($select_SALESEARCH) or die(mysql_error());
-$row_SALESEARCH = mysql_fetch_assoc($SALESEARCH);
+$SALESEARCH = mysqli_query($mysqli_link, $select_SALESEARCH) or die(mysqli_error($mysqli_link));
+$row_SALESEARCH = mysqli_fetch_assoc($SALESEARCH);
 
 $select_CASUAL = "SELECT *, DATE_FORMAT(INVDATETIME, '%m/%d/%Y') AS INVDATETIME  FROM SALESEARCH WHERE INVCUST = '0'";
-$CASUAL = mysql_query($select_CASUAL) or die(mysql_error());
-$row_CASUAL = mysql_fetch_assoc($CASUAL);
+$CASUAL = mysqli_query($mysqli_link, $select_CASUAL) or die(mysqli_error($mysqli_link));
+$row_CASUAL = mysqli_fetch_assoc($CASUAL);
 
 
 //$select_INVSOLD = "SELECT * FROM INVSOLD WHERE SOLDID=$_GET[soldid]";
@@ -154,7 +154,7 @@ document.editsl.invunits.focus();
         <td align="right" class="Verdana12"><?php echo $row_CASUAL['INVTOT']; ?></td>
         <td align="right" class="Verdana12"><?php echo number_format($row_CASUAL['INVTOT']-($row_CASUAL['INVPRICE']*$row_CASUAL['INVUNITS']), 2); ?>&nbsp;</td>
       </tr>
-  <?php } while ($row_CASUAL = mysql_fetch_assoc($CASUAL)); } ?> 
+  <?php } while ($row_CASUAL = mysqli_fetch_assoc($CASUAL)); } ?> 
      <?php do { ?>   
       <tr>
         <td height="18" align="center" class="Verdana12">&nbsp;<?php echo $row_SALESEARCH['INVDATETIME']; ?></td>
@@ -166,7 +166,7 @@ document.editsl.invunits.focus();
         <td align="right" class="Verdana12"><?php echo $row_SALESEARCH['INVTOT']; ?></td>
         <td align="right" class="Verdana12"><?php echo number_format($row_SALESEARCH['INVTOT']-($row_SALESEARCH['INVPRICE']*$row_SALESEARCH['INVUNITS']), 2); ?>&nbsp;</td>
       </tr>
-  <?php } while ($row_SALESEARCH = mysql_fetch_assoc($SALESEARCH)); ?> 
+  <?php } while ($row_SALESEARCH = mysqli_fetch_assoc($SALESEARCH)); ?> 
         </table> 
         </div> 
        </td>

@@ -6,26 +6,26 @@ require_once('../../ASSETS/tax.php');
 $invno=$_GET['invno'];
 $unique1=$_GET['unique1'];
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $query_Staff = "SELECT * FROM STAFF WHERE SIGNEDIN=1";
-$Staff = mysql_query($query_Staff, $tryconnection) or die(mysql_error());
-$row_Staff = mysql_fetch_assoc($Staff);
+$Staff = mysqli_query($tryconnection, $query_Staff) or die(mysqli_error($mysqli_link));
+$row_Staff = mysqli_fetch_assoc($Staff);
 
 $query_Doctor = "SELECT * FROM DOCTOR WHERE SIGNEDIN=1 AND INSTR(DOCTOR,'TBA') = 0 AND INSTR(DOCTOR,'TECHNICIAN') = 0 AND INSTR(DOCTOR,'HOSPITAL') = 0 ";
-$Doctor = mysql_query($query_Doctor, $tryconnection) or die(mysql_error());
-$row_Doctor = mysql_fetch_assoc($Doctor);
+$Doctor = mysqli_query($tryconnection, $query_Doctor) or die(mysqli_error($mysqli_link));
+$row_Doctor = mysqli_fetch_assoc($Doctor);
 
 
 if ($_GET['todo']=='create' || $_GET['todo']=='apply'){
 //$query_ARARECV = "SELECT *, DATE_FORMAT(INVDTE, '%m/%d/%Y') AS INVDTE FROM ARARECV WHERE UNIQUE1 = '$unique1' AND CUSTNO='$_SESSION[client]'";
 $query_ARARECV = "SELECT *, DATE_FORMAT(INVDTE, '%m/%d/%Y') AS INVDTE FROM ARARECV WHERE UNIQUE1 = '$unique1' ";
-$ARARECV = mysql_query($query_ARARECV, $tryconnection) or die(mysql_error());
-$row_ARARECV = mysql_fetch_assoc($ARARECV);
+$ARARECV = mysqli_query($tryconnection, $query_ARARECV) or die(mysqli_error($mysqli_link));
+$row_ARARECV = mysqli_fetch_assoc($ARARECV);
 
 	if ($_GET['todo']=='apply'){
 	$query_ARCUSTO = "SELECT BALANCE, CREDIT FROM ARCUSTO WHERE CUSTNO='$_SESSION[client]'";
-	$ARCUSTO = mysql_query($query_ARCUSTO, $tryconnection) or die(mysql_error());
-	$row_ARCUSTO = mysql_fetch_assoc($ARCUSTO);
+	$ARCUSTO = mysqli_query($tryconnection, $query_ARCUSTO) or die(mysqli_error($mysqli_link));
+	$row_ARCUSTO = mysqli_fetch_assoc($ARCUSTO);
 	$dep2payment = 0 ;
 		if ($row_ARCUSTO['CREDIT'] <= $row_ARARECV['IBAL']){
 		$dep2payment = $row_ARCUSTO['CREDIT'];
@@ -43,18 +43,18 @@ $file2look=$_GET['file2look'];
 
 	if ($file2look=='ARRECHS'){
 		$query_ARARECV = "SELECT * FROM ARARECV WHERE  CUSTNO='$_SESSION[client]'AND UNIQUE1 = '$unique1' ";
-		$ARARECV = mysql_query($query_ARARECV, $tryconnection) or die(mysql_error());
-		$row_ARARECV = mysql_fetch_assoc($ARARECV);
+		$ARARECV = mysqli_query($tryconnection, $query_ARARECV) or die(mysqli_error($mysqli_link));
+		$row_ARARECV = mysqli_fetch_assoc($ARARECV);
 		
 		if (empty($row_ARARECV)){
 		$copy_ARRECHS="INSERT INTO ARARECV SELECT * FROM ARRECHS WHERE UNIQUE1 = '$unique1' AND CUSTNO='$_SESSION[client]'";
-		$RESULT = mysql_query($copy_ARRECHS, $tryconnection) or die(mysql_error());
+		$RESULT = mysqli_query($tryconnection, $copy_ARRECHS) or die(mysqli_error($mysqli_link));
 			}
 		}//if ($file2look=='ARRECHS')
 		
 $query_ARARECV = "SELECT *, DATE_FORMAT(INVDTE, '%m/%d/%Y') AS INVDTE FROM $file2look WHERE UNIQUE1 = '$unique1' AND CUSTNO='$_SESSION[client]'";
-$ARARECV = mysql_query($query_ARARECV, $tryconnection) or die(mysql_error());
-$row_ARARECV = mysql_fetch_assoc($ARARECV);
+$ARARECV = mysqli_query($tryconnection, $query_ARARECV) or die(mysqli_error($mysqli_link));
+$row_ARARECV = mysqli_fetch_assoc($ARARECV);
 
 }//else if ($_GET['todo']=='cancel')
 
@@ -64,8 +64,8 @@ if (isset($_POST['ok'])){
 
 $invdte=$_POST['minvdte'].' '.date('H:i:s');
 $convt_date = "SELECT STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s')" ;
-$get_date = mysql_query($convt_date, $tryconnection) or die(mysql_error()) ;
-$row_datex = mysql_fetch_array($get_date) ;
+$get_date = mysqli_query($tryconnection, $convt_date) or die(mysqli_error($mysqli_link)) ;
+$row_datex = mysqli_fetch_array($get_date) ;
 $ibal=$row_ARARECV['IBAL']-$_POST['amtpaid'];
 //$amtpaid=$row_ARARECV['AMTPAID']+$_POST['amtpaid'];
 $amtpaid = $_POST['amtpaid'];
@@ -85,28 +85,28 @@ else {
  $refno = $_POST['refno'];
 }
 
-$update_ARARECV = "UPDATE ARARECV SET SALESMN='".mysql_real_escape_string($_POST['salesmn'])."', PONUM='".mysql_real_escape_string($_POST['ponum'])."', REFNO='$refno', AMTPAID='$row_ARARECV[AMTPAID]'+'$amtpaid', DTEPAID=STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'), IBAL='$ibal' WHERE UNIQUE1 = '$unique1' AND CUSTNO='$_SESSION[client]'";
-$RESULT = mysql_query($update_ARARECV, $tryconnection) or die(mysql_error());
+$update_ARARECV = "UPDATE ARARECV SET SALESMN='".mysqli_real_escape_string($mysqli_link, $_POST['salesmn'])."', PONUM='".mysqli_real_escape_string($mysqli_link, $_POST['ponum'])."', REFNO='$refno', AMTPAID='$row_ARARECV[AMTPAID]'+'$amtpaid', DTEPAID=STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'), IBAL='$ibal' WHERE UNIQUE1 = '$unique1' AND CUSTNO='$_SESSION[client]'";
+$RESULT = mysqli_query($tryconnection, $update_ARARECV) or die(mysqli_error($mysqli_link));
 
 	if ($_GET['todo']=='create'){
 	$insert_ARCASHR = "INSERT INTO ARCASHR (INVNO, INVDTE, CUSTNO, COMPANY, SALESMN, PONUM, REFNO, AMTPAID, DTEPAID) VALUES 
-	('$row_ARARECV[INVNO]', STR_TO_DATE('$row_ARARECV[INVDTE]', '%m/%d/%Y %H:%i:%s'), '$row_ARARECV[CUSTNO]', '".mysql_real_escape_string($row_ARARECV['COMPANY'])."', '".mysql_real_escape_string($_POST['salesmn'])."', '".mysql_real_escape_string($_POST['ponum'])."', '$_POST[refno]', '$_POST[amtpaid]', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s')) ";
-	$RESULT = mysql_query($insert_ARCASHR, $tryconnection) or die(mysql_error());
+	('$row_ARARECV[INVNO]', STR_TO_DATE('$row_ARARECV[INVDTE]', '%m/%d/%Y %H:%i:%s'), '$row_ARARECV[CUSTNO]', '".mysqli_real_escape_string($mysqli_link, $row_ARARECV['COMPANY'])."', '".mysqli_real_escape_string($mysqli_link, $_POST['salesmn'])."', '".mysqli_real_escape_string($mysqli_link, $_POST['ponum'])."', '$_POST[refno]', '$_POST[amtpaid]', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s')) ";
+	$RESULT = mysqli_query($tryconnection, $insert_ARCASHR) or die(mysqli_error($mysqli_link));
 	}
 	
 	else if ($_GET['todo']=='apply'){
-	$insert_ARCASHR = "INSERT INTO ARCASHR (INVNO, INVDTE, CUSTNO, COMPANY, SALESMN, PONUM, REFNO, AMTPAID, DTEPAID) VALUES ('$row_ARARECV[INVNO]', STR_TO_DATE('$row_ARARECV[INVDTE]', '%m/%d/%Y %H:%i:%s'), '$row_ARARECV[CUSTNO]', '".mysql_real_escape_string($row_ARARECV['COMPANY'])."', '".mysql_real_escape_string($_POST['salesmn'])."', '".mysql_real_escape_string($_POST['ponum'])."', 'DEP.APP.', '-$_POST[amtpaid]', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s')) ";
-	$RESULT = mysql_query($insert_ARCASHR, $tryconnection) or die(mysql_error());	
-	$insert_ARCASHR = "INSERT INTO ARCASHR (INVNO, INVDTE, CUSTNO, COMPANY, SALESMN, PONUM, REFNO, AMTPAID, DTEPAID) VALUES ('$row_ARARECV[INVNO]', STR_TO_DATE('$row_ARARECV[INVDTE]', '%m/%d/%Y %H:%i:%s'), '$row_ARARECV[CUSTNO]', '".mysql_real_escape_string($row_ARARECV['COMPANY'])."', '".mysql_real_escape_string($_POST['salesmn'])."', '".mysql_real_escape_string($_POST['ponum'])."', 'DEP.APP.', '$_POST[amtpaid]', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s')) ";
-	$RESULT = mysql_query($insert_ARCASHR, $tryconnection) or die(mysql_error());
+	$insert_ARCASHR = "INSERT INTO ARCASHR (INVNO, INVDTE, CUSTNO, COMPANY, SALESMN, PONUM, REFNO, AMTPAID, DTEPAID) VALUES ('$row_ARARECV[INVNO]', STR_TO_DATE('$row_ARARECV[INVDTE]', '%m/%d/%Y %H:%i:%s'), '$row_ARARECV[CUSTNO]', '".mysqli_real_escape_string($mysqli_link, $row_ARARECV['COMPANY'])."', '".mysqli_real_escape_string($mysqli_link, $_POST['salesmn'])."', '".mysqli_real_escape_string($mysqli_link, $_POST['ponum'])."', 'DEP.APP.', '-$_POST[amtpaid]', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s')) ";
+	$RESULT = mysqli_query($tryconnection, $insert_ARCASHR) or die(mysqli_error($mysqli_link));	
+	$insert_ARCASHR = "INSERT INTO ARCASHR (INVNO, INVDTE, CUSTNO, COMPANY, SALESMN, PONUM, REFNO, AMTPAID, DTEPAID) VALUES ('$row_ARARECV[INVNO]', STR_TO_DATE('$row_ARARECV[INVDTE]', '%m/%d/%Y %H:%i:%s'), '$row_ARARECV[CUSTNO]', '".mysqli_real_escape_string($mysqli_link, $row_ARARECV['COMPANY'])."', '".mysqli_real_escape_string($mysqli_link, $_POST['salesmn'])."', '".mysqli_real_escape_string($mysqli_link, $_POST['ponum'])."', 'DEP.APP.', '$_POST[amtpaid]', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s')) ";
+	$RESULT = mysqli_query($tryconnection, $insert_ARCASHR) or die(mysqli_error($mysqli_link));
 	}
 	
 		if (isset($credit)){
 		  $remainingpayment = $credit ;	
 		  $refno = $_POST['refno'] ;
 		  $query_ARARECV2="SELECT * FROM ARARECV WHERE CUSTNO='$_SESSION[client]' AND IBAL > 0 ORDER BY invdte, UNIQUE1 ASC";
-				$ARARECV2=mysql_query($query_ARARECV2, $tryconnection) or die(mysql_error());
-				$row_ARARECV2=mysql_fetch_assoc($ARARECV2);
+				$ARARECV2=mysqli_query($tryconnection, $query_ARARECV2) or die(mysqli_error($mysqli_link));
+				$row_ARARECV2=mysqli_fetch_assoc($ARARECV2);
 // AND AUTOPAY
 				do {
 					
@@ -120,26 +120,26 @@ $RESULT = mysql_query($update_ARARECV, $tryconnection) or die(mysql_error());
 				    $credit = $credit - $amtpaid ;
 					if ($amtpaid > 0){
 					$update_ARARECV2="UPDATE ARARECV SET AMTPAID=AMTPAID+$amtpaid, IBAL=(IBAL-$amtpaid), DTEPAID='$row_datex[0]', REFNO = '$refno' WHERE INVNO='$row_ARARECV2[INVNO]' AND UNIQUE1 = '$row_ARARECV2[UNIQUE1]'";
-					mysql_query($update_ARARECV2, $tryconnection) or die(mysql_error());
+					mysqli_query($tryconnection, $update_ARARECV2) or die(mysqli_error($mysqli_link));
 				
 					$insert_ARCASHR = sprintf("INSERT INTO ARCASHR (INVNO, INVDTE, CUSTNO, COMPANY, SALESMN, PONUM, DISCOUNT, AMTPAID, DTEPAID, REFNO) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
 							$row_ARARECV2['INVNO'],
 							$row_ARARECV2['INVDTE'],
 							$row_ARARECV['CUSTNO'],
-							mysql_real_escape_string($row_ARARECV['COMPANY']),
-							mysql_real_escape_string($_POST['salesmn']),
-							mysql_real_escape_string($row_ARARECV2['PONUM']),
+							mysqli_real_escape_string($mysqli_link, $row_ARARECV['COMPANY']),
+							mysqli_real_escape_string($mysqli_link, $_POST['salesmn']),
+							mysqli_real_escape_string($mysqli_link, $row_ARARECV2['PONUM']),
 							$row_ARARECV2['DISCOUNT'],
 							$amtpaid,
 							$row_datex[0],
 							$refno);
-					mysql_query($insert_ARCASHR, $tryconnection) or die(mysql_error());
+					mysqli_query($tryconnection, $insert_ARCASHR) or die(mysqli_error($mysqli_link));
 
 
 					$remainingpayment=$remainingpayment - $amtpaid;
 
 					}//if ($remainingpayment > 0){
-				} while ($row_ARARECV2=mysql_fetch_assoc($ARARECV2) AND $remainingpayment > 0 );
+				} while ($row_ARARECV2=mysqli_fetch_assoc($ARARECV2) AND $remainingpayment > 0 );
 			
 		}
 
@@ -150,37 +150,37 @@ if ($remainingpayment > 0 ) {
 							'DEP.',
 							$row_ARARECV2['INVDTE'],
 							$row_ARARECV['CUSTNO'],
-							mysql_real_escape_string($row_ARARECV['COMPANY']),
-							mysql_real_escape_string($_POST['salesmn']),
-							mysql_real_escape_string($row_ARARECV2['PONUM']),
+							mysqli_real_escape_string($mysqli_link, $row_ARARECV['COMPANY']),
+							mysqli_real_escape_string($mysqli_link, $_POST['salesmn']),
+							mysqli_real_escape_string($mysqli_link, $row_ARARECV2['PONUM']),
 							0.00,
 							$remainingpayment,
 							$row_datex[0],
 							$refno);
 							
-							mysql_query($query_DEP, $tryconnection) or die(mysql_error()) ;
+							mysqli_query($tryconnection, $query_DEP) or die(mysqli_error($mysqli_link)) ;
 }
 
 $query_ARCUSTO = "SELECT BALANCE, CREDIT FROM ARCUSTO WHERE CUSTNO='$_SESSION[client]' LIMIT 1";
-$ARCUSTO = mysql_query($query_ARCUSTO, $tryconnection) or die(mysql_error());
-$row_ARCUSTO = mysql_fetch_assoc($ARCUSTO);
+$ARCUSTO = mysqli_query($tryconnection, $query_ARCUSTO) or die(mysqli_error($mysqli_link));
+$row_ARCUSTO = mysqli_fetch_assoc($ARCUSTO);
 
 $balance=$row_ARCUSTO['BALANCE']-$realamt;
 
 
 	if ($_GET['todo']!='apply'){
 	$update_ARCUSTO = "UPDATE ARCUSTO SET BALANCE='$balance' WHERE CUSTNO='$_SESSION[client]' LIMIT 1";
-	$RESULT = mysql_query($update_ARCUSTO, $tryconnection) or die(mysql_error());
+	$RESULT = mysqli_query($tryconnection, $update_ARCUSTO) or die(mysqli_error($mysqli_link));
 	
 			if (isset($credit)){
 			$credit=$row_ARCUSTO['CREDIT']+$credit;
 			$update_ARCUSTO = "UPDATE ARCUSTO SET CREDIT='$credit' WHERE CUSTNO='$_SESSION[client]' LIMIT 1";
-			$RESULT = mysql_query($update_ARCUSTO, $tryconnection) or die(mysql_error());
+			$RESULT = mysqli_query($tryconnection, $update_ARCUSTO) or die(mysqli_error($mysqli_link));
 			}
 	}
 	else if ($_GET['todo']=='apply'){
 	$update_ARCUSTO = "UPDATE ARCUSTO SET CREDIT=CREDIT-$_POST[amtpaid] WHERE CUSTNO='$_SESSION[client]' LIMIT 1";
-	$RESULT = mysql_query($update_ARCUSTO, $tryconnection) or die(mysql_error());
+	$RESULT = mysqli_query($tryconnection, $update_ARCUSTO) or die(mysqli_error($mysqli_link));
 	}
 
 $closewin="opener.document.location.reload(); self.close();";
@@ -200,22 +200,22 @@ else if (isset($_POST['ok2'])){
 $invdte=$_POST['minvdte'].' '.date('H:i:s');
 $ibal=$row_ARARECV['IBAL']+$amtpaid;
 
-$update_ARARECV = "UPDATE ARARECV SET SALESMN='".mysql_real_escape_string($_POST['salesmn'])."', PONUM='".mysql_real_escape_string($_POST['ponum'])."', REFNO='$_POST[refno]', AMTPAID=AMTPAID-$amtpaid, DTEPAID=STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'), IBAL='$ibal' WHERE UNIQUE1 = '$unique1' AND CUSTNO='$_SESSION[client]'";
-$RESULT = mysql_query($update_ARARECV, $tryconnection) or die(mysql_error());
+$update_ARARECV = "UPDATE ARARECV SET SALESMN='".mysqli_real_escape_string($mysqli_link, $_POST['salesmn'])."', PONUM='".mysqli_real_escape_string($mysqli_link, $_POST['ponum'])."', REFNO='$_POST[refno]', AMTPAID=AMTPAID-$amtpaid, DTEPAID=STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'), IBAL='$ibal' WHERE UNIQUE1 = '$unique1' AND CUSTNO='$_SESSION[client]'";
+$RESULT = mysqli_query($tryconnection, $update_ARARECV) or die(mysqli_error($mysqli_link));
 
-$insert_ARCASHR = "INSERT INTO ARCASHR (INVNO, INVDTE, CUSTNO, COMPANY, SALESMN, PONUM, REFNO, AMTPAID, DTEPAID) VALUES ('$row_ARARECV[INVNO]', STR_TO_DATE('$row_ARARECV[INVDTE]', '%m/%d/%Y %H:%i:%s'), '$row_ARARECV[CUSTNO]', '".mysql_real_escape_string($row_ARARECV['COMPANY'])."', '".mysql_real_escape_string($_POST['salesmn'])."', '".mysql_real_escape_string($_POST['ponum'])."', '$_POST[refno]', '-$amtpaid', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s')) ";
-$RESULT = mysql_query($insert_ARCASHR, $tryconnection) or die(mysql_error());
+$insert_ARCASHR = "INSERT INTO ARCASHR (INVNO, INVDTE, CUSTNO, COMPANY, SALESMN, PONUM, REFNO, AMTPAID, DTEPAID) VALUES ('$row_ARARECV[INVNO]', STR_TO_DATE('$row_ARARECV[INVDTE]', '%m/%d/%Y %H:%i:%s'), '$row_ARARECV[CUSTNO]', '".mysqli_real_escape_string($mysqli_link, $row_ARARECV['COMPANY'])."', '".mysqli_real_escape_string($mysqli_link, $_POST['salesmn'])."', '".mysqli_real_escape_string($mysqli_link, $_POST['ponum'])."', '$_POST[refno]', '-$amtpaid', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s')) ";
+$RESULT = mysqli_query($tryconnection, $insert_ARCASHR) or die(mysqli_error($mysqli_link));
 	
 $query_ARCUSTO = "SELECT BALANCE, CREDIT FROM ARCUSTO WHERE CUSTNO='$_SESSION[client]' LIMIT 1";
-$ARCUSTO = mysql_query($query_ARCUSTO, $tryconnection) or die(mysql_error());
-$row_ARCUSTO = mysql_fetch_assoc($ARCUSTO);
+$ARCUSTO = mysqli_query($tryconnection, $query_ARCUSTO) or die(mysqli_error($mysqli_link));
+$row_ARCUSTO = mysqli_fetch_assoc($ARCUSTO);
 
 $balance=$row_ARCUSTO['BALANCE']+$amtpaid;
 $credit=$row_ARCUSTO['CREDIT']-$amtpaid;
 	if ($credit<0){$credit="0.00";}
 
 $update_ARCUSTO = "UPDATE ARCUSTO SET BALANCE='$balance', CREDIT='$credit' WHERE CUSTNO='$_SESSION[client]' LIMIT 1";
-$RESULT = mysql_query($update_ARCUSTO, $tryconnection) or die(mysql_error());
+$RESULT = mysqli_query($tryconnection, $update_ARCUSTO) or die(mysqli_error($mysqli_link));
 
 $closewin="opener.document.location.reload(); self.close();";
 }
@@ -376,9 +376,9 @@ function bodyonunload()
                     <select name="salesmn" id="salesmn">
       		<?php
 			do { echo '<option value="'.$row_Staff['STAFF'].'">'.$row_Staff['STAFF'].'</option>'; 
-					} while ($row_Staff = mysql_fetch_assoc($Staff));
+					} while ($row_Staff = mysqli_fetch_assoc($Staff));
 			do { echo '<option value="'.$row_Doctor['DOCTOR'].'">'.$row_Doctor['DOCTOR'].'</option>';
-					} while ($row_Doctor = mysql_fetch_assoc($Doctor));
+					} while ($row_Doctor = mysqli_fetch_assoc($Doctor));
 			?>
     		</select>		</td>
       </tr>

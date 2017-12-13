@@ -21,41 +21,41 @@ $pettype=$_GET['pettype'];
 
 $client=$_SESSION['client'];
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 
 $query_LOCK_CLIENT = "LOCK TABLES ARCUSTO WRITE" ;
-$LOCK_CLIENT = mysql_query($query_LOCK_CLIENT) or die(mysql_error());
+$LOCK_CLIENT = mysqli_query($mysqli_link, $query_LOCK_CLIENT) or die(mysqli_error($mysqli_link));
 $query_CLIENT = "SELECT LOCKED FROM ARCUSTO WHERE CUSTNO = '$client' LIMIT 1";
-$CLIENT = mysql_query($query_CLIENT, $tryconnection) or die(mysql_error());
-$row_CLIENT = mysql_fetch_assoc($CLIENT);
+$CLIENT = mysqli_query($tryconnection, $query_CLIENT) or die(mysqli_error($mysqli_link));
+$row_CLIENT = mysqli_fetch_assoc($CLIENT);
 
 if ($row_CLIENT['LOCKED']=='1' && $_GET['refID']!='EST' && !isset($_SESSION['round'])){
 $query_UNLOCK = "UNLOCK TABLES" ;
-$UNLOCK = mysql_query($query_UNLOCK, $tryconnection) or die(mysql_error()) ;
+$UNLOCK = mysqli_query($tryconnection, $query_UNLOCK) or die(mysqli_error($mysqli_link)) ;
 $gobackwin="alert('This client\'s file is locked for invoicing.'); document.location='../../CLIENT/CLIENT_PATIENT_FILE.php?refID=REG';";
 }
 else if ($row_CLIENT['LOCKED']!='1' && $_GET['refID']!='EST'){
 	$query_LOCK = "UPDATE ARCUSTO SET LOCKED='1' WHERE CUSTNO = '$client' LIMIT 1";
-    $LOCK = mysql_query($query_LOCK, $tryconnection) or die(mysql_error()) ;
+    $LOCK = mysqli_query($tryconnection, $query_LOCK) or die(mysqli_error($mysqli_link)) ;
 }
 
 $query_UNLOCK = "UNLOCK TABLES" ;
-$UNLOCK = mysql_query($query_UNLOCK, $tryconnection) or die(mysql_error()) ;
+$UNLOCK = mysqli_query($tryconnection, $query_UNLOCK) or die(mysqli_error($mysqli_link)) ;
 
 $query_Doctor = "SELECT * FROM DOCTOR WHERE SIGNEDIN=1";
-$Doctor = mysql_query($query_Doctor, $tryconnection) or die(mysql_error());
-$row_Doctor = mysql_fetch_assoc($Doctor);
-$totalRows_Doctor = mysql_num_rows($Doctor);
+$Doctor = mysqli_query($tryconnection, $query_Doctor) or die(mysqli_error($mysqli_link));
+$row_Doctor = mysqli_fetch_assoc($Doctor);
+$totalRows_Doctor = mysqli_num_rows($Doctor);
 
 
 if (isset($_POST['cancel']) && $_GET['refID']!='EST'){
 	if ($row_CLIENT['LOCKED']=='1'){
         $query_LOCK_CLIENT = "LOCK TABLES ARCUSTO WRITE" ;
-        $LOCK_CLIENT = mysql_query($query_LOCK_CLIENT) or die(mysql_error()); 
+        $LOCK_CLIENT = mysqli_query($mysqli_link, $query_LOCK_CLIENT) or die(mysqli_error($mysqli_link)); 
 		$query_LOCK1 = "UPDATE ARCUSTO SET LOCKED='0' WHERE CUSTNO = '$client'  LIMIT 1";
-		$LOCK1 = mysql_query($query_LOCK1, $tryconnection) or die(mysql_error());
+		$LOCK1 = mysqli_query($tryconnection, $query_LOCK1) or die(mysqli_error($mysqli_link));
         $query_UNLOCK = "UNLOCK TABLES" ;
-        $UNLOCK = mysql_query($query_UNLOCK, $tryconnection) or die(mysql_error()) ;
+        $UNLOCK = mysqli_query($tryconnection, $query_UNLOCK) or die(mysqli_error($mysqli_link)) ;
 	}
 $gobackwin="document.location='../../CLIENT/CLIENT_PATIENT_FILE.php';";
 }
@@ -415,7 +415,7 @@ do {
 ?>
       <option value="<?php echo $row_Doctor['DOCTOR']?>" ><?php echo $row_Doctor['DOCTOR']?></option>
       <?php
-} while ($row_Doctor = mysql_fetch_assoc($Doctor));
+} while ($row_Doctor = mysqli_fetch_assoc($Doctor));
 //  $rows = mysql_num_rows($Doctor);
 //  if($rows > 0) {
 //      mysql_data_seek($Doctor, 0);

@@ -2,22 +2,22 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $query_CRITDATA = "SELECT * FROM CRITDATA LIMIT 1";
-$CRITDATA = mysql_query($query_CRITDATA, $tryconnection) or die(mysql_error());
-$row_CRITDATA = mysql_fetch_assoc($CRITDATA);
+$CRITDATA = mysqli_query($tryconnection, $query_CRITDATA) or die(mysqli_error($mysqli_link));
+$row_CRITDATA = mysqli_fetch_assoc($CRITDATA);
 
 $spec=$_GET['species'];
 
 $query_CAN1=sprintf("SELECT DISTINCT TCATGRY FROM VETCAN WHERE TSPECIES='%s' ORDER BY TCATGRY,TNO ASC", $spec);
-$CAN1 = mysql_query($query_CAN1, $tryconnection) or die(mysql_error());
-$row_CAN1 = mysql_fetch_assoc($CAN1);
+$CAN1 = mysqli_query($tryconnection, $query_CAN1) or die(mysqli_error($mysqli_link));
+$row_CAN1 = mysqli_fetch_assoc($CAN1);
 
 $categories = array();
 
 do {
 $categories[]=$row_CAN1['TCATGRY'];
-} while ($row_CAN1 = mysql_fetch_assoc($CAN1));
+} while ($row_CAN1 = mysqli_fetch_assoc($CAN1));
 
 
 ///$categories=explode(",",$_GET['categories']);
@@ -123,9 +123,9 @@ overflow:auto;
 foreach ($categories as $value){
 
 $query_CAN1=sprintf("SELECT * FROM VETCAN WHERE TCATGRY='$value' AND TSPECIES='%s' ORDER BY TCATGRY,TNO ASC", $spec);
-$CAN1 = mysql_query($query_CAN1, $tryconnection) or die(mysql_error());
-$row_CAN1 = mysql_fetch_assoc($CAN1);
-$totalRows_CAN1 = mysql_num_rows($CAN1);
+$CAN1 = mysqli_query($tryconnection, $query_CAN1) or die(mysqli_error($mysqli_link));
+$row_CAN1 = mysqli_fetch_assoc($CAN1);
+$totalRows_CAN1 = mysqli_num_rows($CAN1);
   
 echo '<tr class="Verdana13B">
       <td>&nbsp;</td>
@@ -152,7 +152,7 @@ do {
       <td align="right">&nbsp;</td>
     </tr>
   <?php }
-while ($row_CAN1 = mysql_fetch_assoc($CAN1));
+while ($row_CAN1 = mysqli_fetch_assoc($CAN1));
 echo  '<tr>
       <td height="10" colspan="9"></td>
     </tr>';

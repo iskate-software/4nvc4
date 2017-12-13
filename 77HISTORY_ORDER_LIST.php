@@ -2,7 +2,7 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 
 if (!empty($_POST['startdate'])){
 $startdate=$_POST['startdate'];
@@ -12,8 +12,8 @@ $startdate='00/00/0000';
 }
 
 $startdate="SELECT STR_TO_DATE('$startdate','%m/%d/%Y')";
-$startdate=mysql_query($startdate, $tryconnection) or die(mysql_error());
-$startdate=mysql_fetch_array($startdate);
+$startdate=mysqli_query($tryconnection, $startdate) or die(mysqli_error($mysqli_link));
+$startdate=mysqli_fetch_array($startdate);
 
 if (!empty($_POST['enddate'])){
 $enddate=$_POST['enddate'];
@@ -23,13 +23,13 @@ $enddate=date('m/d/Y');
 }
 
 $enddate="SELECT STR_TO_DATE('$enddate','%m/%d/%Y')";
-$enddate=mysql_query($enddate, $tryconnection) or die(mysql_error());
-$enddate=mysql_fetch_array($enddate);
+$enddate=mysqli_query($tryconnection, $enddate) or die(mysqli_error($mysqli_link));
+$enddate=mysqli_fetch_array($enddate);
 
 
 $query_INVTHIST = "SELECT * FROM INVTHIST WHERE VPCCODE = '$_GET[vpccode]' AND ORDERED >= '$startdate[0]' AND ORDERED <= '$enddate[0]'";
-$INVTHIST = mysql_query($query_INVTHIST, $tryconnection) or die(mysql_error());
-$row_INVTHIST = mysql_fetch_assoc($INVTHIST);
+$INVTHIST = mysqli_query($tryconnection, $query_INVTHIST) or die(mysqli_error($mysqli_link));
+$row_INVTHIST = mysqli_fetch_assoc($INVTHIST);
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/POP UP WINDOWS TEMPLATE.dwt" codeOutsideHTMLIsLocked="false" -->
@@ -100,7 +100,7 @@ document.editsl.invunits.focus();
         <td align="right" class="Verdana12"><?php echo $row_INVTHIST['DRUGCOST']; ?></td>
         <td></td>
       </tr>
-  <?php } while ($row_INVTHIST = mysql_fetch_assoc($INVTHIST)); ?> 
+  <?php } while ($row_INVTHIST = mysqli_fetch_assoc($INVTHIST)); ?> 
         </table> 
         </div> 
        </td>

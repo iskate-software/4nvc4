@@ -2,13 +2,13 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $spec=$_GET['species'];
 $GETcategory=implode(",",$_POST['report']);
 
 $query_SPECIES = "SELECT DISTINCT TCATGRY, TTYPE FROM VETCAN WHERE TSPECIES='$spec' ORDER BY TCATGRY ASC";
-$SPECIES = mysql_query($query_SPECIES, $tryconnection) or die(mysql_error());
-$row_SPECIES = mysql_fetch_assoc($SPECIES);
+$SPECIES = mysqli_query($tryconnection, $query_SPECIES) or die(mysqli_error($mysqli_link));
+$row_SPECIES = mysqli_fetch_assoc($SPECIES);
 
 
 if (isset($_POST['ok'])){
@@ -94,7 +94,7 @@ else if (document.forms[0].selall.value="Select All"){
     </td>
     <td width="69">&nbsp;</td>
   </tr>
-      <?php } while ($row_SPECIES = mysql_fetch_assoc($SPECIES)); ?>
+      <?php } while ($row_SPECIES = mysqli_fetch_assoc($SPECIES)); ?>
   <tr>
     <td height="26" colspan="3" align="center">    </tr>
   <tr>

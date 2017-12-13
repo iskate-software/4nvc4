@@ -11,14 +11,14 @@ $pettype=$_GET['pettype'];
 $client=$_SESSION['client'];
 
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $query_Staff = "SELECT * FROM STAFF WHERE SIGNEDIN=1 ORDER BY PRIORITY";
-$Staff = mysql_query($query_Staff, $tryconnection) or die(mysql_error());
-$row_Staff = mysql_fetch_assoc($Staff);
+$Staff = mysqli_query($tryconnection, $query_Staff) or die(mysqli_error($mysqli_link));
+$row_Staff = mysqli_fetch_assoc($Staff);
 
 $query_Doctor = "SELECT * FROM DOCTOR WHERE SIGNEDIN=1 AND (SUBSTR(DOCTOR,1,3) = 'Dr ' OR INSTR(DOCTOR,'DVM')<> 0) ORDER BY PRIORITY";
-$Doctor = mysql_query($query_Doctor, $tryconnection) or die(mysql_error());
-$row_Doctor = mysql_fetch_assoc($Doctor);
+$Doctor = mysqli_query($tryconnection, $query_Doctor) or die(mysqli_error($mysqli_link));
+$row_Doctor = mysqli_fetch_assoc($Doctor);
 
 
 if (isset($_POST['check']) && !isset($_POST['cancel'])) {
@@ -26,12 +26,12 @@ if (isset($_POST['check']) && !isset($_POST['cancel'])) {
 ///////////////////////////////////////////////////////////////////////
 //create an empty row in PETHOLD 
 $query_PETHOLD = "SELECT * FROM PETHOLD WHERE PHPETID='$_SESSION[patient]'";
-$PETHOLD = mysql_query($query_PETHOLD, $tryconnection) or die(mysql_error());
-$row_PETHOLD = mysql_fetch_assoc($PETHOLD);
+$PETHOLD = mysqli_query($tryconnection, $query_PETHOLD) or die(mysqli_error($mysqli_link));
+$row_PETHOLD = mysqli_fetch_assoc($PETHOLD);
 //if there is no record in PETHOLD for this patient, create one
 if (empty($row_PETHOLD['PHPETID'])){
 $query_PETHOLD="INSERT INTO PETHOLD (PHCUSTNO, PHPETID, PHPETNAME) VALUES ('$_SESSION[client]','$_SESSION[patient]','$_SESSION[petname]')";
-$PETHOLD = mysql_unbuffered_query($query_PETHOLD, $tryconnection) or die(mysql_error());
+$PETHOLD = mysql_unbuffered_query($query_PETHOLD, $tryconnection) or die(mysqli_error($mysqli_link));
 }
 
 
@@ -39,25 +39,25 @@ $PETHOLD = mysql_unbuffered_query($query_PETHOLD, $tryconnection) or die(mysql_e
 
 //select the estimates from ESTHOLD where the INVCUST = custno
 $query_ESTHOLD = "SELECT DISTINCT INVHYPE FROM ESTHOLD WHERE INVCUST=$_SESSION[client]";
-$ESTHOLD = mysql_query($query_ESTHOLD, $tryconnection) or die(mysql_error());
-$row_ESTHOLD = mysql_fetch_assoc($ESTHOLD);
-$totalRows_ESTHOLD = mysql_num_rows($ESTHOLD);
+$ESTHOLD = mysqli_query($tryconnection, $query_ESTHOLD) or die(mysqli_error($mysqli_link));
+$row_ESTHOLD = mysqli_fetch_assoc($ESTHOLD);
+$totalRows_ESTHOLD = mysqli_num_rows($ESTHOLD);
 $query_INVHOLD = "SELECT INVNO FROM INVHOLD WHERE INVCUST=$_SESSION[client] LIMIT 1";
-$INVHOLD = mysql_query($query_INVHOLD, $tryconnection) or die(mysql_error());
-$row_INVHOLD = mysql_fetch_assoc($INVHOLD);
-$totalRows_INVHOLD = mysql_num_rows($INVHOLD);
+$INVHOLD = mysqli_query($tryconnection, $query_INVHOLD) or die(mysqli_error($mysqli_link));
+$row_INVHOLD = mysqli_fetch_assoc($INVHOLD);
+$totalRows_INVHOLD = mysqli_num_rows($INVHOLD);
 
    if (!isset($_SESSION['round']) && $_SESSION['refID']!='EST' && $totalRows_INVHOLD==0) {     
     $query_lockc = "LOCK TABLES CRITDATA WRITE" ;
-    $get_it = mysql_query($query_lockc, $tryconnection) or die(mysql_error()) ;    
+    $get_it = mysqli_query($tryconnection, $query_lockc) or die(mysqli_error($mysqli_link)) ;    
 	$query_INVNO = "SELECT LASTINV FROM CRITDATA LIMIT 1";
-	$INVNO = mysql_query($query_INVNO, $tryconnection) or die(mysql_error());
-	$row_INVNO = mysql_fetch_assoc($INVNO);
+	$INVNO = mysqli_query($tryconnection, $query_INVNO) or die(mysqli_error($mysqli_link));
+	$row_INVNO = mysqli_fetch_assoc($INVNO);
 	$_SESSION['minvno'] = $row_INVNO['LASTINV'] + 1 ;
 	$query_INVNO = "UPDATE CRITDATA SET LASTINV = '$_SESSION[minvno]'" ;
-	$INVNO = mysql_query($query_INVNO,$tryconnection) or die(mysql_error()) ;
+	$INVNO = mysqli_query($tryconnection, $query_INVNO) or die(mysqli_error($mysqli_link)) ;
 	$query_unlockc = "UNLOCK TABLES" ;
-	$let_it_go = mysql_query($query_unlockc, $tryconnection) or die(mysql_error()) ;
+	$let_it_go = mysqli_query($tryconnection, $query_unlockc) or die(mysqli_error($mysqli_link)) ;
    }
    else if (!isset($_SESSION['round']) && $_SESSION['refID']!='EST' && $totalRows_INVHOLD!=0){
 	$_SESSION['minvno'] = $row_INVHOLD['INVNO'];
@@ -84,7 +84,7 @@ $totalRows_INVHOLD = mysql_num_rows($INVHOLD);
 
 if (isset($_POST['cancel'])){
 	$query_LOCK = "UPDATE ARCUSTO SET LOCKED='0' WHERE CUSTNO = '$client' LIMIT 1";
-	$LOCK = mysql_query($query_LOCK, $tryconnection) or die(mysql_error());
+	$LOCK = mysqli_query($tryconnection, $query_LOCK) or die(mysqli_error($mysqli_link));
 $gobackwin="document.location='../../CLIENT/CLIENT_PATIENT_FILE.php';";
 }
 
@@ -348,14 +348,14 @@ document.Staff.submit();
       <?php
 do {  
       echo '<option value="'.$row_Doctor['DOCTOR'].'">'.$row_Doctor['DOCTOR'].'</option>';
-} while ($row_Doctor = mysql_fetch_assoc($Doctor));
+} while ($row_Doctor = mysqli_fetch_assoc($Doctor));
 // Is this where the doctors double up with the staff?  - YES :)
 	  
 do {  
 ?>
       <option value="<?php echo $row_Staff['STAFF']?>" ><?php echo $row_Staff['STAFF']?></option>
       <?php
-} while ($row_Staff = mysql_fetch_assoc($Staff));
+} while ($row_Staff = mysqli_fetch_assoc($Staff));
 //  $rows = mysql_num_rows($Staff);
 //  if($rows > 0) {
 //      mysql_data_seek($Staff, 0);

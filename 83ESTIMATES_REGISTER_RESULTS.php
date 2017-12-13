@@ -2,14 +2,14 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $search_ESTHOLD="SELECT *, DATE_FORMAT(INVDATETIME, '%m/%d/%Y') AS INVDTE FROM ESTHOLD";
-$ESTHOLD=mysql_query($search_ESTHOLD, $tryconnection ) or die(mysql_error());
-$row_ESTHOLD=mysql_fetch_assoc($ESTHOLD);
+$ESTHOLD=mysqli_query($tryconnection, $search_ESTHOLD) or die(mysqli_error($mysqli_link));
+$row_ESTHOLD=mysqli_fetch_assoc($ESTHOLD);
 
 $search_GRANDTOTAL="SELECT SUM(INVTOT) AS GRANDTOTAL FROM ESTHOLD WHERE INVDESCR='TOTAL'";
-$GRANDTOTAL=mysql_query($search_GRANDTOTAL, $tryconnection ) or die(mysql_error());
-$row_GRANDTOTAL=mysql_fetch_assoc($GRANDTOTAL);
+$GRANDTOTAL=mysqli_query($tryconnection, $search_GRANDTOTAL) or die(mysqli_error($mysqli_link));
+$row_GRANDTOTAL=mysqli_fetch_assoc($GRANDTOTAL);
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/DVMBasicTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
@@ -189,8 +189,8 @@ echo '>
     <td width="160" height="15" align="left" class="Verdana12B">';
 	if ($newcust!=$row_ESTHOLD['INVCUST']){
 	$query_CLIENT = "SELECT * FROM ARCUSTO WHERE CUSTNO = '".$row_ESTHOLD['INVCUST']."'";
-	$CLIENT = mysql_query($query_CLIENT, $tryconnection) or die(mysql_error());
-	$row_CLIENT = mysql_fetch_assoc($CLIENT);
+	$CLIENT = mysqli_query($tryconnection, $query_CLIENT) or die(mysqli_error($mysqli_link));
+	$row_CLIENT = mysqli_fetch_assoc($CLIENT);
 echo substr($row_CLIENT['COMPANY'].", ".$row_CLIENT['CONTACT'],0,29);
 	}
 echo '&nbsp;</td>
@@ -234,7 +234,7 @@ echo '<tr>
 }  
   
   }
-  while ($row_ESTHOLD=mysql_fetch_assoc($ESTHOLD));
+  while ($row_ESTHOLD=mysqli_fetch_assoc($ESTHOLD));
   
   ?>
  

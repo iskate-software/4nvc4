@@ -2,7 +2,7 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $commcode=$_GET['commcode'];
 
 if ($_GET['display']=="INVOICE"){
@@ -14,8 +14,8 @@ $filter="AND COMMTYPE='2'";
 else {$filter="";}
 
 $query_COMMENTS = "SELECT * FROM ARSYSCOMM WHERE COMMCODE LIKE '$commcode%' ".$filter." ORDER BY COMMCODE ASC";
-$COMMENTS = mysql_query($query_COMMENTS, $tryconnection) or die(mysql_error());
-$row_COMMENTS = mysql_fetch_assoc($COMMENTS);
+$COMMENTS = mysqli_query($tryconnection, $query_COMMENTS) or die(mysqli_error($mysqli_link));
+$row_COMMENTS = mysqli_fetch_assoc($COMMENTS);
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/IFRAME.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
@@ -90,17 +90,17 @@ display:none;
 
 <table width="717" border="1" cellpadding="0" cellspacing="0" bordercolor="#CCCCCC" frame="below" rules="rows" bgcolor="#FFFFFF">
 <?php do { ?>
-  <tr onclick="PerformComment('<?php echo $row_COMMENTS['COMMCODE']; ?>','<?php echo $row_COMMENTS['COMMID']; ?>','<?php echo mysql_real_escape_string($row_COMMENTS['COMMENT']); ?>');" id="<?php echo $row_COMMENTS['COMMID']; ?>" onmouseover="CursorToPointer(this.id)">
+  <tr onclick="PerformComment('<?php echo $row_COMMENTS['COMMCODE']; ?>','<?php echo $row_COMMENTS['COMMID']; ?>','<?php echo mysqli_real_escape_string($mysqli_link, $row_COMMENTS['COMMENT']); ?>');" id="<?php echo $row_COMMENTS['COMMID']; ?>" onmouseover="CursorToPointer(this.id)">
     <td width="150" align="left" valign="top" class="Labels">&nbsp;<?php echo $row_COMMENTS['COMMCODE']; ?></td>
     <td colspan="2" align="left" valign="top" class="Labels"><?php echo $row_COMMENTS['COMMENT']; ?></td>
     <td width="30" align="center" valign="top" class="Andale13B"><?php if ($row_COMMENTS['COMMTYPE']=='2'){echo '*';} else {echo '';}?>    </td>
   </tr>
-  <?php } while ($row_COMMENTS = mysql_fetch_assoc($COMMENTS)); ?>
+  <?php } while ($row_COMMENTS = mysqli_fetch_assoc($COMMENTS)); ?>
 </table>
 </form>
 <!-- InstanceEndEditable -->
 </body>
 <!-- InstanceEnd --></html>
 <?php
-mysql_free_result($COMMENTS);
+mysqli_free_result($COMMENTS);
 ?>

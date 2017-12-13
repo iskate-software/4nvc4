@@ -4,22 +4,22 @@ require_once('../../tryconnection.php');
 if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "form")) {
   $insertSQL = sprintf("INSERT INTO ARSYSCOMM (COMMCODE, `COMMENT`, COMMTYPE, COMMULT, COMMEMO, COMSWITCH) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')",
                       $_POST['commcode'],
-                      mysql_real_escape_string($_POST['comment']),
+                      mysqli_real_escape_string($mysqli_link, $_POST['comment']),
                       $_POST['commtype'],
                       $_POST['commult'],
                       $_POST['commemo'],
                       $_POST['comswitch']);
 
-  mysql_select_db($database_tryconnection, $tryconnection);
-  $Result1 = mysql_query($insertSQL, $tryconnection) or die(mysql_error());
+  mysqli_select_db($tryconnection, $database_tryconnection);
+  $Result1 = mysqli_query($tryconnection, $insertSQL) or die(mysqli_error($mysqli_link));
 header("Location:COMMENTS_LIST2.php");
 }
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $query_Recordset1 = "SELECT * FROM ARSCOM WHERE ARSCOM.COMMCODE='$_GET[recordID]'";
-$Recordset1 = mysql_query($query_Recordset1, $tryconnection) or die(mysql_error());
-$row_Recordset1 = mysql_fetch_assoc($Recordset1);
-$totalRows_Recordset1 = mysql_num_rows($Recordset1);
+$Recordset1 = mysqli_query($tryconnection, $query_Recordset1) or die(mysqli_error($mysqli_link));
+$row_Recordset1 = mysqli_fetch_assoc($Recordset1);
+$totalRows_Recordset1 = mysqli_num_rows($Recordset1);
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -193,7 +193,7 @@ document.getElementById('dropmsg2').style.display="none";
     </tr>
     <tr>
       <td align="left" valign="top" class="Labels"><label>Comment
-        <textarea name="comment" cols="70" rows="8" class="commentarea" id="comment"><?php do {echo $row_Recordset1['COMMENT']."&nbsp;";} while ($row_Recordset1 = mysql_fetch_assoc($Recordset1)); ?></textarea>
+        <textarea name="comment" cols="70" rows="8" class="commentarea" id="comment"><?php do {echo $row_Recordset1['COMMENT']."&nbsp;";} while ($row_Recordset1 = mysqli_fetch_assoc($Recordset1)); ?></textarea>
         </label></td>
     </tr>
     <tr>

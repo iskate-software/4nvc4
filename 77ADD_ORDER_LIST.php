@@ -1,21 +1,21 @@
 <?php 
 session_start();
 require_once('../../tryconnection.php');
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 
 $reqsupplier = $_SESSION['supplier'] ;
 
 $query_INVENTORY = "SELECT * FROM ARINVT WHERE ITEMID='$_GET[itemid]' LIMIT 1";
-$INVENTORY = mysql_query($query_INVENTORY, $tryconnection) or die(mysql_error());
-$row_INVENTORY = mysql_fetch_assoc($INVENTORY);
+$INVENTORY = mysqli_query($tryconnection, $query_INVENTORY) or die(mysqli_error($mysqli_link));
+$row_INVENTORY = mysqli_fetch_assoc($INVENTORY);
 
 if (isset($_POST['save'])){
 $insert_INVENTOR = "INSERT INTO INVENTOR (`UNITS`, `CODE`, `DESCRIP`, SUPPLIER, VPCCODE, DRUGCOST, PKGQTY) VALUES ('$_POST[units]', '$row_INVENTORY[ITEM]', '$row_INVENTORY[DESCRIP]', '$row_INVENTORY[SUPPLIER]', '$row_INVENTORY[VPARTNO]', '$row_INVENTORY[COST]', '$row_INVENTORY[PKGQTY]')";
-$insert_INVENTOR = mysql_query($insert_INVENTOR) or die(mysql_error());
+$insert_INVENTOR = mysqli_query($mysqli_link, $insert_INVENTOR) or die(mysqli_error($mysqli_link));
 
 if ($row_INVENTORY['MONITOR'] == 1) {
   $upd_inv = "UPDATE ARINVT SET ORDERED = ORDERED + '$_POST[units]' WHERE ITEMID='$_GET[itemid]' LIMIT 1" ;
-  $do_upd = mysql_query($upd_inv, $tryconnection) or die(mysql_error()) ;
+  $do_upd = mysqli_query($tryconnection, $upd_inv) or die(mysqli_error($mysqli_link)) ;
 }
 
 $closewin = "opener.document.location.reload(); self.close();";

@@ -5,13 +5,13 @@ require_once('../../ASSETS/tax.php');
 
 $client=$_SESSION['client'];
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 
 //need to know what files to look into and what condition to retrieve by
 
 $query_ARARECV = "SELECT *, DATE_FORMAT(INVDTE, '%m/%d/%Y') AS INVDTE, DATE_FORMAT(DTEPAID, '%m/%d/%Y') AS DTEPAID FROM ARARECV WHERE CUSTNO='$client'";
-$ARARECV = mysql_query($query_ARARECV, $tryconnection) or die(mysql_error());
-$row_ARARECV = mysql_fetch_assoc($ARARECV);
+$ARARECV = mysqli_query($tryconnection, $query_ARARECV) or die(mysqli_error($mysqli_link));
+$row_ARARECV = mysqli_fetch_assoc($ARARECV);
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -148,7 +148,7 @@ window.open("../../IMAGES/CUSTOM_DOCUMENTS/INVOICE_PREVIEW2.php?file2search=ARIN
 			echo "<td width='120'>".$row_ARARECV['PONUM']."</td>";
 			echo "<td width=''>".$row_ARARECV['UNIQUE1']."</td>";
 			echo "</tr>";
-			} while ($row_ARARECV = mysql_fetch_assoc($ARARECV));
+			} while ($row_ARARECV = mysqli_fetch_assoc($ARARECV));
 		?>
     	</table>
     </div>

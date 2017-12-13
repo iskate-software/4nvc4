@@ -1,17 +1,17 @@
 <?php 
 session_start();
 require_once('../../tryconnection.php');
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $careful = "LOCK TABLES INVHOLD WRITE" ;
-$step1 = mysql_query($careful, $tryconnection) or die(mysql_error()) ;
+$step1 = mysqli_query($tryconnection, $careful) or die(mysqli_error($mysqli_link)) ;
 $clean_up = "DELETE FROM INVHOLD WHERE INVNO = 0 AND INVCUST = 0" ;
-$go = mysql_query($clean_up, $tryconnection) or die(mysql_error()) ;
+$go = mysqli_query($tryconnection, $clean_up) or die(mysqli_error($mysqli_link)) ;
 $shrink = "OPTIMIZE TABLE INVHOLD" ;
-$do_shrink = mysql_query($shrink, $tryconnection) or die(mysql_error()) ;
+$do_shrink = mysqli_query($tryconnection, $shrink) or die(mysqli_error($mysqli_link)) ;
 $release = "UNLOCK TABLES" ;
-$go2 = mysql_query($release, $tryconnection) or die(mysql_error()) ;
+$go2 = mysqli_query($tryconnection, $release) or die(mysqli_error($mysqli_link)) ;
 $cl_med = "DELETE FROM MEDNOTES WHERE EXISTS (SELECT CUSTNO FROM ARINVOI WHERE INVNO = MEDNOTES.NCUSTNO)" ;
-$do_it = mysql_query($cl_med, $tryconnection) or die(mysql_error()) ;
+$do_it = mysqli_query($tryconnection, $cl_med) or die(mysqli_error($mysqli_link)) ;
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/DVMBasicTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>

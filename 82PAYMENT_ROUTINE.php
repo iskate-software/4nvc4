@@ -46,14 +46,14 @@ elseif (isset($_SESSION['patient'])){
 $patient=$_SESSION['patient'];
 }
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $query_DISCOUNT = "SELECT * FROM DISCOUNT ORDER BY DISCID";
-$DISCOUNT = mysql_query($query_DISCOUNT, $tryconnection) or die(mysql_error());
+$DISCOUNT = mysqli_query($tryconnection, $query_DISCOUNT) or die(mysqli_error($mysqli_link));
 // $row_DISCOUNT = mysql_fetch_assoc($DISCOUNT);
 
 $query_PATIENT_CLIENT = "SELECT *, DATE_FORMAT(PDOB,'%m/%d/%Y') AS PDOB FROM PETMAST JOIN ARCUSTO ON (ARCUSTO.CUSTNO=PETMAST.CUSTNO) WHERE PETID = '$patient' LIMIT 1";
-$PATIENT_CLIENT = mysql_query($query_PATIENT_CLIENT, $tryconnection) or die(mysql_error());
-$row_PATIENT_CLIENT = mysql_fetch_assoc($PATIENT_CLIENT);
+$PATIENT_CLIENT = mysqli_query($tryconnection, $query_PATIENT_CLIENT) or die(mysqli_error($mysqli_link));
+$row_PATIENT_CLIENT = mysqli_fetch_assoc($PATIENT_CLIENT);
 
 $pdob=$row_PATIENT_CLIENT['PDOB'];
 $psex=$row_PATIENT_CLIENT['PSEX'];
@@ -63,8 +63,8 @@ $previousbalance=0;
 // New logic to recalc the client balance every time, in case of previous errors.
 $custno = $_SESSION['client'] ;
 $GET_BAL1 = "SELECT SUM(IBAL) AS RECVBL FROM ARARECV WHERE CUSTNO = '$custno' " ;
-$QUERY_BAL = mysql_query($GET_BAL1, $tryconnection) or die(mysql_error()) ;
-$row_QUERY_BAL = mysql_fetch_assoc($QUERY_BAL) ;
+$QUERY_BAL = mysqli_query($tryconnection, $GET_BAL1) or die(mysqli_error($mysqli_link)) ;
+$row_QUERY_BAL = mysqli_fetch_assoc($QUERY_BAL) ;
 
 //if (isset($_POST['save']) || isset($_POST['prtsave'])){
 //$_SESSION['prevbal'] = $row_PATIENT_CLIENT['BALANCE'];	
@@ -120,7 +120,7 @@ $TOTAL=round($TOTAL,2);
 
 $paydisc = array() ;
 $xi = 0 ;
-while ($row_DISCOUNT = mysql_fetch_assoc($DISCOUNT)) {
+while ($row_DISCOUNT = mysqli_fetch_assoc($DISCOUNT)) {
  if (strlen($row_DISCOUNT['METHOD'] < 4 )) {$paydisc[$xi][1] = '&nbsp;'.$row_DISCOUNT['METHOD'] ;} else {}$paydisc[$xi][1] = $row_DISCOUNT['METHOD'] ;
 //  $paydisc[$xi][1] = $row_DISCOUNT['METHOD'] ;
   if ($calc_disc == 1) {
@@ -205,34 +205,34 @@ if (isset($_POST['cancel']))
 {
 
 $lock_it = "LOCK TABLES INVHOLD WRITE, RECEP WRITE, REJECTIN WRITE, ARCUSTO WRITE" ;  
-$Qlock = mysql_query($lock_it, $tryconnection) or die(mysql_error()) ;
+$Qlock = mysqli_query($tryconnection, $lock_it) or die(mysqli_error($mysqli_link)) ;
 
 $insertSQL="INSERT INTO REJECTIN (REJINV, REJDATE, DATETIME, CUSTNO, PETID, ITOTAL, STAFF, COMPANY) VALUES ($_SESSION[minvno], NOW(), NOW(),'$_SESSION[client]','$_SESSION[patient]','$_POST[itotal]','$_SESSION[staff]','$_POST[company]')";
-$execute_Insert = mysql_query($insertSQL, $tryconnection) or die(mysql_error());
+$execute_Insert = mysqli_query($tryconnection, $insertSQL) or die(mysqli_error($mysqli_link));
 
 //delete from INVHOLD
 
 
 $deleteSQL = "DELETE FROM INVHOLD WHERE INVCUST='$_SESSION[client]'";
-mysql_query($deleteSQL, $tryconnection) or die(mysql_error());
+mysqli_query($tryconnection, $deleteSQL) or die(mysqli_error($mysqli_link));
 $optimize = "OPTIMIZE TABLE INVHOLD";
-mysql_query($optimize, $tryconnection) or die(mysql_error());
+mysqli_query($tryconnection, $optimize) or die(mysqli_error($mysqli_link));
 
 //DELETE FROM RECEP FILE
 $query_discharge="DELETE FROM RECEP WHERE RFPETID='$_SESSION[patient]'";
-$discharge=mysql_query($query_discharge,$tryconnection) or die(mysql_error());
+$discharge=mysqli_query($tryconnection, $query_discharge) or die(mysqli_error($mysqli_link));
 $query_optimize="OPTIMIZE TABLE RECEP ";
-$optimize=mysql_query($query_optimize, $tryconnection) or die(mysql_error());
+$optimize=mysqli_query($tryconnection, $query_optimize) or die(mysqli_error($mysqli_link));
 
 $query_LOCK = "UPDATE ARCUSTO SET LOCKED='0' WHERE CUSTNO = '$_SESSION[client]' LIMIT 1";
-$LOCK = mysql_query($query_LOCK, $tryconnection) or die(mysql_error());
+$LOCK = mysqli_query($tryconnection, $query_LOCK) or die(mysqli_error($mysqli_link));
 
 $unlock_it = "UNLOCK TABLES" ;
-$Qunlock = mysql_query($unlock_it, $tryconnection) or die(mysql_error()) ;
+$Qunlock = mysqli_query($tryconnection, $unlock_it) or die(mysqli_error($mysqli_link)) ;
 
 //$gobackwin="history.go(-4);";
 $query_MVETCANDROP="DROP VIEW IF EXISTS MVETCAN";
-$MVETCANDROP=mysql_query($query_MVETCANDROP, $tryconnection) or die(mysql_error());
+$MVETCANDROP=mysqli_query($tryconnection, $query_MVETCANDROP) or die(mysqli_error($mysqli_link));
 
 header("Location:../../CLIENT/CLIENT_PATIENT_FILE.php");
 }

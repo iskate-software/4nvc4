@@ -5,32 +5,32 @@ require_once('../../ASSETS/tax.php');
 
 $client=$_SESSION['client'];
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $query_Staff = "SELECT * FROM STAFF WHERE SIGNEDIN=1";
-$Staff = mysql_query($query_Staff, $tryconnection) or die(mysql_error());
-$row_Staff = mysql_fetch_assoc($Staff);
+$Staff = mysqli_query($tryconnection, $query_Staff) or die(mysqli_error($mysqli_link));
+$row_Staff = mysqli_fetch_assoc($Staff);
 
 $query_Doctor = "SELECT * FROM DOCTOR WHERE SIGNEDIN=1";
-$Doctor = mysql_query($query_Doctor, $tryconnection) or die(mysql_error());
-$row_Doctor = mysql_fetch_assoc($Doctor);
+$Doctor = mysqli_query($tryconnection, $query_Doctor) or die(mysqli_error($mysqli_link));
+$row_Doctor = mysqli_fetch_assoc($Doctor);
 
 $query_CLIENT = "SELECT * FROM ARCUSTO WHERE CUSTNO = '$client'";
-$CLIENT = mysql_query($query_CLIENT, $tryconnection) or die(mysql_error());
-$row_CLIENT = mysql_fetch_assoc($CLIENT);
+$CLIENT = mysqli_query($tryconnection, $query_CLIENT) or die(mysqli_error($mysqli_link));
+$row_CLIENT = mysqli_fetch_assoc($CLIENT);
 
 
 if (isset($_POST['ok'])){
-$insert_ARCASHR = "INSERT INTO ARCASHR (INVNO, INVDTE, CUSTNO, COMPANY, SALESMN, REFNO, AMTPAID, DTEPAID) VALUES ('DEP.', NOW(), '$client', '".mysql_real_escape_string($row_CLIENT['TITLE']." ".$row_CLIENT['CONTACT']." ".$row_CLIENT['COMPANY'])."', '".mysql_real_escape_string($_POST['salesmn'])."', '$_POST[refno]', '$_POST[amtpaid]', STR_TO_DATE('$_POST[minvdte]', '%m/%d/%Y %H:%i:%s')) ";
-$RESULT = mysql_query($insert_ARCASHR, $tryconnection) or die(mysql_error());
+$insert_ARCASHR = "INSERT INTO ARCASHR (INVNO, INVDTE, CUSTNO, COMPANY, SALESMN, REFNO, AMTPAID, DTEPAID) VALUES ('DEP.', NOW(), '$client', '".mysqli_real_escape_string($mysqli_link, $row_CLIENT['TITLE']." ".$row_CLIENT['CONTACT']." ".$row_CLIENT['COMPANY'])."', '".mysqli_real_escape_string($mysqli_link, $_POST['salesmn'])."', '$_POST[refno]', '$_POST[amtpaid]', STR_TO_DATE('$_POST[minvdte]', '%m/%d/%Y %H:%i:%s')) ";
+$RESULT = mysqli_query($tryconnection, $insert_ARCASHR) or die(mysqli_error($mysqli_link));
 
 $query_ARCUSTO = "SELECT BALANCE, CREDIT FROM ARCUSTO WHERE CUSTNO='$_SESSION[client]'";
-$ARCUSTO = mysql_query($query_ARCUSTO, $tryconnection) or die(mysql_error());
-$row_ARCUSTO = mysql_fetch_assoc($ARCUSTO);
+$ARCUSTO = mysqli_query($tryconnection, $query_ARCUSTO) or die(mysqli_error($mysqli_link));
+$row_ARCUSTO = mysqli_fetch_assoc($ARCUSTO);
 
 $balance=$row_ARCUSTO['BALANCE']-$_POST['amtpaid'];
 
 $update_ARCUSTO = "UPDATE ARCUSTO SET BALANCE='$balance', CREDIT=CREDIT+$_POST[amtpaid] WHERE CUSTNO='$_SESSION[client]' ";
-$RESULT = mysql_query($update_ARCUSTO, $tryconnection) or die(mysql_error());
+$RESULT = mysqli_query($tryconnection, $update_ARCUSTO) or die(mysqli_error($mysqli_link));
 
 //		if ($balance<=0){
 //		$credit=-($balance);
@@ -168,9 +168,9 @@ function MM_swapImgRestore() { //v3.0
     <td height="35" class="Verdana12"><select name="salesmn" id="salesmn">
       <?php
 			do { echo '<option value="'.$row_Staff['STAFF'].'">'.$row_Staff['STAFF'].'</option>'; 
-					} while ($row_Staff = mysql_fetch_assoc($Staff));
+					} while ($row_Staff = mysqli_fetch_assoc($Staff));
 			do { echo '<option value="'.$row_Doctor['DOCTOR'].'">'.$row_Doctor['DOCTOR'].'</option>';
-					} while ($row_Doctor = mysql_fetch_assoc($Doctor));
+					} while ($row_Doctor = mysqli_fetch_assoc($Doctor));
 			?>
     </select></td>
   </tr>

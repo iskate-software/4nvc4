@@ -10,10 +10,10 @@ else {
 $startdate='00/00/0000';
 }
 $stdum = $startdate ;
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $startdate="SELECT STR_TO_DATE('$startdate','%m/%d/%Y')";
-$startdate=mysql_query($startdate, $tryconnection) or die(mysql_error());
-$startdate=mysql_fetch_array($startdate);
+$startdate=mysqli_query($tryconnection, $startdate) or die(mysqli_error($mysqli_link));
+$startdate=mysqli_fetch_array($startdate);
 
 if (!empty($_GET['enddate'])){
 $enddate=$_GET['enddate'];
@@ -23,8 +23,8 @@ $enddate=date('m/d/Y');
 }
 $enddum = $enddate ;
 $enddate="SELECT STR_TO_DATE('$enddate','%m/%d/%Y')";
-$enddate=mysql_query($enddate, $tryconnection) or die(mysql_error());
-$enddate=mysql_fetch_array($enddate);
+$enddate=mysqli_query($tryconnection, $enddate) or die(mysqli_error($mysqli_link));
+$enddate=mysqli_fetch_array($enddate);
 
 $iclient = $_GET['client'] ;
 $can = $_GET['checkcanbox'] ;
@@ -36,8 +36,8 @@ $canc = "" ;
 if ($can == 1) {
 $canc = " AND INSTR(PONUM,'CANC') <> 0 " ;
 $get_Canc = "select ROUND(sum(substr(ponum,5,16)),2) as CANCEL from $file2search where instr(ponum,'CANC') <> 0 AND INVDTE >= '$startdate[0]' AND INVDTE <= '$enddate[0]' " ;
-$Cancget = mysql_query($get_Canc, $tryconnection) or die(mysql_error()) ;
-$row_cancsum = mysql_fetch_assoc($Cancget) ;
+$Cancget = mysqli_query($tryconnection, $get_Canc) or die(mysqli_error($mysqli_link)) ;
+$row_cancsum = mysqli_fetch_assoc($Cancget) ;
 $cancsum = $row_cancsum['CANCEL'] ;
 }
 if (!isset($iclient)) {
@@ -49,31 +49,31 @@ $search_PST = "SELECT SUM(PTAX) AS Total_PST FROM $file2search WHERE  INVDTE >= 
 else {
 echo ' Starting temps ' ;
  $drop_it = "DROP TEMPORARY TABLE IF EXISTS TEMPI" ;
- $do_drop = mysql_query($drop_it, $tryconnection) or die(mysql_error()) ;
+ $do_drop = mysqli_query($tryconnection, $drop_it) or die(mysqli_error($mysqli_link)) ;
  $mktemp = "CREATE TEMPORARY TABLE TEMPI (INVNO CHAR(8), SALESMN CHAR(3), CUSTNO INT(7), COMPANY CHAR(40),INVDTE DATE, DUMMY DATE, PONUM CHAR(20),ITOTAL FLOAT(8,2),TAX FLOAT(7,2),PTAX FLOAT(7,2), IBAL FLOAT(8,2), AMTPAID FLOAT(8,2))" ;
- $do_mkt = mysql_query($mktemp, $tryconnection ) or die(mysql_error()) ;
+ $do_mkt = mysqli_query($tryconnection, $mktemp) or die(mysqli_error($mysqli_link)) ;
  echo ' and stuffing it ' ;
  $temp1 = "INSERT INTO TEMPI SELECT INVNO, SALESMN, CUSTNO,COMPANY, INVDTE, DATE_FORMAT(INVDTE, '%m/%d/%Y') AS DUMMY,PONUM,ITOTAL,TAX,PTAX, IBAL, AMTPAID FROM ARINVOI WHERE INVDTE >= '$startdate[0]' AND INVDTE <= '$enddate[0]' $canc AND CUSTNO = '$iclient' " ;
  $temp2 = "INSERT INTO TEMPI SELECT INVNO, SALESMN, CUSTNO,COMPANY, INVDTE, DATE_FORMAT(INVDTE, '%m/%d/%Y') AS DUMMY,PONUM,ITOTAL,TAX,PTAX, IBAL, AMTPAID   FROM INVLAST WHERE INVDTE >= '$startdate[0]' AND INVDTE <= '$enddate[0]' $canc AND CUSTNO = '$iclient' " ;
  $temp3 = "INSERT INTO TEMPI SELECT INVNO, SALESMN, CUSTNO,COMPANY, INVDTE, DATE_FORMAT(INVDTE, '%m/%d/%Y') AS DUMMY,PONUM,ITOTAL,TAX,PTAX, IBAL, AMTPAID  FROM ARYINVO WHERE INVDTE >= '$startdate[0]' AND INVDTE <= '$enddate[0]' $canc AND CUSTNO = '$iclient' " ;
  echo ' Executing ' ;
- $Do_t1 = mysql_query($temp1, $tryconnection) or die(mysql_error()) ;
- $Do_t2 = mysql_query($temp2, $tryconnection) or die(mysql_error()) ;
- $Do_t3 = mysql_query($temp3, $tryconnection) or die(mysql_error()) ;
+ $Do_t1 = mysqli_query($tryconnection, $temp1) or die(mysqli_error($mysqli_link)) ;
+ $Do_t2 = mysqli_query($tryconnection, $temp2) or die(mysqli_error($mysqli_link)) ;
+ $Do_t3 = mysqli_query($tryconnection, $temp3) or die(mysqli_error($mysqli_link)) ;
  echo ' and the totals ' ;
  $search_ARINVOI="SELECT *, DATE_FORMAT(INVDTE, '%m/%d/%Y') AS INVDTE FROM TEMPI ORDER BY DUMMY, INVNO ASC";
  $search_NET = "SELECT SUM(ITOTAL - PTAX - TAX) AS Total_NET FROM TEMPI ";
  $search_TAX = "SELECT SUM(TAX) AS Total_TAX FROM TEMPI ";
  $search_PST = "SELECT SUM(PTAX) AS Total_PST FROM TEMPI";
 }
-$ARINVOI=mysql_query($search_ARINVOI, $tryconnection ) or die(mysql_error());
-$row_ARINVOI=mysql_fetch_assoc($ARINVOI);
-$NET = mysql_query($search_NET, $tryconnection ) or die(mysql_error()) ;
-$TAX = mysql_query($search_TAX, $tryconnection ) or die(mysql_error()) ;
-$PST = mysql_query($search_PST, $tryconnection ) or die(mysql_error()) ;
-$row_NET = mysql_fetch_array($NET) ;
-$row_TAX = mysql_fetch_array($TAX) ;
-$row_PST = mysql_fetch_array($PST) ;
+$ARINVOI=mysqli_query($tryconnection, $search_ARINVOI) or die(mysqli_error($mysqli_link));
+$row_ARINVOI=mysqli_fetch_assoc($ARINVOI);
+$NET = mysqli_query($tryconnection, $search_NET) or die(mysqli_error($mysqli_link)) ;
+$TAX = mysqli_query($tryconnection, $search_TAX) or die(mysqli_error($mysqli_link)) ;
+$PST = mysqli_query($tryconnection, $search_PST) or die(mysqli_error($mysqli_link)) ;
+$row_NET = mysqli_fetch_array($NET) ;
+$row_TAX = mysqli_fetch_array($TAX) ;
+$row_PST = mysqli_fetch_array($PST) ;
 
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -281,7 +281,7 @@ document.getElementById(x).style.backgroundColor="#FFFFFF";
     <td width="65" align="right" class="Verdana13">'.$row_ARINVOI['AMTPAID'].'</td>
   </tr>';
   }
-  while ($row_ARINVOI=mysql_fetch_assoc($ARINVOI));
+  while ($row_ARINVOI=mysqli_fetch_assoc($ARINVOI));
   
   ?>
   

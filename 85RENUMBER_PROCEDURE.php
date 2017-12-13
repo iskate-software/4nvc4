@@ -2,29 +2,29 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $spec=$_GET['species'];
 $POSTcategory=$_POST['category'];
 $GETcategory=$_GET['category'];
 
 $query_SPECIES = "SELECT DISTINCT `PROCEDURE`, PROCODE FROM PROCEDUR WHERE FEEFILE='$spec'";
-$SPECIES = mysql_query($query_SPECIES, $tryconnection) or die(mysql_error());
-$row_SPECIES = mysql_fetch_assoc($SPECIES);
+$SPECIES = mysqli_query($tryconnection, $query_SPECIES) or die(mysqli_error($mysqli_link));
+$row_SPECIES = mysqli_fetch_assoc($SPECIES);
 
 $query_NAME = "SELECT `PROCEDURE`, PROCODE, INVHXCAT FROM PROCEDUR WHERE FEEFILE='$spec' AND PROCODE='$GETcategory'";
-$NAME = mysql_query($query_NAME, $tryconnection) or die(mysql_error());
-$row_NAME = mysql_fetch_assoc($NAME);
+$NAME = mysqli_query($tryconnection, $query_NAME) or die(mysqli_error($mysqli_link));
+$row_NAME = mysqli_fetch_assoc($NAME);
 
 $query_HXFILTER = "SELECT * FROM HXFILTER WHERE HXCNAME!='Diagnostics'";
-$HXFILTER = mysql_query($query_HXFILTER, $tryconnection) or die(mysql_error());
-$row_HXFILTER = mysql_fetch_assoc($HXFILTER);
+$HXFILTER = mysqli_query($tryconnection, $query_HXFILTER) or die(mysqli_error($mysqli_link));
+$row_HXFILTER = mysqli_fetch_assoc($HXFILTER);
 
 
 //UPDATE
 if (isset($_POST['save']))
 {
 $query_UPDATEPROCEDUR = "UPDATE PROCEDUR SET `PROCEDURE`='$_POST[procedure]', PROCODE='$_POST[procode]', THXCAT='$_POST[thxfil]' WHERE PROCODE='$GETcategory' AND FEEFILE='$spec'";
-$UPDATEPROCEDUR = mysql_query($query_UPDATEPROCEDUR, $tryconnection) or die(mysql_error());
+$UPDATEPROCEDUR = mysqli_query($tryconnection, $query_UPDATEPROCEDUR) or die(mysqli_error($mysqli_link));
 
 $refreshwindow="self.location.reload();";
 }
@@ -33,7 +33,7 @@ $refreshwindow="self.location.reload();";
 elseif (isset($_POST['delete']))
 {
 $query_DELETEPROCEDUR = "DELETE FROM PROCEDUR WHERE PROCODE='$GETcategory'";
-$DELETEPROCEDUR = mysql_query($query_DELETEPROCEDUR, $tryconnection) or die(mysql_error());
+$DELETEPROCEDUR = mysqli_query($tryconnection, $query_DELETEPROCEDUR) or die(mysqli_error($mysqli_link));
 $refreshwindow="self.location.reload();";
 }
 
@@ -128,7 +128,7 @@ self.location='RENUMBER_PROCEDURE.php?species=<?php echo $_GET['species']; ?>&ca
       <option value=""></option>
        	<?php do {
 		echo '<option id="'.$row_HXFILTER['HXCAT'],'" value="'.$row_HXFILTER['HXCAT'],'">'.$row_HXFILTER['HXCNAME'].'</option>';
-		} while ($row_HXFILTER = mysql_fetch_assoc($HXFILTER));
+		} while ($row_HXFILTER = mysqli_fetch_assoc($HXFILTER));
 		 ?>
       </select>
      </td>
@@ -137,7 +137,7 @@ self.location='RENUMBER_PROCEDURE.php?species=<?php echo $_GET['species']; ?>&ca
      <?php do { ?>
      <option value="<?php echo $row_SPECIES['PROCODE']; ?>">&nbsp;<?php echo $row_SPECIES['PROCODE']." ".$row_SPECIES['PROCEDURE']; ?></option>
    
-    <?php } while ($row_SPECIES = mysql_fetch_assoc($SPECIES)); ?>
+    <?php } while ($row_SPECIES = mysqli_fetch_assoc($SPECIES)); ?>
     </select>    </td>
   </tr>
   <tr>

@@ -2,7 +2,7 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 
 
 if (!isset($_SESSION['expense']) && $_GET['expenses'] > 0){
@@ -12,7 +12,7 @@ $insertEXPENSE=sprintf("INSERT INTO ARCASHR (INVNO, INVDTE, CUSTNO, COMPANY, AMT
 					$_GET['company'],
 					-$_GET['expenses'],
 					"Cash");
-$insertEXPENSE=mysql_query($insertEXPENSE, $tryconnection) or die(mysql_error());
+$insertEXPENSE=mysqli_query($tryconnection, $insertEXPENSE) or die(mysqli_error($mysqli_link));
 $_SESSION['expense'] = 1;
 }
 
@@ -31,8 +31,8 @@ $startdate='00/00/0000';
 $stdum = $startdate ;
 
 $startdate="SELECT STR_TO_DATE('$startdate','%m/%d/%Y')";
-$startdate=mysql_query($startdate, $tryconnection) or die(mysql_error());
-$startdate=mysql_fetch_array($startdate);
+$startdate=mysqli_query($tryconnection, $startdate) or die(mysqli_error($mysqli_link));
+$startdate=mysqli_fetch_array($startdate);
 
 if (!empty($_GET['enddate'])){
 $enddate=$_GET['enddate'];
@@ -43,17 +43,17 @@ $enddate=date('m/d/Y');
 $enddum = $enddate ;
 
 $enddate="SELECT STR_TO_DATE('$enddate','%m/%d/%Y')";
-$enddate=mysql_query($enddate, $tryconnection) or die(mysql_error());
-$enddate=mysql_fetch_array($enddate);
+$enddate=mysqli_query($tryconnection, $enddate) or die(mysqli_error($mysqli_link));
+$enddate=mysqli_fetch_array($enddate);
 // Create a temporary table
 
 if ($type == 1) { // the detailed report option.
 $temp_table1 = "DROP TEMPORARY TABLE IF EXISTS ARTEMP" ;
 $temp_table2 = "CREATE TEMPORARY TABLE ARTEMP SELECT * FROM $file2search WHERE DTEPAID >= '$startdate[0]' AND DTEPAID <= '$enddate[0]'" ;
 $temp_table3 = "INSERT INTO ARTEMP SELECT * FROM CASHDEP WHERE DTEPAID >= '$startdate[0]' AND DTEPAID <= '$enddate[0]'" ;
-$TAB1 = mysql_query($temp_table1, $tryconnection ) or die(mysql_error()) ;
-$TAB2 = mysql_query($temp_table2, $tryconnection) or die(mysql_error()) ;
-$TAB3 = mysql_query($temp_table3, $tryconnection ) or die(mysql_error()) ;
+$TAB1 = mysqli_query($tryconnection, $temp_table1) or die(mysqli_error($mysqli_link)) ;
+$TAB2 = mysqli_query($tryconnection, $temp_table2) or die(mysqli_error($mysqli_link)) ;
+$TAB3 = mysqli_query($tryconnection, $temp_table3) or die(mysqli_error($mysqli_link)) ;
 
 $search_ARCASHR="SELECT INVNO,ARTEMP.CUSTNO,ARTEMP.SALESMN,ARTEMP.COMPANY,REFNO,AMTPAID, DATE_FORMAT(INVDTE, '%m/%d/%Y') AS INVDTE, DATE_FORMAT(DTEPAID, '%m/%d/%Y') AS DTEPAID FROM ARTEMP LEFT JOIN ARCUSTO ON ARTEMP.CUSTNO = ARCUSTO.CUSTNO WHERE DTEPAID >= '$startdate[0]' AND DTEPAID <= '$enddate[0]' AND INSTR(REFNO , 'DEP.AP') = 0 ORDER BY REFNO,ARCUSTO.COMPANY ASC";
 }
@@ -70,13 +70,13 @@ $temp_table7 = "INSERT INTO ARTEMP SELECT INVNO,CUSTNO,SALESMN,COMPANY,INVDTE,DT
 $search_ARCASHR="SELECT INVNO,ARTEMP.CUSTNO,ARTEMP.SALESMN,ARTEMP.COMPANY,REFNO,AMTPAID, DATE_FORMAT(INVDTE, '%m/%d/%Y') AS INVDTE, DATE_FORMAT(DTEPAID, '%m/%d/%Y') AS DTEPAID FROM ARTEMP LEFT JOIN ARCUSTO ON ARTEMP.CUSTNO = ARCUSTO.CUSTNO WHERE DTEPAID >= '$startdate[0]' AND DTEPAID <= '$enddate[0]' AND INSTR(REFNO , 'DEP.AP') = 0 ORDER BY refno, ARCUSTO.COMPANY,REFNO ASC";
 
 
-$TAB1 = mysql_query($temp_table1, $tryconnection) or die(mysql_error()) ;
-$TAB2 = mysql_query($temp_table2, $tryconnection ) or die(mysql_error()) ;
-$TAB3 = mysql_query($temp_table3, $tryconnection ) or die(mysql_error()) ;
-$TAB4 = mysql_query($temp_table4, $tryconnection ) or die(mysql_error()) ;
-$TAB5 = mysql_query($temp_table5, $tryconnection ) or die(mysql_error()) ;
-$TAB6 = mysql_query($temp_table6, $tryconnection ) or die(mysql_error()) ;
-$TAB7 = mysql_query($temp_table7, $tryconnection ) or die(mysql_error()) ;
+$TAB1 = mysqli_query($tryconnection, $temp_table1) or die(mysqli_error($mysqli_link)) ;
+$TAB2 = mysqli_query($tryconnection, $temp_table2) or die(mysqli_error($mysqli_link)) ;
+$TAB3 = mysqli_query($tryconnection, $temp_table3) or die(mysqli_error($mysqli_link)) ;
+$TAB4 = mysqli_query($tryconnection, $temp_table4) or die(mysqli_error($mysqli_link)) ;
+$TAB5 = mysqli_query($tryconnection, $temp_table5) or die(mysqli_error($mysqli_link)) ;
+$TAB6 = mysqli_query($tryconnection, $temp_table6) or die(mysqli_error($mysqli_link)) ;
+$TAB7 = mysqli_query($tryconnection, $temp_table7) or die(mysqli_error($mysqli_link)) ;
       }
 else { // The specific client option.
 
@@ -87,11 +87,11 @@ $temp_table4 = "INSERT INTO ARTEMP SELECT * FROM LASTCASH WHERE DTEPAID >= '$sta
 $temp_table5 = "INSERT INTO ARTEMP SELECT * FROM ARYCASH WHERE DTEPAID >= '$startdate[0]' AND DTEPAID <= '$enddate[0]'  AND CUSTNO = '$iclient'" ;
 $search_ARCASHR="SELECT INVNO,ARTEMP.CUSTNO,ARTEMP.SALESMN,ARTEMP.COMPANY,REFNO,AMTPAID, DATE_FORMAT(INVDTE, '%m/%d/%Y') AS INVDTE, DATE_FORMAT(DTEPAID, '%m/%d/%Y') AS DTEPAID FROM ARTEMP LEFT JOIN ARCUSTO ON ARTEMP.CUSTNO = ARCUSTO.CUSTNO WHERE  INSTR(REFNO , 'DEP.AP') = 0 ORDER BY DTEPAID,REFNO ASC";
 
-$TAB1 = mysql_query($temp_table1, $tryconnection ) or die(mysql_error()) ;
-$TAB2 = mysql_query($temp_table2, $tryconnection) or die(mysql_error()) ;
-$TAB3 = mysql_query($temp_table3, $tryconnection ) or die(mysql_error()) ;
-$TAB4 = mysql_query($temp_table4, $tryconnection ) or die(mysql_error()) ;
-$TAB5 = mysql_query($temp_table5, $tryconnection ) or die(mysql_error()) ;
+$TAB1 = mysqli_query($tryconnection, $temp_table1) or die(mysqli_error($mysqli_link)) ;
+$TAB2 = mysqli_query($tryconnection, $temp_table2) or die(mysqli_error($mysqli_link)) ;
+$TAB3 = mysqli_query($tryconnection, $temp_table3) or die(mysqli_error($mysqli_link)) ;
+$TAB4 = mysqli_query($tryconnection, $temp_table4) or die(mysqli_error($mysqli_link)) ;
+$TAB5 = mysqli_query($tryconnection, $temp_table5) or die(mysqli_error($mysqli_link)) ;
 
 }
 
@@ -105,35 +105,35 @@ $search_DINE = "SELECT SUM(AMTPAID) AS Total_DINE FROM ARTEMP WHERE INSTR(UPPER(
 $search_GE   = "SELECT SUM(AMTPAID) AS Total_GE FROM ARTEMP WHERE INSTR(UPPER(REFNO),'GE') <> 0 AND DTEPAID >= '$startdate[0]' AND DTEPAID <= '$enddate[0]'";
 $search_CELL = "SELECT SUM(AMTPAID) AS Total_CELL FROM ARTEMP WHERE INSTR(UPPER(REFNO),'CELL') <> 0 AND DTEPAID >= '$startdate[0]' AND DTEPAID <= '$enddate[0]'";
 $search_PND = "SELECT SUM(AMTPAID) AS Total_PND FROM ARTEMP WHERE INSTR(UPPER(REFNO),'POUND') <> 0 AND DTEPAID >= '$startdate[0]' AND DTEPAID <= '$enddate[0]'";
-$CASH = mysql_query($search_Cash, $tryconnection ) or die(mysql_error()) ;
-$CHQ = mysql_query($search_CHQ, $tryconnection ) or die(mysql_error()) ;
-$DCRD = mysql_query($search_DCRD, $tryconnection ) or die(mysql_error()) ;
-$VISA = mysql_query($search_VISA, $tryconnection ) or die(mysql_error()) ;
-$MCRD = mysql_query($search_MCRD, $tryconnection ) or die(mysql_error()) ;
-$AMEX = mysql_query($search_AMEX, $tryconnection ) or die(mysql_error()) ;
-$DINE = mysql_query($search_DINE, $tryconnection ) or die(mysql_error()) ;
-$GE = mysql_query($search_GE, $tryconnection ) or die(mysql_error()) ;
-$CELL = mysql_query($search_CELL, $tryconnection ) or die(mysql_error()) ;
-$PND = mysql_query($search_PND, $tryconnection ) or die(mysql_error()) ;
+$CASH = mysqli_query($tryconnection, $search_Cash) or die(mysqli_error($mysqli_link)) ;
+$CHQ = mysqli_query($tryconnection, $search_CHQ) or die(mysqli_error($mysqli_link)) ;
+$DCRD = mysqli_query($tryconnection, $search_DCRD) or die(mysqli_error($mysqli_link)) ;
+$VISA = mysqli_query($tryconnection, $search_VISA) or die(mysqli_error($mysqli_link)) ;
+$MCRD = mysqli_query($tryconnection, $search_MCRD) or die(mysqli_error($mysqli_link)) ;
+$AMEX = mysqli_query($tryconnection, $search_AMEX) or die(mysqli_error($mysqli_link)) ;
+$DINE = mysqli_query($tryconnection, $search_DINE) or die(mysqli_error($mysqli_link)) ;
+$GE = mysqli_query($tryconnection, $search_GE) or die(mysqli_error($mysqli_link)) ;
+$CELL = mysqli_query($tryconnection, $search_CELL) or die(mysqli_error($mysqli_link)) ;
+$PND = mysqli_query($tryconnection, $search_PND) or die(mysqli_error($mysqli_link)) ;
 
-$ARCASHR=mysql_query($search_ARCASHR, $tryconnection ) or die(mysql_error());
-$row_ARCASHR=mysql_fetch_assoc($ARCASHR);
+$ARCASHR=mysqli_query($tryconnection, $search_ARCASHR) or die(mysqli_error($mysqli_link));
+$row_ARCASHR=mysqli_fetch_assoc($ARCASHR);
 
-$row_CASH = mysql_fetch_array($CASH) ;
-$row_CHQ = mysql_fetch_array($CHQ) ;
-$row_DCRD = mysql_fetch_array($DCRD) ;
-$row_VISA = mysql_fetch_array($VISA) ;
-$row_MCRD = mysql_fetch_array($MCRD) ;
-$row_AMEX = mysql_fetch_array($AMEX) ;
-$row_DINE = mysql_fetch_array($DINE) ;
-$row_GE = mysql_fetch_array($GE) ;
-$row_CELL = mysql_fetch_array($CELL) ;
-$row_PND = mysql_fetch_array($PND) ;
+$row_CASH = mysqli_fetch_array($CASH) ;
+$row_CHQ = mysqli_fetch_array($CHQ) ;
+$row_DCRD = mysqli_fetch_array($DCRD) ;
+$row_VISA = mysqli_fetch_array($VISA) ;
+$row_MCRD = mysqli_fetch_array($MCRD) ;
+$row_AMEX = mysqli_fetch_array($AMEX) ;
+$row_DINE = mysqli_fetch_array($DINE) ;
+$row_GE = mysqli_fetch_array($GE) ;
+$row_CELL = mysqli_fetch_array($CELL) ;
+$row_PND = mysqli_fetch_array($PND) ;
 
 
 $query_EXPENSE="SELECT SUM(AMTPAID) AS EXPENSE FROM ARCASHR WHERE INVNO='EXPENSE' AND DTEPAID >= '$startdate[0]' AND DTEPAID <= '$enddate[0]'";
-$EXPENSE=mysql_query($query_EXPENSE, $tryconnection) or die(mysql_error());
-$row_EXPENSE=mysql_fetch_assoc($EXPENSE);
+$EXPENSE=mysqli_query($tryconnection, $query_EXPENSE) or die(mysqli_error($mysqli_link));
+$row_EXPENSE=mysqli_fetch_assoc($EXPENSE);
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/DVMBasicTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
@@ -338,7 +338,7 @@ document.getElementById(x).style.backgroundColor="#FFFFFF";
     <td align="right" class="Verdana13">'.$row_ARCASHR['AMTPAID'].'</td>
   </tr>';
   }
-  while ($row_ARCASHR=mysql_fetch_assoc($ARCASHR));
+  while ($row_ARCASHR=mysqli_fetch_assoc($ARCASHR));
   
   ?>
 </table>
