@@ -2,9 +2,9 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $select_FAXREP = "SELECT * FROM FAXREP LIMIT 1";
-$FAXREP = mysql_query($select_FAXREP) or die(mysql_error());
+$FAXREP = mysqli_query($mysqli_link, $select_FAXREP) or die(mysqli_error($mysqli_link));
 $row_FAXREP = mysqli_fetch_assoc($FAXREP);
 
 if (!empty($_POST['area'])) {$area=$_POST['area'];}
@@ -15,16 +15,16 @@ if (!empty($_POST['faxnoa'])){$faxno=$_POST['faxnoa'].'-'.$_POST['faxnob'];}
 
 if (isset($_POST['ok'])){
 $query_FAXREP = sprintf("UPDATE FAXREP SET CLINIC='%s', AREA='%s', PHONE='%s', FAXNO='%s', SHIPTO='%s', CODE='%s', FAXTO='%s', SENTBY='%s'",
-					mysql_real_escape_string($_POST['clinic']),
+					mysqli_real_escape_string($mysqli_link, $_POST['clinic']),
 					$area,
 					$phone,
 					$faxno,
-					mysql_real_escape_string($_POST['shipto']),
+					mysqli_real_escape_string($mysqli_link, $_POST['shipto']),
 					$_POST['code'],
-					mysql_real_escape_string($_POST['faxto']),
-					mysql_real_escape_string($_POST['sentby'])
+					mysqli_real_escape_string($mysqli_link, $_POST['faxto']),
+					mysqli_real_escape_string($mysqli_link, $_POST['sentby'])
 					);
-$FAXREP = mysql_query($query_FAXREP, $tryconnection) or die(mysql_error());
+$FAXREP = mysqli_query($tryconnection, $query_FAXREP) or die(mysqli_error($mysqli_link));
 $closewin = "window.open('FAX_ORDER_SHEET','_blank'); document.location='ORDER_LIST.php';";
 }
 

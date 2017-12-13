@@ -2,12 +2,12 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $spec=$_GET['species'];
 $GETcategory=implode(",",$_POST['report']);
 
 $query_SPECIES = "SELECT DISTINCT TCATGRY, TTYPE FROM VETCAN WHERE TSPECIES='$spec' ORDER BY TCATGRY ASC";
-$SPECIES = mysql_query($query_SPECIES, $tryconnection) or die(mysql_error());
+$SPECIES = mysqli_query($tryconnection, $query_SPECIES) or die(mysqli_error($mysqli_link));
 $row_SPECIES = mysqli_fetch_assoc($SPECIES);
 
 

@@ -2,13 +2,13 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $select_FAXREP = "SELECT * FROM FAXREP LIMIT 1";
-$FAXREP = mysql_query($select_FAXREP) or die(mysql_error());
+$FAXREP = mysqli_query($mysqli_link, $select_FAXREP) or die(mysqli_error($mysqli_link));
 $row_FAXREP = mysqli_fetch_assoc($FAXREP);
 
 $select_INVENTOR = "SELECT *, SUM(`UNITS`) AS `UNITS` FROM INVENTOR WHERE UNITS <> 0 AND SUPPLIER = '$_SESSION[supplier]' GROUP BY `DESCRIP` ORDER BY `DESCRIP` ASC";
-$INVENTOR = mysql_query($select_INVENTOR) or die(mysql_error());
+$INVENTOR = mysqli_query($mysqli_link, $select_INVENTOR) or die(mysqli_error($mysqli_link));
 $row_INVENTOR = mysqli_fetch_assoc($INVENTOR);
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -28,7 +28,7 @@ $row_INVENTOR = mysqli_fetch_assoc($INVENTOR);
 
 function bodyonload(){
 <?php  $select_INVENTOR = "SELECT *, SUM(`UNITS`) AS `UNITS` FROM INVENTOR WHERE UNITS <> 0 AND BACKORDER <> 1 AND SUPPLIER = '$_SESSION[supplier]' GROUP BY `DESCRIP` ORDER BY `DESCRIP` ASC";
-$INVENTOR = mysql_query($select_INVENTOR) or die(mysql_error());
+$INVENTOR = mysqli_query($mysqli_link, $select_INVENTOR) or die(mysqli_error($mysqli_link));
 $row_INVENTOR = mysqli_fetch_assoc($INVENTOR);?>
 window.print();
 //self.close();

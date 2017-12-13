@@ -93,8 +93,8 @@ if (isset($_POST['ok2'])){
 //CANCEL INVOICE - INSERT INTO REJECTIN
 if (isset($_POST['cancel']))
 {
-$insertSQL="INSERT INTO REJECTIN (REJINV, REJDATE, DATETIME, CUSTNO, PETID, ITOTAL, csstaff, COMPANY) VALUES ($_SESSION[minvno], NOW(), NOW(),'$_SESSION[client]','$_SESSION[patient]','$_POST[itotal]','".mysql_real_escape_string($_SESSION['csstaff'])."','".mysql_real_escape_string($_POST['company'])."')";
-mysql_query($insertSQL, $tryconnection);
+$insertSQL="INSERT INTO REJECTIN (REJINV, REJDATE, DATETIME, CUSTNO, PETID, ITOTAL, csstaff, COMPANY) VALUES ($_SESSION[minvno], NOW(), NOW(),'$_SESSION[client]','$_SESSION[patient]','$_POST[itotal]','".mysqli_real_escape_string($mysqli_link, $_SESSION['csstaff'])."','".mysqli_real_escape_string($mysqli_link, $_POST['company'])."')";
+mysqli_query($tryconnection, $insertSQL);
 
 header("Location:../../INDEX.php");
 }

@@ -12,9 +12,9 @@ $_SESSION['category'] = $category ;
 $_SESSION['species'] = $species ;
 
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $query_TFF = "SELECT * FROM VETCAN WHERE TFFID='$tffid' LIMIT 1";
-$TFF = mysql_query($query_TFF, $tryconnection) or die(mysql_error());
+$TFF = mysqli_query($tryconnection, $query_TFF) or die(mysqli_error($mysqli_link));
 $row_TFF = mysqli_fetch_assoc($TFF);
 
 $tno = $row_TFF['TNO'] ;
@@ -23,10 +23,10 @@ $tno = $row_TFF['TNO'] ;
 
 /////////////////////////////PAGING WITHIN A CATEGORY OF THE VETCAN FILE FOR A SPECIFIC SPECIES /////////////////////////
 $query_VIEW="CREATE OR REPLACE VIEW INVOICE2 AS SELECT TFFID,TNO,TTYPE FROM VETCAN WHERE TSPECIES = $species AND TCATGRY = $category ORDER BY TNO ASC";
-$VIEW= mysql_query($query_VIEW, $tryconnection) or die(mysql_error());
+$VIEW= mysqli_query($tryconnection, $query_VIEW) or die(mysqli_error($mysqli_link));
 
 $query_INVOICE2="SELECT * FROM INVOICE2";
-$INVOICE2= mysql_query($query_INVOICE2, $tryconnection) or die(mysql_error());
+$INVOICE2= mysqli_query($tryconnection, $query_INVOICE2) or die(mysqli_error($mysqli_link));
 $row_INVOICE2 = mysqli_fetch_assoc($INVOICE2);
 
 $ids= array();
@@ -48,20 +48,20 @@ $_SESSION['key'] = $key ;
 // */
 
 $query_TFFNO = "SELECT TCATGRY, TTYPE, MAX(TNO) AS TNO FROM VETCAN WHERE TCATGRY='$category' AND TSPECIES = '$species' ";
-$TFFNO = mysql_query($query_TFFNO, $tryconnection) or die(mysql_error());
+$TFFNO = mysqli_query($tryconnection, $query_TFFNO) or die(mysqli_error($mysqli_link));
 $row_TFFNO = mysqli_fetch_assoc($TFFNO);
 
 $query_TCATGRY = "SELECT MAX(TCATGRY) AS TCATGRY FROM VETCAN WHERE TSPECIES='$_GET[species]'";
-$TCATGRY = mysql_query($query_TCATGRY, $tryconnection) or die(mysql_error());
+$TCATGRY = mysqli_query($tryconnection, $query_TCATGRY) or die(mysqli_error($mysqli_link));
 $row_TCATGRY = mysqli_fetch_assoc($TCATGRY);
 
 $commcode=$row_TFF['TAUTOCOMM'];
 $query_COMMENTS = "SELECT * FROM ARSYSCOMM WHERE COMMCODE='$commcode' LIMIT 1";
-$COMMENTS = mysql_query($query_COMMENTS, $tryconnection) or die(mysql_error());
+$COMMENTS = mysqli_query($tryconnection, $query_COMMENTS) or die(mysqli_error($mysqli_link));
 $row_COMMENTS = mysqli_fetch_assoc($COMMENTS);
 
 $query_VACCINES = "SELECT * FROM VACCINES";
-$VACCINES = mysql_query($query_VACCINES, $tryconnection) or die(mysql_error());
+$VACCINES = mysqli_query($tryconnection, $query_VACCINES) or die(mysqli_error($mysqli_link));
 $row_VACCINES = mysqli_fetch_assoc($VACCINES);
 
 
@@ -71,7 +71,7 @@ if (isset($_POST["save"])  && $_GET["tffid"] == "0") {
 	$tno=$_POST['tno'];
 		if ($row_TFFNO['TNO'] >= (int)$tno){
 		$query_UPDATESEQ = "UPDATE VETCAN SET TNO=TNO+1 WHERE TNO>='$tno' AND TSPECIES='$_GET[species]' AND TCATGRY='$_GET[category]'";
-		$UPDATESEQ = mysql_query($query_UPDATESEQ, $tryconnection) or die(mysql_error());
+		$UPDATESEQ = mysqli_query($tryconnection, $query_UPDATESEQ) or die(mysqli_error($mysqli_link));
 		}
 		
 		// make sure the trevcats are all right adjusted.
@@ -88,7 +88,7 @@ $insertSQL = sprintf("INSERT INTO VETCAN (TSPECIES, TCATGRY, TTYPE, TNO, TDESCR,
                        $_POST['tcatgry'],
                        $_POST['ttype'],
                        $_POST['tno'],
-                       mysql_real_escape_string($_POST['tdescr']),
+                       mysqli_real_escape_string($mysqli_link, $_POST['tdescr']),
                        $_POST['tfee'],
                        $_POST['tdisp'],
                        $_POST['tprof'],
@@ -104,7 +104,7 @@ $insertSQL = sprintf("INSERT INTO VETCAN (TSPECIES, TCATGRY, TTYPE, TNO, TDESCR,
                        !empty($_POST['tupdate']) ? "1" : "0",
                        $_POST['tflags'],
                        !empty($_POST['tnoprint']) ? "1" : "0",
-                       mysql_real_escape_string($_POST['twdescr']),
+                       mysqli_real_escape_string($mysqli_link, $_POST['twdescr']),
                        $_POST['tinv'],
                        $_POST['tautocomm'],
                        !empty($_POST['tinvcomm']) ? "1" : "0",
@@ -124,8 +124,8 @@ $insertSQL = sprintf("INSERT INTO VETCAN (TSPECIES, TCATGRY, TTYPE, TNO, TDESCR,
 					   $_POST['tpaydisc']
 					   );
 
-  mysql_select_db($database_tryconnection, $tryconnection);
-  $Result1 = mysql_query($insertSQL, $tryconnection) or die(mysql_error());
+  mysqli_select_db($tryconnection, $database_tryconnection);
+  $Result1 = mysqli_query($tryconnection, $insertSQL) or die(mysqli_error($mysqli_link));
   if (isset($_POST['save'])){
     header("Location: TFF_DIRECTORY.php?species=$_GET[species]&check=");
   }
@@ -149,7 +149,7 @@ elseif ((isset($_POST["save"]) ||  isset($_POST["check"]) && !isset($_POST['dele
 		else {
 		$query_UPDATESEQ = "UPDATE VETCAN SET TNO=TNO-1 WHERE TNO<='$tno' AND TNO>'$row_TFF[TNO]' AND TSPECIES='$_GET[species]' AND TCATGRY='$_GET[category]'";
 		}
-	$UPDATESEQ = mysql_query($query_UPDATESEQ, $tryconnection) or die(mysql_error());
+	$UPDATESEQ = mysqli_query($tryconnection, $query_UPDATESEQ) or die(mysqli_error($mysqli_link));
 	}
 		
 		// make sure the trevcats are all right adjusted.
@@ -169,7 +169,7 @@ $updateSQL = sprintf("UPDATE VETCAN SET TSPECIES='%s', TCATGRY='%s', TTYPE='%s',
                        $_POST['tcatgry'],
                        $_POST['ttype'],
                        $_POST['tno'],
-                       mysql_real_escape_string($_POST['tdescr']),
+                       mysqli_real_escape_string($mysqli_link, $_POST['tdescr']),
                        $_POST['tfee'],
                        $_POST['tdisp'],
                        $_POST['tprof'],
@@ -185,7 +185,7 @@ $updateSQL = sprintf("UPDATE VETCAN SET TSPECIES='%s', TCATGRY='%s', TTYPE='%s',
                        !empty($_POST['tupdate']) ? "1" : "0",
                        $_POST['tflags'],
                        !empty($_POST['tnoprint']) ? "1" : "0",
-                       mysql_real_escape_string($_POST['twdescr']),
+                       mysqli_real_escape_string($mysqli_link, $_POST['twdescr']),
                        $_POST['tinv'],
                        $_POST['tautocomm'],
                        !empty($_POST['tinvcomm']) ? "1" : "0",
@@ -206,8 +206,8 @@ $updateSQL = sprintf("UPDATE VETCAN SET TSPECIES='%s', TCATGRY='%s', TTYPE='%s',
 					   $_GET['tffid']
 					   );
 
-mysql_select_db($database_tryconnection, $tryconnection);
-$Result1 = mysql_query($updateSQL, $tryconnection) or die(mysql_error());
+mysqli_select_db($tryconnection, $database_tryconnection);
+$Result1 = mysqli_query($tryconnection, $updateSQL) or die(mysqli_error($mysqli_link));
 
 // update any associated procedure
 $invprice = $_POST['tfee'] ;
@@ -217,7 +217,7 @@ $invmin = $_POST['tno'] ;
 
 $QUERY_Proc = "UPDATE PROCEDUR SET INVPRICE = '$invprice', INVTOT = INVPRICE*INVUNITS WHERE 
 FEEFILE='$feefile' AND INVMAJ = '$invmaj' AND INVMIN = '$invmin' AND FEEUPDTE = '1' ";
-$UPDATE_Proc = mysql_query($QUERY_Proc, $tryconnection) or die(mysql_error()) ; 
+$UPDATE_Proc = mysqli_query($tryconnection, $QUERY_Proc) or die(mysqli_error($mysqli_link)) ; 
 
 
   if (isset($_POST['save'])){
@@ -235,10 +235,10 @@ $UPDATE_Proc = mysql_query($QUERY_Proc, $tryconnection) or die(mysql_error()) ;
 elseif (isset($_POST['delete']) && $_GET['tffid'] != "0"){
 $tno=$row_TFF['TNO'];
 $query_UPDATESEQ = "UPDATE VETCAN SET TNO=TNO-1 WHERE TNO>'$tno' AND TSPECIES='$_GET[species]' AND TCATGRY='$_GET[category]'";
-$UPDATESEQ = mysql_query($query_UPDATESEQ, $tryconnection) or die(mysql_error());
+$UPDATESEQ = mysqli_query($tryconnection, $query_UPDATESEQ) or die(mysqli_error($mysqli_link));
 $deleteSQL="DELETE FROM VETCAN WHERE TFFID='$tffid'";
-mysql_select_db($database_tryconnection, $tryconnection);
-$Result1 = mysql_query($deleteSQL, $tryconnection) or die(mysql_error());
+mysqli_select_db($tryconnection, $database_tryconnection);
+$Result1 = mysqli_query($tryconnection, $deleteSQL) or die(mysqli_error($mysqli_link));
 //  if (isset($_POST['save'])){
     header("Location: TFF_DIRECTORY.php?species=$_GET[species]&check=");
 //    }

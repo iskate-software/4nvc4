@@ -2,13 +2,13 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $search_REJECTIN="SELECT *, DATE_FORMAT(DATETIME, '%m/%d/%Y %H:%i:%s') AS INVDTE FROM REJECTIN WHERE ITOTAL!=0";
-$REJECTIN=mysql_query($search_REJECTIN, $tryconnection ) or die(mysql_error());
+$REJECTIN=mysqli_query($tryconnection, $search_REJECTIN) or die(mysqli_error($mysqli_link));
 $row_REJECTIN=mysqli_fetch_assoc($REJECTIN);
 
 $search_GRANDTOTAL="SELECT SUM(ITOTAL) AS GRANDTOTAL FROM REJECTIN";
-$GRANDTOTAL=mysql_query($search_GRANDTOTAL, $tryconnection ) or die(mysql_error());
+$GRANDTOTAL=mysqli_query($tryconnection, $search_GRANDTOTAL) or die(mysqli_error($mysqli_link));
 $row_GRANDTOTAL=mysqli_fetch_assoc($GRANDTOTAL);
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/DVMBasicTemplate.dwt" codeOutsideHTMLIsLocked="false" -->

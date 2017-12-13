@@ -3,50 +3,50 @@ session_start();
 require_once('../../tryconnection.php'); 
 include("../../ASSETS/tax.php");
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $query_CRITDATA = "SELECT ESTEXP FROM CRITDATA LIMIT 1";
-$CRITDATA = mysql_query($query_CRITDATA, $tryconnection) or die(mysql_error());
+$CRITDATA = mysqli_query($tryconnection, $query_CRITDATA) or die(mysqli_error($mysqli_link));
 $row_CRITDATA = mysqli_fetch_assoc($CRITDATA);
 
 
 $intervquery1="SELECT CURRENT_DATE() + INTERVAL $row_CRITDATA[ESTEXP] DAY";
-$interval1= mysql_unbuffered_query($intervquery1, $tryconnection) or die(mysql_error());
+$interval1= mysql_unbuffered_query($intervquery1, $tryconnection) or die(mysqli_error($mysqli_link));
 $interval=mysqli_fetch_array($interval1);
 $intervquery2="SELECT DATE_FORMAT('$interval[0]','%m/%d/%Y');";
-$interval2= mysql_unbuffered_query($intervquery2, $tryconnection) or die(mysql_error());
+$interval2= mysql_unbuffered_query($intervquery2, $tryconnection) or die(mysqli_error($mysqli_link));
 $interval=mysqli_fetch_array($interval2);
 
 
 if (isset($_POST['save'])) {
 
 $expquery="SELECT STR_TO_DATE('$_POST[estexp]','%m/%d/%Y');";
-$expdate1= mysql_unbuffered_query($expquery, $tryconnection) or die(mysql_error());
+$expdate1= mysql_unbuffered_query($expquery, $tryconnection) or die(mysqli_error($mysqli_link));
 $expdate=mysqli_fetch_array($expdate1);
 //format the date into the mysql format
 $query_invdatetime="SELECT STR_TO_DATE('$_SESSION[minvdte]','%m/%d/%Y %H:%i:%s')";
-$invdatetime= mysql_unbuffered_query($query_invdatetime, $tryconnection) or die(mysql_error());
+$invdatetime= mysql_unbuffered_query($query_invdatetime, $tryconnection) or die(mysqli_error($mysqli_link));
 $row_invdatetime=mysqli_fetch_array($invdatetime);
 
 
 $query_PREFER="SELECT TRTMCOUNT FROM PREFER LIMIT 1";
-$PREFER= mysql_query($query_PREFER, $tryconnection) or die(mysql_error());
+$PREFER= mysqli_query($tryconnection, $query_PREFER) or die(mysqli_error($mysqli_link));
 $row_PREFER = mysqli_fetch_assoc($PREFER);
 
 $treatmxx=$_SESSION['client']/$row_PREFER['TRTMCOUNT'];
 $treatmxx="TREATM".floor($treatmxx);
 
 	$query_CHECKTABLE="SELECT * FROM $treatmxx LIMIT 1";
-	$CHECKTABLE= mysql_query($query_CHECKTABLE, $tryconnection) or $none=1;
+	$CHECKTABLE= mysqli_query($tryconnection, $query_CHECKTABLE) or $none=1;
 	
 	if (isset($none)){
 	$create_TREATMXX="CREATE TABLE $treatmxx LIKE TREATM0";
-	$result=mysql_query($create_TREATMXX, $tryconnection) or die(mysql_error());
+	$result=mysqli_query($tryconnection, $create_TREATMXX) or die(mysqli_error($mysqli_link));
 	}
 
 
 //insert the heading with the estimate name
-$insertSQL = "INSERT INTO $treatmxx (CUSTNO, PETID, TREATDESC, HCAT, HSUBCAT, WHO, TREATDATE) VALUES ('$_SESSION[client]','$_SESSION[patient]','ESTIMATE ".mysql_real_escape_string($_POST['invhype'])."', 32,'71', '".mysql_real_escape_string($_SESSION['invline'][0]['INVDOC'])."', '$row_invdatetime[0]')";
-mysql_query($insertSQL, $tryconnection) or die(mysql_error());
+$insertSQL = "INSERT INTO $treatmxx (CUSTNO, PETID, TREATDESC, HCAT, HSUBCAT, WHO, TREATDATE) VALUES ('$_SESSION[client]','$_SESSION[patient]','ESTIMATE ".mysqli_real_escape_string($mysqli_link, $_POST['invhype'])."', 32,'71', '".mysqli_real_escape_string($mysqli_link, $_SESSION['invline'][0]['INVDOC'])."', '$row_invdatetime[0]')";
+mysqli_query($tryconnection, $insertSQL) or die(mysqli_error($mysqli_link));
 
 
 $insertSQL = sprintf("INSERT INTO ESTHOLD (INVNO, INVCUST, INVPET, INVDESCR, INVHYPE, DATETIME, PETNAME, ESTEXP) VALUES ('%s','%s', '%s', '%s', '%s', '%s', '%s', '%s')",
@@ -54,12 +54,12 @@ $insertSQL = sprintf("INSERT INTO ESTHOLD (INVNO, INVCUST, INVPET, INVDESCR, INV
 							  $_SESSION['invline'][0]['INVCUST'],
 							  $_SESSION['invline'][0]['INVPET'],
 							  "0",
-							 mysql_real_escape_string($_POST['invhype']),
+							 mysqli_real_escape_string($mysqli_link, $_POST['invhype']),
 							  $row_xnow[0],
-							  mysql_real_escape_string($_SESSION['invline'][0]['PETNAME']),
+							  mysqli_real_escape_string($mysqli_link, $_SESSION['invline'][0]['PETNAME']),
 							  $expdate[0]
 							  );
-mysql_query($insertSQL, $tryconnection);
+mysqli_query($tryconnection, $insertSQL);
 
 foreach ($_SESSION['invline'] as $item){
 
@@ -77,13 +77,13 @@ if ($item['INVEST']=='1'){
 $treatdesc=$invunits.";".$item['INVDESCR'].";".number_format($item['INVTOT'],2);
 
 	if ($item['INVDECLINE']=='1'){
-	$insertSQL = "INSERT INTO $treatmxx (CUSTNO, PETID, TREATDESC, HCAT, HSUBCAT, HTMAJ, WHO, TREATDATE) VALUES ('$item[INVCUST]','$item[INVPET]','$treatdesc', 32,'77','$item[INVMAJ]', '".mysql_real_escape_string($item['INVDOC'])."', '$row_invdatetime[0]')";
-	mysql_query($insertSQL, $tryconnection);
+	$insertSQL = "INSERT INTO $treatmxx (CUSTNO, PETID, TREATDESC, HCAT, HSUBCAT, HTMAJ, WHO, TREATDATE) VALUES ('$item[INVCUST]','$item[INVPET]','$treatdesc', 32,'77','$item[INVMAJ]', '".mysqli_real_escape_string($mysqli_link, $item['INVDOC'])."', '$row_invdatetime[0]')";
+	mysqli_query($tryconnection, $insertSQL);
 	}
 
 	else {
-	$insertSQL = "INSERT INTO $treatmxx (CUSTNO, PETID, TREATDESC, HCAT, HSUBCAT, HTMAJ, WHO, TREATDATE) VALUES ('$item[INVCUST]','$item[INVPET]','$treatdesc', 32 ,'72','$item[INVMAJ]', '".mysql_real_escape_string($item['INVSTAFF'])."', '$row_invdatetime[0]')";
-	mysql_query($insertSQL, $tryconnection);
+	$insertSQL = "INSERT INTO $treatmxx (CUSTNO, PETID, TREATDESC, HCAT, HSUBCAT, HTMAJ, WHO, TREATDATE) VALUES ('$item[INVCUST]','$item[INVPET]','$treatdesc', 32 ,'72','$item[INVMAJ]', '".mysqli_real_escape_string($mysqli_link, $item['INVSTAFF'])."', '$row_invdatetime[0]')";
+	mysqli_query($tryconnection, $insertSQL);
 	}
 	
 $insertSQL = sprintf("INSERT INTO ESTHOLD (INVNO, INVCUST, INVPET, INVDATETIME, INVMAJ, INVMIN, INVDOC, INVSTAFF, INVUNITS, INVDESCR, INVPRICE, INVTOT, INVINCM, INVDISC, INVLGSM, INVREVCAT, INVGST, INVTAX, REFCLIN, REFVET, INVUPDTE, INVFLAGS, INVDISP, INVGET, INVPERCNT, INVHYPE, AUTOCOMM, INVCOMM, HISTCOMM, MODICODE, INVNARC, INVVPC, INVUPRICE, INVPKGQTY, MEMO, IRADLOG, ISURGLOG, INARCLOG, IUAC, INVSERUM, INVEST, INVDECLINE, PETNAME, INVOICECOMMENT, INVPRU, XDISC, MTAXRATE, TUNITS, TFLOAT, TENTER, LCODE, LCOMMENT, ESTEXP) VALUES ('%s','%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
@@ -93,10 +93,10 @@ $insertSQL = sprintf("INSERT INTO ESTHOLD (INVNO, INVCUST, INVPET, INVDATETIME, 
 							  $row_invdatetime[0],
 							  $item['INVMAJ'],
 							  $item['INVMIN'],
-							  mysql_real_escape_string($item['INVDOC']),
-							  mysql_real_escape_string($item['INVSTAFF']),
+							  mysqli_real_escape_string($mysqli_link, $item['INVDOC']),
+							  mysqli_real_escape_string($mysqli_link, $item['INVSTAFF']),
 							  $item['INVUNITS'],
-							  mysql_real_escape_string($item['INVDESCR']),
+							  mysqli_real_escape_string($mysqli_link, $item['INVDESCR']),
 							  $item['INVPRICE'],
 							  $item['INVTOT'],
 							  $item['INVINCM'],
@@ -105,15 +105,15 @@ $insertSQL = sprintf("INSERT INTO ESTHOLD (INVNO, INVCUST, INVPET, INVDATETIME, 
 							  $item['INVREVCAT'],
 							  $item['INVGST'],
 							  $item['INVTAX'],
-							  mysql_real_escape_string($item['REFCLIN']),
-							  mysql_real_escape_string($item['REFVET']),
+							  mysqli_real_escape_string($mysqli_link, $item['REFCLIN']),
+							  mysqli_real_escape_string($mysqli_link, $item['REFVET']),
 							  $item['INVUPDTE'],
 							  $item['INVFLAGS'],
 							  $item['INVDISP'],
 							  $item['INVGET'],
 							  $item['INVPERCNT'],
-							  mysql_real_escape_string($_POST['invhype']),
-							  mysql_real_escape_string($item['AUTOCOMM']),
+							  mysqli_real_escape_string($mysqli_link, $_POST['invhype']),
+							  mysqli_real_escape_string($mysqli_link, $item['AUTOCOMM']),
 							  $item['INVCOMM'],
 							  $item['HISTCOMM'],
 							  $item['MODICODE'],
@@ -129,19 +129,19 @@ $insertSQL = sprintf("INSERT INTO ESTHOLD (INVNO, INVCUST, INVPET, INVDATETIME, 
 							  $item['INVSERUM'],
 							  '1',
 							  $item['INVDECLINE'],
-							  mysql_real_escape_string($item['PETNAME']),
-							  mysql_real_escape_string($item['INVOICECOMMENT']),
+							  mysqli_real_escape_string($mysqli_link, $item['PETNAME']),
+							  mysqli_real_escape_string($mysqli_link, $item['INVOICECOMMENT']),
 							  $item['INVPRU'],
 							  $item['XDISC'],
 							  $item['MTAXRATE'],
 							  $item['TUNITS'],
 							  $item['TFLOAT'],
 							  $item['TENTER'],
-							  mysql_real_escape_string($item['LCODE']),
-							  mysql_real_escape_string($item['LCOMMENT']),
+							  mysqli_real_escape_string($mysqli_link, $item['LCODE']),
+							  mysqli_real_escape_string($mysqli_link, $item['LCOMMENT']),
 							  $expdate[0]
 							  );
-mysql_query($insertSQL, $tryconnection);
+mysqli_query($tryconnection, $insertSQL);
 }
 }
 
@@ -151,11 +151,11 @@ $insertSQL = sprintf("INSERT INTO ESTHOLD (INVNO, INVCUST, INVPET, INVDESCR, INV
 							  $_SESSION['invline'][0]['INVPET'],
 							  $nametax,
 							  $_POST['xgst'],
-							  mysql_real_escape_string($_POST['invhype']),
-							  mysql_real_escape_string($_SESSION['invline'][0]['PETNAME']),
+							  mysqli_real_escape_string($mysqli_link, $_POST['invhype']),
+							  mysqli_real_escape_string($mysqli_link, $_SESSION['invline'][0]['PETNAME']),
 							  $expdate[0]
 							  );
-mysql_query($insertSQL, $tryconnection);
+mysqli_query($tryconnection, $insertSQL);
 
 $insertSQL = sprintf("INSERT INTO ESTHOLD (INVNO, INVCUST, INVPET, INVDESCR, INVTOT, INVHYPE, PETNAME, ESTEXP) VALUES ('%s','%s', '%s', '%s', '%s', '%s', '%s', '%s')",
  							  "0",
@@ -163,11 +163,11 @@ $insertSQL = sprintf("INSERT INTO ESTHOLD (INVNO, INVCUST, INVPET, INVDESCR, INV
 							  $_SESSION['invline'][0]['INVPET'],
 							  "PST",
 							  $_POST['xpst'],
-							  mysql_real_escape_string($_POST['invhype']),
-							  mysql_real_escape_string($_SESSION['invline'][0]['PETNAME']),
+							  mysqli_real_escape_string($mysqli_link, $_POST['invhype']),
+							  mysqli_real_escape_string($mysqli_link, $_SESSION['invline'][0]['PETNAME']),
 							  $expdate[0]
 							  );
-mysql_query($insertSQL, $tryconnection);
+mysqli_query($tryconnection, $insertSQL);
 
 $insertSQL = sprintf("INSERT INTO ESTHOLD (INVNO, INVCUST, INVPET, INVDESCR, INVTOT, INVHYPE, PETNAME, ESTEXP) VALUES ('%s','%s', '%s', '%s', '%s', '%s', '%s', '%s')",
  							  "0",
@@ -175,16 +175,16 @@ $insertSQL = sprintf("INSERT INTO ESTHOLD (INVNO, INVCUST, INVPET, INVDESCR, INV
 							  $_SESSION['invline'][0]['INVPET'],
 							  "TOTAL",
 							  $_POST['xtotal'],
-							  mysql_real_escape_string($_POST['invhype']),
-							  mysql_real_escape_string($_SESSION['invline'][0]['PETNAME']),
+							  mysqli_real_escape_string($mysqli_link, $_POST['invhype']),
+							  mysqli_real_escape_string($mysqli_link, $_SESSION['invline'][0]['PETNAME']),
 							  $expdate[0]
 							  );
-mysql_query($insertSQL, $tryconnection);
+mysqli_query($tryconnection, $insertSQL);
 
 
 $xtotal=" ;TOTAL;".number_format($_POST['xtotal'],2);
-$insertSQL = "INSERT INTO $treatmxx (CUSTNO, PETID, TREATDESC, HCAT, HSUBCAT, HTMAJ, WHO, TREATDATE) VALUES ('".$_SESSION['invline'][0]['INVCUST']."','".$_SESSION['invline'][0]['INVPET']."','$xtotal', 32 ,'72','', '".mysql_real_escape_string($_SESSION['invline'][0]['INVSTAFF'])."', '$row_invdatetime[0]')";
-mysql_query($insertSQL, $tryconnection);
+$insertSQL = "INSERT INTO $treatmxx (CUSTNO, PETID, TREATDESC, HCAT, HSUBCAT, HTMAJ, WHO, TREATDATE) VALUES ('".$_SESSION['invline'][0]['INVCUST']."','".$_SESSION['invline'][0]['INVPET']."','$xtotal', 32 ,'72','', '".mysqli_real_escape_string($mysqli_link, $_SESSION['invline'][0]['INVSTAFF'])."', '$row_invdatetime[0]')";
+mysqli_query($tryconnection, $insertSQL);
 
 
 $client=$_SESSION['invline'][0]['INVCUST'];

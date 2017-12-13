@@ -2,17 +2,17 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $spec=$_GET['species'];
 
 $query_HXFILTER = "SELECT * FROM HXFILTER WHERE HXCNAME!='Diagnostics'";
-$HXFILTER = mysql_query($query_HXFILTER, $tryconnection) or die(mysql_error());
+$HXFILTER = mysqli_query($tryconnection, $query_HXFILTER) or die(mysqli_error($mysqli_link));
 $row_HXFILTER = mysqli_fetch_assoc($HXFILTER);
 
 if (isset($_POST['save']))
 {
 $query_INSERTPROCEDUR = "INSERT INTO PROCEDUR (PROCODE, `PROCEDURE`, FEEFILE) VALUES ('$_POST[procode]','$_POST[procedure]', $spec)";
-$INSERTPROCEDUR = mysql_query($query_INSERTPROCEDUR, $tryconnection) or die(mysql_error());
+$INSERTPROCEDUR = mysqli_query($tryconnection, $query_INSERTPROCEDUR) or die(mysqli_error($mysqli_link));
 }
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

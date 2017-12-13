@@ -4,13 +4,13 @@ require_once('../../tryconnection.php');
 include("../../ASSETS/age.php");
 //unset($_SESSION);
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $spec=$_GET['species'];
 
 function categ($tryconnection,$spec)
 {
 $query_SPECIES = "SELECT DISTINCT `PROCEDURE`, PROCODE FROM PROCEDUR WHERE FEEFILE='$spec' ORDER BY PROCODE ASC";
-$SPECIES = mysql_query($query_SPECIES, $tryconnection) or die(mysql_error());
+$SPECIES = mysqli_query($tryconnection, $query_SPECIES) or die(mysqli_error($mysqli_link));
 $row_SPECIES = mysqli_fetch_assoc($SPECIES);
 $totalRows_SPECIES = mysqli_num_rows($SPECIES);
 

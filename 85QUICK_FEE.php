@@ -2,16 +2,16 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $procid=$_GET['procid'];
 
 $query_PROCEDUR = "SELECT * FROM PROCEDUR WHERE PROCID=$procid";
-$PROCEDUR = mysql_query($query_PROCEDUR, $tryconnection) or die(mysql_error());
+$PROCEDUR = mysqli_query($tryconnection, $query_PROCEDUR) or die(mysqli_error($mysqli_link));
 $row_PROCEDUR = mysqli_fetch_assoc($PROCEDUR);
 
 if (isset($_POST['save'])){
 $query_QUICKUPDATE = "UPDATE PROCEDUR SET INVPRICE='$_POST[invprice]', INVUNITS='$_POST[invunits]', INVTOT='$_POST[invtot]', INVDISP='$_POST[invdisp]' WHERE PROCID=$procid";
-$QUICKUPDATE = mysql_query($query_QUICKUPDATE, $tryconnection) or die(mysql_error());
+$QUICKUPDATE = mysqli_query($tryconnection, $query_QUICKUPDATE) or die(mysqli_error($mysqli_link));
 }
 
 

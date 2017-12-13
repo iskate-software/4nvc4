@@ -5,12 +5,12 @@ require_once('../../ASSETS/tax.php');
 
 $client=$_SESSION['client'];
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 
 //need to know what files to look into and what condition to retrieve by
 
 $query_ARARECV = "SELECT *, DATE_FORMAT(INVDTE, '%m/%d/%Y') AS INVDTE, DATE_FORMAT(DTEPAID, '%m/%d/%Y') AS DTEPAID FROM ARARECV WHERE CUSTNO='$client'";
-$ARARECV = mysql_query($query_ARARECV, $tryconnection) or die(mysql_error());
+$ARARECV = mysqli_query($tryconnection, $query_ARARECV) or die(mysqli_error($mysqli_link));
 $row_ARARECV = mysqli_fetch_assoc($ARARECV);
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

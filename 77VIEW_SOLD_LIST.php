@@ -2,13 +2,13 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $select_INVSOLD = "SELECT * FROM INVSOLD WHERE INVVPC=$_GET[soldid]";
-$INVSOLD = mysql_query($select_INVSOLD) or die(mysql_error());
+$INVSOLD = mysqli_query($mysqli_link, $select_INVSOLD) or die(mysqli_error($mysqli_link));
 $row_INVSOLD = mysqli_fetch_assoc($INVSOLD);
 
 $select_ARINVT = "SELECT * FROM ARINVT WHERE VPARTNO=$row_INVSOLD[INVVPC]";
-$ARINVT = mysql_query($select_ARINVT) or die(mysql_error());
+$ARINVT = mysqli_query($mysqli_link, $select_ARINVT) or die(mysqli_error($mysqli_link));
 $row_ARINVT = mysqli_fetch_assoc($ARINVT);
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

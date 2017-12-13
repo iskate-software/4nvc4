@@ -8,22 +8,22 @@ if (!isset($_SESSION['supplier'])) {
 }
 $heading = $reqsupplier ;
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $select_INVENTOR = "SELECT CODE,DESCRIP,SUPPLIER,VPCCODE,DRUGCOST,BACKORDER,PACKAGE,PKGQTY,LOCN, SUM(UNITS) AS UNITS FROM INVENTOR WHERE SUPPLIER = '$reqsupplier' AND UNITS <> 0 GROUP BY VPCCODE ORDER BY DESCRIP";
-$INVENTOR = mysql_query($select_INVENTOR) or die(mysql_error());
+$INVENTOR = mysqli_query($mysqli_link, $select_INVENTOR) or die(mysqli_error($mysqli_link));
 $row_INVENTOR = mysqli_fetch_assoc($INVENTOR);
 
 
 if (isset($_POST['zap'])){
 $delete_INVENTOR = "DELETE FROM INVENTOR";
-$delete_INVENTOR = mysql_query($delete_INVENTOR) or die(mysql_error());
+$delete_INVENTOR = mysqli_query($mysqli_link, $delete_INVENTOR) or die(mysqli_error($mysqli_link));
 header("Location:../COMMON/INVENTORY_DIRECTORY.php");
 }
 
 else if (isset($_POST['finish'])){
 	foreach ($_POST['deleted'] as $deleted){
 	$delete_INVSOLD = "DELETE FROM INVENTOR WHERE VPCCODE='$deleted' ";
-	$delete_INVSOLD1 = mysql_query($delete_INVSOLD) or die(mysql_error());
+	$delete_INVSOLD1 = mysqli_query($mysqli_link, $delete_INVSOLD) or die(mysqli_error($mysqli_link));
 	}
 header("Location:../COMMON/INVENTORY_DIRECTORY.php");
 }

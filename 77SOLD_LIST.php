@@ -3,23 +3,23 @@ session_start();
 require_once('../../tryconnection.php');
 
 //$reqsupplier = $_GET['supplier'] ;
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 
 $select_INVSOLD = "SELECT INVSOLD.INVVPC,INVSOLD.INVDESC,SUPPLIER, SUM(INVUNITS) AS INVUNITS FROM INVSOLD LEFT JOIN ARINVT ON INVSOLD.INVVPC = ARINVT.VPARTNO  GROUP BY INVDESC ORDER BY SUPPLIER,INVDESC ASC";
-$INVSOLD = mysql_query($select_INVSOLD) or die(mysql_error());
+$INVSOLD = mysqli_query($mysqli_link, $select_INVSOLD) or die(mysqli_error($mysqli_link));
 $row_INVSOLD = mysqli_fetch_assoc($INVSOLD);
 
 
 if (isset($_POST['zap'])){
 $delete_INVSOLD = "TRUNCATE TABLE INVSOLD";
-$delete_INVSOLD = mysql_query($delete_INVSOLD) or die(mysql_error());
+$delete_INVSOLD = mysqli_query($mysqli_link, $delete_INVSOLD) or die(mysqli_error($mysqli_link));
 $closewin="document.location.reload();";
 }
 
 else if (isset($_POST['finish'])){
 	foreach ($_POST['deleted'] as $deleted){
 	$delete_INVSOLD = "DELETE FROM INVSOLD WHERE INVVPC='$deleted' LIMIT 1";
-	$delete_INVSOLD = mysql_query($delete_INVSOLD) or die(mysql_error());
+	$delete_INVSOLD = mysqli_query($mysqli_link, $delete_INVSOLD) or die(mysqli_error($mysqli_link));
 	}
 $closewin="window.open('../COMMON/INVENTORY_DIRECTORY.php','_self');";
 

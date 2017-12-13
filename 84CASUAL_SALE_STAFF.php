@@ -2,23 +2,23 @@
 session_start();
 require_once('../../tryconnection.php'); 
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $query_Staff = "SELECT * FROM STAFF WHERE SIGNEDIN=1 ORDER BY PERSONID";
-$Staff = mysql_query($query_Staff, $tryconnection) or die(mysql_error());
+$Staff = mysqli_query($tryconnection, $query_Staff) or die(mysqli_error($mysqli_link));
 $row_Staff = mysqli_fetch_assoc($Staff);
 
 $query_Doctor = "SELECT * FROM DOCTOR WHERE SIGNEDIN=1 AND SUBSTR(DOCTOR,1,3) = 'Dr.'";
-$Doctor = mysql_query($query_Doctor, $tryconnection) or die(mysql_error());
+$Doctor = mysqli_query($tryconnection, $query_Doctor) or die(mysqli_error($mysqli_link));
 $row_Doctor = mysqli_fetch_assoc($Doctor);
 
 
 if (isset($_POST['check']) && !isset($_POST['cancel'])) {
 	$query_INVNO = "SELECT LASTINV FROM CRITDATA ";
-	$INVNO = mysql_query($query_INVNO, $tryconnection) or die(mysql_error());
+	$INVNO = mysqli_query($tryconnection, $query_INVNO) or die(mysqli_error($mysqli_link));
 	$row_INVNO = mysqli_fetch_assoc($INVNO);
 	$_SESSION['csminvno'] = $row_INVNO['LASTINV'] + 1 ;
 	$query_INVNO = "UPDATE CRITDATA SET LASTINV = '$_SESSION[csminvno]'" ;
-	$INVNO = mysql_query($query_INVNO,$tryconnection) or die(mysql_error()) ;
+	$INVNO = mysqli_query($tryconnection, $query_INVNO) or die(mysqli_error($mysqli_link)) ;
 
    $_SESSION['csstaff'] = $_POST['invstaff'];
    $_SESSION['csminvdte'] = $_POST['minvdte'];

@@ -13,7 +13,7 @@ header("Location:UPDATE_PROCEDURE.php");
 }
 
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 
 if (!isset($_SESSION['species'])){
 $_SESSION['species']=$_GET['species'];
@@ -28,7 +28,7 @@ $category=$_SESSION['category'];
 
 
 $query_PROCEDURE=sprintf("SELECT * FROM PROCEDUR WHERE PROCODE = '%s' AND FEEFILE='%s' ORDER BY ISORTCODE ASC",$category, $spec);
-$PROCEDURE = mysql_query($query_PROCEDURE, $tryconnection) or die(mysql_error());
+$PROCEDURE = mysqli_query($tryconnection, $query_PROCEDURE) or die(mysqli_error($mysqli_link));
 $row_PROCEDURE = mysqli_fetch_assoc($PROCEDURE);
 
 if (!isset($_SESSION['procname'])){
@@ -41,7 +41,7 @@ $procname=$_SESSION['procname'];
 			do {
 				$autcomm=$row_PROCEDURE['AUTOCOMM'];
 				$query_TAUTOCOMM = "SELECT * FROM ARSYSCOMM WHERE COMMCODE='$autcomm'";
-				$TAUTOCOMM = mysql_query($query_TAUTOCOMM, $tryconnection) or die(mysql_error());
+				$TAUTOCOMM = mysqli_query($tryconnection, $query_TAUTOCOMM) or die(mysqli_error($mysqli_link));
 				$row_TAUTOCOMM = mysqli_fetch_assoc($TAUTOCOMM);
 				$invoicecomment=$row_TAUTOCOMM['COMMENT'];
 						   
@@ -112,7 +112,7 @@ $ps = "j";
 function categ($tryconnection,$spec)
 {
 $query_CATEGORY ="SELECT DISTINCT TCATGRY, TTYPE FROM VETCAN WHERE TSPECIES='$spec' ORDER BY TCATGRY ASC";
-$CATEGORY = mysql_query($query_CATEGORY, $tryconnection) or die(mysql_error());
+$CATEGORY = mysqli_query($tryconnection, $query_CATEGORY) or die(mysqli_error($mysqli_link));
 $row_CATEGORY = mysqli_fetch_assoc($CATEGORY);
 $totalRows_CATEGORY = mysqli_num_rows($CATEGORY);
 
@@ -129,8 +129,8 @@ echo"</select>";
 //////////////////////////LIST PRODUCT SERVICE FROM TREATMENT FEE FILE////////////////////
 function subcateg($tryconnection,$cat, $spec)
 {
-$query_PRODUCTSERVICE = sprintf("SELECT TFFID, TNO, TDESCR, TTYPE, TFEE, TCATGRY, TDISCOUNT FROM VETCAN WHERE TCATGRY = '%s' AND  TSPECIES='$spec' ORDER BY TNO ASC",mysql_real_escape_string($cat));
-$PRODUCTSERVICE = mysql_query($query_PRODUCTSERVICE, $tryconnection) or die(mysql_error());
+$query_PRODUCTSERVICE = sprintf("SELECT TFFID, TNO, TDESCR, TTYPE, TFEE, TCATGRY, TDISCOUNT FROM VETCAN WHERE TCATGRY = '%s' AND  TSPECIES='$spec' ORDER BY TNO ASC",mysqli_real_escape_string($mysqli_link, $cat));
+$PRODUCTSERVICE = mysqli_query($tryconnection, $query_PRODUCTSERVICE) or die(mysqli_error($mysqli_link));
 $row_PRODUCTSERVICE = mysqli_fetch_assoc($PRODUCTSERVICE);
 $totalRows_PRODUCTSERVICE = mysqli_num_rows($PRODUCTSERVICE);
 
@@ -147,14 +147,14 @@ echo"</select>";
 //////////////////////SELECTED ITEM FROM TREATMENT FEE FILE/////////////////
 //$query_SELECTEDITEM = sprintf("SELECT * FROM VETCAN WHERE TNO = '%s' AND TCATGRY = '%s'",mysql_real_escape_string($ps),mysql_real_escape_string($cat));
 $query_SELECTEDITEM = sprintf("SELECT * FROM VETCAN WHERE TFFID = '%s'",$ps);
-$SELECTEDITEM = mysql_query($query_SELECTEDITEM, $tryconnection) or die(mysql_error());
+$SELECTEDITEM = mysqli_query($tryconnection, $query_SELECTEDITEM) or die(mysqli_error($mysqli_link));
 $row_SELECTEDITEM = mysqli_fetch_assoc($SELECTEDITEM);
 
 
 
 if (!empty($row_SELECTEDITEM['TAUTOCOMM'])){
 $query_TAUTOCOMM = "SELECT * FROM ARSYSCOMM WHERE COMMCODE='$row_SELECTEDITEM[TAUTOCOMM]'";
-$TAUTOCOMM = mysql_query($query_TAUTOCOMM, $tryconnection) or die(mysql_error());
+$TAUTOCOMM = mysqli_query($tryconnection, $query_TAUTOCOMM) or die(mysqli_error($mysqli_link));
 $row_TAUTOCOMM = mysqli_fetch_assoc($TAUTOCOMM);
 }
 
@@ -216,10 +216,10 @@ $row_TAUTOCOMM = mysqli_fetch_assoc($TAUTOCOMM);
 if (isset($_POST['save'])){
 
 $delete_PROCEDURE="DELETE FROM PROCEDUR WHERE PROCODE = '$category'";
-mysql_query($delete_PROCEDURE, $tryconnection) or die(mysql_error());
+mysqli_query($tryconnection, $delete_PROCEDURE) or die(mysqli_error($mysqli_link));
 
 $optimize_PROCEDURE="OPTIMIZE TABLE PROCEDUR";
-mysql_query($optimize_PROCEDURE, $tryconnection) or die(mysql_error());
+mysqli_query($tryconnection, $optimize_PROCEDURE) or die(mysqli_error($mysqli_link));
 
 $i=1;
 
@@ -233,7 +233,7 @@ $insertSQL2 = sprintf("INSERT INTO PROCEDUR (FEEFILE, PROCODE, `PROCEDURE`, INVM
 							  $item['INVMAJ'],
 							  $item['INVMIN'],
 							  $item['INVUNITS'],
-							  mysql_real_escape_string($item['INVDESCR']),
+							  mysqli_real_escape_string($mysqli_link, $item['INVDESCR']),
 							  $item['INVPRICE'],
 							  $item['INVTOT'],
 							  $item['INVPRU'],
@@ -249,9 +249,9 @@ $insertSQL2 = sprintf("INSERT INTO PROCEDUR (FEEFILE, PROCODE, `PROCEDURE`, INVM
 							  $item['INVGET'],
 							  $item['INVPERCNT'],
 							  $item['INVMIN'],
-							  mysql_real_escape_string($item['INVHYPE']),
+							  mysqli_real_escape_string($mysqli_link, $item['INVHYPE']),
 							  $item['FEEUPDTE'],
-							  mysql_real_escape_string($item['AUTOCOMM']),
+							  mysqli_real_escape_string($mysqli_link, $item['AUTOCOMM']),
 							  $item['INVCOMM'],
 							  $item['HISTCOMM'],
 							  $item['MODICODE'],
@@ -266,7 +266,7 @@ $insertSQL2 = sprintf("INSERT INTO PROCEDUR (FEEFILE, PROCODE, `PROCEDURE`, INVM
 							  $item['INVHXCAT'],
 							  $item['INVTDISCOUNT']
 							  );
-mysql_query($insertSQL2, $tryconnection) or die(mysql_error());
+mysqli_query($tryconnection, $insertSQL2) or die(mysqli_error($mysqli_link));
 $i=$i+1;
 }
 header("Location:PROCEDURES_DIRECTORY.php?species=$_SESSION[species]");
@@ -607,7 +607,7 @@ document.forms[0].invtot.value = resultfull;
 		foreach ($vacc as $value ){
 		
 		$query_VACCINES = "SELECT * FROM VACCINES WHERE NAME='$value'";
-		$VACCINES = mysql_query($query_VACCINES, $tryconnection) or die(mysql_error());
+		$VACCINES = mysqli_query($tryconnection, $query_VACCINES) or die(mysqli_error($mysqli_link));
 		$row_VACCINES = mysqli_fetch_assoc($VACCINES);
 
 			echo '	<tr>

@@ -8,15 +8,15 @@ $pdob=$_GET['pdob'];
 $llocalid=$_GET['llocalid'];
 $pettype=$_GET['pettype'];
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 
 $query_ESTHOLD = "SELECT DISTINCT INVHYPE, DATE_FORMAT(ESTEXP, '%m/%d/%Y') AS ESTEXP FROM ESTHOLD WHERE INVCUST=$_SESSION[client]";
-$ESTHOLD = mysql_query($query_ESTHOLD, $tryconnection) or die(mysql_error());
+$ESTHOLD = mysqli_query($tryconnection, $query_ESTHOLD) or die(mysqli_error($mysqli_link));
 $row_ESTHOLD = mysqli_fetch_assoc($ESTHOLD);
 $totalRows_ESTHOLD = mysqli_num_rows($ESTHOLD);
 
 $query_INVHOLD = "SELECT INVNO, INVHYPE, DATE_FORMAT(DATETIME, '%m/%d/%Y') AS DATETIME FROM INVHOLD WHERE INVCUST=$_SESSION[client]";
-$INVHOLD = mysql_query($query_INVHOLD, $tryconnection) or die(mysql_error());
+$INVHOLD = mysqli_query($tryconnection, $query_INVHOLD) or die(mysqli_error($mysqli_link));
 $row_INVHOLD = mysqli_fetch_assoc($INVHOLD);
 $totalRows_INVHOLD = mysqli_num_rows($INVHOLD);
 
@@ -24,8 +24,8 @@ if (isset($_POST['view'])){
 $_SESSION['view'] = array();
 	foreach ($_POST['estres'] as $value){
 	if ($value!='0'){
-	$query_ESTHOLD = "SELECT *, DATE_FORMAT(ESTEXP, '%m/%d/%Y') AS ESTEXP FROM ESTHOLD WHERE INVCUST=$_SESSION[client] AND INVHYPE='".mysql_real_escape_string($value)."'  ORDER BY PETNAME, ISORTCODE";
-	$ESTHOLD = mysql_query($query_ESTHOLD, $tryconnection) or die(mysql_error());
+	$query_ESTHOLD = "SELECT *, DATE_FORMAT(ESTEXP, '%m/%d/%Y') AS ESTEXP FROM ESTHOLD WHERE INVCUST=$_SESSION[client] AND INVHYPE='".mysqli_real_escape_string($mysqli_link, $value)."'  ORDER BY PETNAME, ISORTCODE";
+	$ESTHOLD = mysqli_query($tryconnection, $query_ESTHOLD) or die(mysqli_error($mysqli_link));
 	$row_ESTHOLD = mysqli_fetch_assoc($ESTHOLD);
 		do {
 		$_SESSION['view'][]=array('INVNO' => $row_ESTHOLD['INVNO'],
@@ -53,7 +53,7 @@ $_SESSION['view'] = array();
 	
 		else if ($value=='0'){
 		$query_INVHOLD = "SELECT *, DATE_FORMAT(DATETIME, '%m/%d/%Y') AS DATETIME FROM INVHOLD WHERE INVCUST=$_SESSION[client] ORDER BY INVNO,PETNAME, ISORTCODE";
-		$INVHOLD = mysql_query($query_INVHOLD, $tryconnection) or die(mysql_error());
+		$INVHOLD = mysqli_query($tryconnection, $query_INVHOLD) or die(mysqli_error($mysqli_link));
 		$row_INVHOLD = mysqli_fetch_assoc($INVHOLD);
 		do {
 		$_SESSION['view'][]=array('INVNO' => $row_INVHOLD['INVNO'],
@@ -90,11 +90,11 @@ $_SESSION['invline'] = array();
 
 if (!isset($_POST['ignore'])){
     $lock_it = "LOCK TABLES ESTHOLD WRITE" ;  
-    $Qlock = mysql_query($lock_it, $tryconnection) or die(mysql_error()) ;
+    $Qlock = mysqli_query($tryconnection, $lock_it) or die(mysqli_error($mysqli_link)) ;
 	foreach ($_POST['estres'] as $value){
 	if ($value!='0'){
-	$query_ESTHOLD = "SELECT *, DATE_FORMAT(ESTEXP, '%m/%d/%Y') AS ESTEXP FROM ESTHOLD WHERE INVCUST=$_SESSION[client] AND INVHYPE='".mysql_real_escape_string($value)."' AND (INVDESCR!='0' AND INVDESCR!='GST' AND INVDESCR!='HST' AND INVDESCR!='PST' AND INVDESCR!='TOTAL' AND INVDESCR!='Subtotal') ORDER BY PETNAME ASC";
-	$ESTHOLD = mysql_query($query_ESTHOLD, $tryconnection) or die(mysql_error());
+	$query_ESTHOLD = "SELECT *, DATE_FORMAT(ESTEXP, '%m/%d/%Y') AS ESTEXP FROM ESTHOLD WHERE INVCUST=$_SESSION[client] AND INVHYPE='".mysqli_real_escape_string($mysqli_link, $value)."' AND (INVDESCR!='0' AND INVDESCR!='GST' AND INVDESCR!='HST' AND INVDESCR!='PST' AND INVDESCR!='TOTAL' AND INVDESCR!='Subtotal') ORDER BY PETNAME ASC";
+	$ESTHOLD = mysqli_query($tryconnection, $query_ESTHOLD) or die(mysqli_error($mysqli_link));
 	$row_ESTHOLD = mysqli_fetch_assoc($ESTHOLD);
 	if ($_SESSION['refID']=='EST'){$invest='1';}else {$invest='0';}
 	$_SESSION['invhype']=$row_ESTHOLD['INVHYPE'];
@@ -160,20 +160,20 @@ if ($row_ESTHOLD['INVDESC']!='0' && $row_ESTHOLD['INVDESC']!='GST' && $row_ESTHO
 			
 			}
 		while ($row_ESTHOLD = mysqli_fetch_assoc($ESTHOLD));
-$deleteSQL = "DELETE  FROM ESTHOLD WHERE INVCUST='$_SESSION[client]' AND INVHYPE='".mysql_real_escape_string($value)."' ";;
-mysql_query($deleteSQL, $tryconnection) or die(mysql_error());
+$deleteSQL = "DELETE  FROM ESTHOLD WHERE INVCUST='$_SESSION[client]' AND INVHYPE='".mysqli_real_escape_string($mysqli_link, $value)."' ";;
+mysqli_query($tryconnection, $deleteSQL) or die(mysqli_error($mysqli_link));
 $optimize = "OPTIMIZE TABLE ESTHOLD";
-mysql_query($optimize, $tryconnection) or die(mysql_error());
+mysqli_query($tryconnection, $optimize) or die(mysqli_error($mysqli_link));
 		}
 	}
      $unlock_it = "UNLOCK TABLES" ;
-     $Qunlock = mysql_query($unlock_it, $tryconnection) or die(mysql_error()) ;
+     $Qunlock = mysqli_query($tryconnection, $unlock_it) or die(mysqli_error($mysqli_link)) ;
 	}
 	if ($_SESSION['refID']!='EST'){
         $lock_it = "LOCK TABLES INVHOLD WRITE" ;  
-        $Qlock = mysql_query($lock_it, $tryconnection) or die(mysql_error()) ;
+        $Qlock = mysqli_query($tryconnection, $lock_it) or die(mysqli_error($mysqli_link)) ;
 		$query_INVHOLD = "SELECT *, DATE_FORMAT(DATETIME, '%m/%d/%Y') AS DATETIME FROM INVHOLD WHERE INVCUST=$_SESSION[client] AND (INVDESCR!='1' AND INVDESCR!='GST' AND INVDESCR!='HST' AND INVDESCR!='PST' AND INVDESCR!='TOTAL' AND INVDESCR!='Subtotal') ORDER BY PETNAME,ISORTCODE ASC";
-		$INVHOLD = mysql_query($query_INVHOLD, $tryconnection) or die(mysql_error());
+		$INVHOLD = mysqli_query($tryconnection, $query_INVHOLD) or die(mysqli_error($mysqli_link));
 		$row_INVHOLD = mysqli_fetch_assoc($INVHOLD);
 		
 		if ($totalRows_INVHOLD!=0 && !isset($_SESSION['round'])){
@@ -239,12 +239,12 @@ mysql_query($optimize, $tryconnection) or die(mysql_error());
 		while ($row_INVHOLD = mysqli_fetch_assoc($INVHOLD));
 
   $deleteSQL = "DELETE FROM INVHOLD WHERE INVCUST='$_SESSION[client]'";
-  mysql_query($deleteSQL, $tryconnection);
+  mysqli_query($tryconnection, $deleteSQL);
   $optimize = "OPTIMIZE TABLE INVHOLD";
-  mysql_query($optimize, $tryconnection) or die(mysql_error());
+  mysqli_query($tryconnection, $optimize) or die(mysqli_error($mysqli_link));
 } 
  $unlock_it = "UNLOCK TABLES" ;
- $Qunlock = mysql_query($unlock_it, $tryconnection) or die(mysql_error()) ;
+ $Qunlock = mysqli_query($tryconnection, $unlock_it) or die(mysqli_error($mysqli_link)) ;
 }
 
 $firstone=$_SESSION['invline'][0]['PETNAME'];

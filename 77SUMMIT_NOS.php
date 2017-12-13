@@ -2,10 +2,10 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 
 $get_SUMM = "SELECT ITEM,SUPPLIER,VPARTNO FROM DVManager.ARINVT WHERE SUPPLIER = 'SUMMIT' ORDER BY ITEM" ;
-$query_SUMM = mysql_query($get_SUMM, $tryconnection) or die(mysql_error()) ;
+$query_SUMM = mysqli_query($tryconnection, $get_SUMM) or die(mysqli_error($mysqli_link)) ;
 $row_SUMM = mysqli_fetch_assoc($query_SUMM) ;
 
 $sum = 'SUMM' ;
@@ -24,7 +24,7 @@ echo '  got into loop ' ;
   $newvpn = $sum.$newit ;
   echo $newvpn .  ' new ' . $row_SUMM['ITEM'] . ' ' . $row_SUMM['VPARTNO']  ;
   $update_vpn = "UPDATE DVManager.ARINVT SET VPARTNO = '$newvpn' WHERE ITEM = '$item' limit 1 " ;
-  $query = mysql_query($update_vpn, $tryconnection) or die(mysql_error()) ;
+  $query = mysqli_query($tryconnection, $update_vpn) or die(mysqli_error($mysqli_link)) ;
   $start++ ;
 }
 ?>

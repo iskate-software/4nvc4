@@ -3,17 +3,17 @@ session_start();
 require_once('../../tryconnection.php'); 
 
 $sessionname=$_SESSION['petname'];
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 
 if (isset($_POST['save'])){
 $invoicecomment=str_replace('$PETNAME', $_SESSION['petname'], $_POST['commtext']);
-	$update_PETHOLD="UPDATE PETHOLD SET SUBTCOM='".mysql_real_escape_string($invoicecomment)."', PHINVNO='$_SESSION[minvno]', COMINV='$_POST[cominv]', MEDINV='$_POST[medinv]'  WHERE PHPETID='$_SESSION[patient]'";
-	$PETHOLD=mysql_unbuffered_query($update_PETHOLD, $tryconnection) or die (mysql_error());
+	$update_PETHOLD="UPDATE PETHOLD SET SUBTCOM='".mysqli_real_escape_string($mysqli_link, $invoicecomment)."', PHINVNO='$_SESSION[minvno]', COMINV='$_POST[cominv]', MEDINV='$_POST[medinv]'  WHERE PHPETID='$_SESSION[patient]'";
+	$PETHOLD=mysql_unbuffered_query($update_PETHOLD, $tryconnection) or die (mysqli_error($mysqli_link));
 $closewindow='self.close() ;';
 }
 
 $query_PETHOLD = "SELECT * FROM PETHOLD WHERE PHPETID=$_SESSION[patient]";
-$PETHOLD = mysql_query($query_PETHOLD, $tryconnection) or die(mysql_error());
+$PETHOLD = mysqli_query($tryconnection, $query_PETHOLD) or die(mysqli_error($mysqli_link));
 $row_PETHOLD = mysqli_fetch_assoc($PETHOLD);
 
 ?>

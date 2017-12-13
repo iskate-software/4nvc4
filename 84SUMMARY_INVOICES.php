@@ -6,36 +6,36 @@ require_once('../../ASSETS/tax.php');
 
 $client=$_SESSION['client'];
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 
 
 if (!isset($_SESSION['tea'])){
 $query_INVNO = "SELECT LASTINV FROM CRITDATA ";
-$INVNO = mysql_query($query_INVNO, $tryconnection) or die(mysql_error());
+$INVNO = mysqli_query($tryconnection, $query_INVNO) or die(mysqli_error($mysqli_link));
 $row_INVNO = mysqli_fetch_assoc($INVNO);
 $_SESSION['minvno'] = $row_INVNO['LASTINV'] + 1 ;
 $query_INVNO = "UPDATE CRITDATA SET LASTINV = '$_SESSION[minvno]'" ;
-$INVNO = mysql_query($query_INVNO,$tryconnection) or die(mysql_error()) ;
+$INVNO = mysqli_query($tryconnection, $query_INVNO) or die(mysqli_error($mysqli_link)) ;
 $_SESSION['tea']='1';
 $_SESSION['amtpaid'] = 0 ;
 } else { if ($_SESSION['tea']=='1') { $_SESSION['tea']++ ;} else {unset($_SESSION['tea']);}}
 
 $query_Staff = "SELECT * FROM STAFF WHERE SIGNEDIN=1";
-$Staff = mysql_query($query_Staff, $tryconnection) or die(mysql_error());
+$Staff = mysqli_query($tryconnection, $query_Staff) or die(mysqli_error($mysqli_link));
 $row_Staff = mysqli_fetch_assoc($Staff);
 
 $query_Doctor = "SELECT * FROM DOCTOR WHERE SIGNEDIN=1";
-$Doctor = mysql_query($query_Doctor, $tryconnection) or die(mysql_error());
+$Doctor = mysqli_query($tryconnection, $query_Doctor) or die(mysqli_error($mysqli_link));
 $row_Doctor = mysqli_fetch_assoc($Doctor);
 
 // use today's date to figure out the taxname and rate.
 
 $STRUC_TAX = "SELECT DATE_FORMAT(NOW(),'%m/%d/%Y') AS TODAY" ;
-$get_Date = mysql_query($STRUC_TAX, $tryconnection) or die(mysql_error()) ;
+$get_Date = mysqli_query($tryconnection, $STRUC_TAX) or die(mysqli_error($mysqli_link)) ;
 $minvdte = mysqli_fetch_array($get_Date) ;
 
 $query_TAX = "SELECT HTAXNAME, HOTAXNAME, HGST, HOGST, DATE_FORMAT(HGSTDATE,'%m/%d/%Y') AS HGSTDATE, HGSTNO FROM CRITDATA";
-$TAX = mysql_query($query_TAX, $tryconnection) or die(mysql_error());
+$TAX = mysqli_query($tryconnection, $query_TAX) or die(mysqli_error($mysqli_link));
 $row_TAX = mysqli_fetch_assoc($TAX);
 
 $hgstdate=strtotime($row_TAX['HGSTDATE']);
@@ -109,64 +109,64 @@ if ($_POST['amtpaid'] <> 0 ) {
   else {
     $update_CUSTO = "UPDATE ARCUSTO SET BALANCE = BALANCE + '$ibal', ldate = STR_TO_DATE('$invdte', '%m/%d/%Y') WHERE CUSTNO = '$client' LIMIT 1 " ; 
     }
-  $query_CUSTO = mysql_query($update_CUSTO, $tryconnection) or die(mysql_error()) ;
+  $query_CUSTO = mysqli_query($tryconnection, $update_CUSTO) or die(mysqli_error($mysqli_link)) ;
 
 $insert_ARARECV = "INSERT INTO ARARECV (INVNO, INVDTE, INVTIME, CUSTNO, COMPANY, SALESMN, PONUM, REFNO, TAX, PTAX, ITOTAL, DISCOUNT, AMTPAID,DTEPAID, IBAL) 
-VALUES ('$_SESSION[minvno]', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'), STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'), '$client', '".mysql_real_escape_string($_POST['company'])."',
-'".mysql_real_escape_string($_POST['salesmn'])."', '".mysql_real_escape_string($_POST['ponum'])."', '$_POST[refno]', '$_POST[tax]', '0.00','$_POST[itotal]','0.00', '$_POST[amtpaid]', '0000-00-00', '$ibal') ";
-$RESULT = mysql_query($insert_ARARECV, $tryconnection) or die(mysql_error());
+VALUES ('$_SESSION[minvno]', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'), STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'), '$client', '".mysqli_real_escape_string($mysqli_link, $_POST['company'])."',
+'".mysqli_real_escape_string($mysqli_link, $_POST['salesmn'])."', '".mysqli_real_escape_string($mysqli_link, $_POST['ponum'])."', '$_POST[refno]', '$_POST[tax]', '0.00','$_POST[itotal]','0.00', '$_POST[amtpaid]', '0000-00-00', '$ibal') ";
+$RESULT = mysqli_query($tryconnection, $insert_ARARECV) or die(mysqli_error($mysqli_link));
 if ($_POST['amtpaid'] <> 0 ) {
  $add_PAYMENT = "UPDATE ARARECV SET DTEPAID =  STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s') WHERE INVNO = '$_SESSION[minvno]'" ;
- $update_PAYMENT = mysql_query($add_PAYMENT, $tryconnection) or die(mysql_error()) ;
+ $update_PAYMENT = mysqli_query($tryconnection, $add_PAYMENT) or die(mysqli_error($mysqli_link)) ;
 }
 
 			// now get the unique number the system has assigned to this receivable, so that it can be put into the invoice record.
 		     $GET_UNIQUE1 = "SELECT UNIQUE1 FROM ARARECV WHERE INVNO = '$_SESSION[csminvno] '" ;
-		     $FOR_INVOICE = mysql_query($GET_UNIQUE1, $tryconnection) or die(mysql_error()) ;
+		     $FOR_INVOICE = mysqli_query($tryconnection, $GET_UNIQUE1) or die(mysqli_error($mysqli_link)) ;
 		     $row_ARFORIN = mysqli_fetch_assoc($FOR_INVOICE) ;
 		     $uni = $row_ARFORIN['UNIQUE1'] ;
 		     
 $insert_ARINVOI = "INSERT INTO ARINVOI (INVNO, INVDTE, CUSTNO, COMPANY, SALESMN, PONUM, REFNO, TAX, ITOTAL,DISCOUNT,PTAX, AMTPAID,DTEPAID, IBAL, INVPET, UNIQUE1) 
-VALUES ('$_SESSION[minvno]', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'), '$client', '".mysql_real_escape_string($_POST['company'])."',
-'".mysql_real_escape_string($_POST['salesmn'])."', '".mysql_real_escape_string($_POST['ponum'])."', '$_POST[refno]', '$_POST[tax]', '$_POST[itotal]', '0.00','0.00','$_POST[amtpaid]', '0000-00-00', '$ibal' ,'Summary Invoice', '$uni' )";
+VALUES ('$_SESSION[minvno]', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'), '$client', '".mysqli_real_escape_string($mysqli_link, $_POST['company'])."',
+'".mysqli_real_escape_string($mysqli_link, $_POST['salesmn'])."', '".mysqli_real_escape_string($mysqli_link, $_POST['ponum'])."', '$_POST[refno]', '$_POST[tax]', '$_POST[itotal]', '0.00','0.00','$_POST[amtpaid]', '0000-00-00', '$ibal' ,'Summary Invoice', '$uni' )";
 
-$RESULT1 = mysql_query($insert_ARINVOI, $tryconnection) or die(mysql_error());
+$RESULT1 = mysqli_query($tryconnection, $insert_ARINVOI) or die(mysqli_error($mysqli_link));
 if ($_POST['amtpaid'] <> 0 ) {
  $add_PAYMENT1 = "UPDATE ARINVOI SET DTEPAID =  STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s') WHERE INVNO = '$_SESSION[minvno]'" ;
- $update_PAYMENT1 = mysql_query($add_PAYMENT1, $tryconnection) or die(mysql_error()) ;
+ $update_PAYMENT1 = mysqli_query($tryconnection, $add_PAYMENT1) or die(mysqli_error($mysqli_link)) ;
  }
  
 $insert_ARGST = "INSERT INTO ARGST (INVNO, INVDTE, CUSTNO, GST, PROVTAX, ITOTAL, GSTNO, UNIQUE1) 
 VALUES ('$_SESSION[minvno]', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'), '$client','$_POST[tax]', '0.00', '$_POST[itotal]', '$taxnumber', '$uni' )";
-$RESULT2 = mysql_query($insert_ARGST, $tryconnection) or die(mysql_error());
+$RESULT2 = mysqli_query($tryconnection, $insert_ARGST) or die(mysqli_error($mysqli_link));
  
 if ($_POST['amtpaid'] <> 0 ) {
  $insert_ARCASHR = "INSERT INTO ARCASHR (INVNO, INVDTE, CUSTNO, COMPANY, REFNO, DTEPAID, AMTPAID) 
- VALUES ('$_SESSION[minvno]', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'), '$client', '".mysql_real_escape_string($_POST['company'])."', '$_POST[refno]',
+ VALUES ('$_SESSION[minvno]', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'), '$client', '".mysqli_real_escape_string($mysqli_link, $_POST['company'])."', '$_POST[refno]',
  STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'),'$_POST[amtpaid]' )";
- $RESULT3 = mysql_query($insert_ARCASHR, $tryconnection) or die(mysql_error());
+ $RESULT3 = mysqli_query($tryconnection, $insert_ARCASHR) or die(mysqli_error($mysqli_link));
 }
 
 $insert_SALESCAT = "INSERT INTO SALESCAT (INVMAJ,INVTOT,INVGST,INVTAX,INVDISC,INVDOC,INVORDDOC,INVDESC,INVPAID,INVAR,INVLGSM,INVREVCAT,INVDTE,INVNO, INVCUST,INVTNO, UNIQUE1) 
-VALUES ('99', '$_SESSION[realamount]','$_POST[tax]','0.00','0.00','Hospital', 'Hospital','".mysql_real_escape_string($_POST['ponum'])."','$_POST[amtpaid]','$ibal','0','99', 
+VALUES ('99', '$_SESSION[realamount]','$_POST[tax]','0.00','0.00','Hospital', 'Hospital','".mysqli_real_escape_string($mysqli_link, $_POST['ponum'])."','$_POST[amtpaid]','$ibal','0','99', 
 STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'),'$_SESSION[minvno]',  '$client','0', '$uni' )";
-$RESULT4 = mysql_query($insert_SALESCAT, $tryconnection) or die(mysql_error());
+$RESULT4 = mysqli_query($tryconnection, $insert_SALESCAT) or die(mysqli_error($mysqli_link));
 // and do the tax
 if ($_POST['tax'] <> 0) {
  $insert_SALESCATT = "INSERT INTO SALESCAT (INVMAJ,INVTOT,INVGST,INVTAX,INVDISC,INVDOC,INVORDDOC,INVDESC,INVPAID,INVAR,INVLGSM,INVREVCAT,INVDTE,INVNO, INVCUST,INVTNO, UNIQUE1) 
  VALUES ('90', '$_POST[tax]','0.00','0.00','0.00','Hospital', 'Hospital','Tax','0','0','0','90', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'),'$_SESSION[minvno]',  '$client','0', '$uni' )";
- $RESULT5 = mysql_query($insert_SALESCATT, $tryconnection) or die(mysql_error());
+ $RESULT5 = mysqli_query($tryconnection, $insert_SALESCATT) or die(mysqli_error($mysqli_link));
 }
 
 $insert_DVMINV = "INSERT INTO DVMINV (INVNO, INVCUST,INVPET,INVDATETIME,INVMAJ,INVMIN,INVORDDOC,INVDOC,INVSTAFF,INVUNITS,INVDESCR,INVPRICE,INVTOT,INVREVCAT,INVTAX,INVDECLINE,PETNAME, UNIQUE1) 
-VALUES ('$_SESSION[minvno]','$client','0', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'),'99','0','Hospital','Hospital','".mysql_real_escape_string($_POST['salesmn'])."', '1','Summary Invoice',
+VALUES ('$_SESSION[minvno]','$client','0', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'),'99','0','Hospital','Hospital','".mysqli_real_escape_string($mysqli_link, $_POST['salesmn'])."', '1','Summary Invoice',
 '$_SESSION[realamount]','$_SESSION[realamount]','99','$_POST[tax]','0','Summary Invoice' ,'$uni')";
-$RESULT6 = mysql_query($insert_DVMINV, $tryconnection) or die(mysql_error());
+$RESULT6 = mysqli_query($tryconnection, $insert_DVMINV) or die(mysqli_error($mysqli_link));
 // and do the tax
 if ($_POST['tax'] <> 0) {
  $insert_DVMINVT = "INSERT INTO DVMINV (INVNO, INVCUST,INVPET,INVDATETIME,INVMAJ,INVMIN,INVORDDOC,INVDOC,INVSTAFF,INVUNITS,INVDESCR,INVPRICE,INVTOT,INVREVCAT,INVTAX,INVDECLINE,PETNAME, UNIQUE1) 
- VALUES ('$_SESSION[minvno]','$client','0', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'),'90','0','Hospital','Hospital','".mysql_real_escape_string($_POST['salesmn'])."', '1','Tax','$_POST[tax]','$_POST[tax]','90','0.00','0','Summary Invoice', '$uni' )";
- $RESULT7 = mysql_query($insert_DVMINVT, $tryconnection) or die(mysql_error());
+ VALUES ('$_SESSION[minvno]','$client','0', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'),'90','0','Hospital','Hospital','".mysqli_real_escape_string($mysqli_link, $_POST['salesmn'])."', '1','Tax','$_POST[tax]','$_POST[tax]','90','0.00','0','Summary Invoice', '$uni' )";
+ $RESULT7 = mysqli_query($tryconnection, $insert_DVMINVT) or die(mysqli_error($mysqli_link));
 }
 
 header("Location:../../CLIENT/CLIENT_SEARCH_SCREEN.php");

@@ -2,21 +2,21 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $spec=$_GET['species'];
 $POSTcategory=$_POST['category'];
 $GETcategory=$_GET['category'];
 
 $query_SPECIES = "SELECT DISTINCT `PROCEDURE`, PROCODE FROM PROCEDUR WHERE FEEFILE='$spec'";
-$SPECIES = mysql_query($query_SPECIES, $tryconnection) or die(mysql_error());
+$SPECIES = mysqli_query($tryconnection, $query_SPECIES) or die(mysqli_error($mysqli_link));
 $row_SPECIES = mysqli_fetch_assoc($SPECIES);
 
 $query_NAME = "SELECT `PROCEDURE`, PROCODE, INVHXCAT FROM PROCEDUR WHERE FEEFILE='$spec' AND PROCODE='$GETcategory'";
-$NAME = mysql_query($query_NAME, $tryconnection) or die(mysql_error());
+$NAME = mysqli_query($tryconnection, $query_NAME) or die(mysqli_error($mysqli_link));
 $row_NAME = mysqli_fetch_assoc($NAME);
 
 $query_HXFILTER = "SELECT * FROM HXFILTER WHERE HXCNAME!='Diagnostics'";
-$HXFILTER = mysql_query($query_HXFILTER, $tryconnection) or die(mysql_error());
+$HXFILTER = mysqli_query($tryconnection, $query_HXFILTER) or die(mysqli_error($mysqli_link));
 $row_HXFILTER = mysqli_fetch_assoc($HXFILTER);
 
 
@@ -24,7 +24,7 @@ $row_HXFILTER = mysqli_fetch_assoc($HXFILTER);
 if (isset($_POST['save']))
 {
 $query_UPDATEPROCEDUR = "UPDATE PROCEDUR SET `PROCEDURE`='$_POST[procedure]', PROCODE='$_POST[procode]', THXCAT='$_POST[thxfil]' WHERE PROCODE='$GETcategory' AND FEEFILE='$spec'";
-$UPDATEPROCEDUR = mysql_query($query_UPDATEPROCEDUR, $tryconnection) or die(mysql_error());
+$UPDATEPROCEDUR = mysqli_query($tryconnection, $query_UPDATEPROCEDUR) or die(mysqli_error($mysqli_link));
 
 $refreshwindow="self.location.reload();";
 }
@@ -33,7 +33,7 @@ $refreshwindow="self.location.reload();";
 elseif (isset($_POST['delete']))
 {
 $query_DELETEPROCEDUR = "DELETE FROM PROCEDUR WHERE PROCODE='$GETcategory'";
-$DELETEPROCEDUR = mysql_query($query_DELETEPROCEDUR, $tryconnection) or die(mysql_error());
+$DELETEPROCEDUR = mysqli_query($tryconnection, $query_DELETEPROCEDUR) or die(mysqli_error($mysqli_link));
 $refreshwindow="self.location.reload();";
 }
 

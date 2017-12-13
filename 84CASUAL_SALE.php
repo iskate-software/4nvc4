@@ -5,7 +5,7 @@ include("../../ASSETS/tax.php");
 if (isset($_POST['cancel']))
 {
 $insertSQL="INSERT INTO REJECTIN (REJINV, REJDATE, DATETIME, CUSTNO, PETID, ITOTAL, csstaff, COMPANY) VALUES ($_SESSION[minvno], NOW(), NOW(),'0','0','$_POST[itotal]','$_SESSION[csstaff]','$_POST[company]')";
-mysql_query($insertSQL, $tryconnection);
+mysqli_query($tryconnection, $insertSQL);
 
 header("Location:../../INDEX.php");
 }
@@ -58,7 +58,7 @@ if (isset($_POST['ok']) && isset($_GET['reference'])){
 $ref='Lookup Food';
 
 $query_SELECTEDITEM = "SELECT * FROM VETCAN WHERE TDESCR = '$ref' LIMIT 1";
-$SELECTEDITEM = mysql_query($query_SELECTEDITEM, $tryconnection) or die(mysql_error());
+$SELECTEDITEM = mysqli_query($tryconnection, $query_SELECTEDITEM) or die(mysqli_error($mysqli_link));
 $row_SELECTEDITEM = mysqli_fetch_assoc($SELECTEDITEM);
 
 
@@ -67,7 +67,7 @@ $row_SELECTEDITEM = mysqli_fetch_assoc($SELECTEDITEM);
 						   $invoicecomment=$_POST['commtext'];
 							$autcomm=$_POST['autocomm'];
 $query_TAUTOCOMM = "SELECT * FROM ARSYSCOMM WHERE COMMCODE='$autcomm'";
-$TAUTOCOMM = mysql_query($query_TAUTOCOMM, $tryconnection) or die(mysql_error());
+$TAUTOCOMM = mysqli_query($tryconnection, $query_TAUTOCOMM) or die(mysqli_error($mysqli_link));
 $row_TAUTOCOMM = mysqli_fetch_assoc($TAUTOCOMM);
 							$invoicecomment=str_replace('$PETNAME', $_SESSION['petname'], $row_TAUTOCOMM['COMMENT']);
 

@@ -23,9 +23,9 @@ $client=$_SESSION['client'];
 $taxname=taxname($database_tryconnection, $tryconnection, $_SESSION['minvdte']);
 
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $query_PATIENT_CLIENT = "SELECT *, DATE_FORMAT(PDOB,'%m/%d/%Y') AS PDOB FROM PETMAST JOIN ARCUSTO ON (ARCUSTO.CUSTNO=PETMAST.CUSTNO) WHERE PETID = '$patient' LIMIT 1";
-$PATIENT_CLIENT = mysql_query($query_PATIENT_CLIENT, $tryconnection) or die(mysql_error());
+$PATIENT_CLIENT = mysqli_query($tryconnection, $query_PATIENT_CLIENT) or die(mysqli_error($mysqli_link));
 $row_PATIENT_CLIENT = mysqli_fetch_assoc($PATIENT_CLIENT);
 $pdob=$row_PATIENT_CLIENT['PDOB'];
 $psex=$row_PATIENT_CLIENT['PSEX'];
@@ -41,7 +41,7 @@ if (isset($_POST['anotherpet'])){
 $_SESSION['round']='1';
 //unlock the client
 $query_LOCK = "UPDATE ARCUSTO SET LOCKED='0' WHERE CUSTNO = '$client' LIMIT 1";
-$LOCK = mysql_query($query_LOCK, $tryconnection) or die(mysql_error());
+$LOCK = mysqli_query($tryconnection, $query_LOCK) or die(mysqli_error($mysqli_link));
 $openwindow="document.location='../../CLIENT/CLIENT_PATIENT_FILE.php';";
 }
 
@@ -51,48 +51,48 @@ unset($_SESSION['round']);
 
 //delete from INVHOLD
 $query_lockc = "LOCK TABLES INVHOLD WRITE, PETHOLD WRITE, ARCUSTO WRITE" ;
-$get_it = mysql_query($query_lockc, $tryconnection) or die(mysql_error()) ;
+$get_it = mysqli_query($tryconnection, $query_lockc) or die(mysqli_error($mysqli_link)) ;
 $deleteSQL = "DELETE  FROM INVHOLD WHERE INVCUST='$_SESSION[client]'";
-mysql_query($deleteSQL, $tryconnection);
+mysqli_query($tryconnection, $deleteSQL);
 $optimize = "OPTIMIZE TABLE INVHOLD";
-mysql_query($optimize, $tryconnection) or die(mysql_error()) ;
+mysqli_query($tryconnection, $optimize) or die(mysqli_error($mysqli_link)) ;
 
 //update PETHOLD invno
 $query_INVNO_PETHOLD = "UPDATE PETHOLD SET PHINVNO='$_SESSION[minvno]' WHERE PHPETID='$_SESSION[patient]'";
-$INVNO_PETHOLD = mysql_query($query_INVNO_PETHOLD, $tryconnection) or die(mysql_error());
+$INVNO_PETHOLD = mysqli_query($tryconnection, $query_INVNO_PETHOLD) or die(mysqli_error($mysqli_link));
 
 //unlock the client
 $query_LOCK = "UPDATE ARCUSTO SET LOCKED='0' WHERE CUSTNO = '$client' LIMIT 1";
-$LOCK = mysql_query($query_LOCK, $tryconnection) or die(mysql_error());
+$LOCK = mysqli_query($tryconnection, $query_LOCK) or die(mysqli_error($mysqli_link));
 
 $query_unlockc = "UNLOCK TABLES" ;
-$let_it_go = mysql_query($query_unlockc, $tryconnection) or die(mysql_error()) ;
+$let_it_go = mysqli_query($tryconnection, $query_unlockc) or die(mysqli_error($mysqli_link)) ;
 
 //check if there is any such patient in the RECEP
 $query_RECEP = "SELECT * FROM RECEP WHERE RFPETID='$patient' LIMIT 1";
-$RECEP = mysql_query($query_RECEP, $tryconnection) or die(mysql_error());
+$RECEP = mysqli_query($tryconnection, $query_RECEP) or die(mysqli_error($mysqli_link));
 $row_RECEP = mysqli_fetch_assoc($RECEP);
 
 //if there is NO such patient, insert into the DISCHARGED section
 if (empty($row_RECEP)){
-$query_insertSQL="INSERT INTO RECEP (CUSTNO, NAME, RFPETID, PETNAME, PSEX, RFPETTYPE, LOCATION, DESCRIP, FNAME, AREA1, PH1, AREA2, PH2, AREA3, PH3, DATEIN, TIME, DATETIME) VALUES ('$client', '".mysql_real_escape_string($row_PATIENT_CLIENT['COMPANY'])."', '$patient', '".mysql_real_escape_string($row_PATIENT_CLIENT['PETNAME'])."', '$row_PATIENT_CLIENT[PSEX]', '$row_PATIENT_CLIENT[PETTYPE]', '2', '".mysql_real_escape_string($row_PATIENT_CLIENT['PETBREED'])."','".mysql_real_escape_string($row_PATIENT_CLIENT['CONTACT'])."','$row_PATIENT_CLIENT[AREA]','$row_PATIENT_CLIENT[PHONE]','$row_PATIENT_CLIENT[CAREA2]','$row_PATIENT_CLIENT[PHONE2]','$row_PATIENT_CLIENT[CAREA3]','$row_PATIENT_CLIENT[PHONE3]', STR_TO_DATE('$_SESSION[minvdte]','%m/%d/%Y'), NOW(), NOW())";
-$insertSQL=mysql_query($query_insertSQL,$tryconnection) or die(mysql_error());
+$query_insertSQL="INSERT INTO RECEP (CUSTNO, NAME, RFPETID, PETNAME, PSEX, RFPETTYPE, LOCATION, DESCRIP, FNAME, AREA1, PH1, AREA2, PH2, AREA3, PH3, DATEIN, TIME, DATETIME) VALUES ('$client', '".mysqli_real_escape_string($mysqli_link, $row_PATIENT_CLIENT['COMPANY'])."', '$patient', '".mysqli_real_escape_string($mysqli_link, $row_PATIENT_CLIENT['PETNAME'])."', '$row_PATIENT_CLIENT[PSEX]', '$row_PATIENT_CLIENT[PETTYPE]', '2', '".mysqli_real_escape_string($mysqli_link, $row_PATIENT_CLIENT['PETBREED'])."','".mysqli_real_escape_string($mysqli_link, $row_PATIENT_CLIENT['CONTACT'])."','$row_PATIENT_CLIENT[AREA]','$row_PATIENT_CLIENT[PHONE]','$row_PATIENT_CLIENT[CAREA2]','$row_PATIENT_CLIENT[PHONE2]','$row_PATIENT_CLIENT[CAREA3]','$row_PATIENT_CLIENT[PHONE3]', STR_TO_DATE('$_SESSION[minvdte]','%m/%d/%Y'), NOW(), NOW())";
+$insertSQL=mysqli_query($tryconnection, $query_insertSQL) or die(mysqli_error($mysqli_link));
 }
 else {
 //move to discharged within the reception file
 $query_admit="UPDATE RECEP SET LOCATION='3' WHERE RFPETID='$patient' LIMIT 1";
-$admit=mysql_query($query_admit,$tryconnection) or die(mysql_error());
+$admit=mysqli_query($tryconnection, $query_admit) or die(mysqli_error($mysqli_link));
 }
 
 $query_xnow="SELECT NOW()";
-$xnow= mysql_unbuffered_query($query_xnow, $tryconnection) or die(mysql_error());
+$xnow= mysql_unbuffered_query($query_xnow, $tryconnection) or die(mysqli_error($mysqli_link));
 $row_xnow=mysqli_fetch_array($xnow);
 
 //if there is at least ONE item that is NOT an estimate, insert into invhold
 if ($howmany!=0){
  $iseq = 0 ;
  $query_lockc = "LOCK TABLES INVHOLD WRITE" ;
- $get_it = mysql_query($query_lockc, $tryconnection) or die(mysql_error()) ;
+ $get_it = mysqli_query($tryconnection, $query_lockc) or die(mysqli_error($mysqli_link)) ;
 $insertSQL = sprintf("INSERT INTO INVHOLD (INVNO, ISORTCODE, INVCUST, INVPET, INVDESCR, DATETIME, PETNAME) VALUES ('%s','%s','%s', '%s', '%s', '%s', '%s')",
  							  $_SESSION['invline'][0]['INVNO'],
  							  $iseq,
@@ -100,15 +100,15 @@ $insertSQL = sprintf("INSERT INTO INVHOLD (INVNO, ISORTCODE, INVCUST, INVPET, IN
 							  $_SESSION['invline'][0]['INVPET'],
 							  "1",
 							  $row_xnow[0],
-							  mysql_real_escape_string($_SESSION['invline'][0]['PETNAME'])
+							  mysqli_real_escape_string($mysqli_link, $_SESSION['invline'][0]['PETNAME'])
 							  );
-mysql_query($insertSQL, $tryconnection) or die(mysql_error());
+mysqli_query($tryconnection, $insertSQL) or die(mysqli_error($mysqli_link));
                               $iseq++ ;
 
 foreach ($foundnonestimate as $item) {
 //format the date into the mysql format
 $query_invdatetime="SELECT STR_TO_DATE('$item[INVDATETIME]','%m/%d/%Y %H:%i:%s')";
-$invdatetime= mysql_unbuffered_query($query_invdatetime, $tryconnection) or die(mysql_error());
+$invdatetime= mysql_unbuffered_query($query_invdatetime, $tryconnection) or die(mysqli_error($mysqli_link));
 $row_invdatetime=mysqli_fetch_array($invdatetime);
 
 $insertSQL2 = sprintf("INSERT INTO INVHOLD (INVNO,ISORTCODE, INVCUST, INVPET, INVDATETIME, INVMAJ, INVMIN, INVDOC, INVSTAFF, INVUNITS, INVDESCR, 
@@ -126,10 +126,10 @@ VALUES ('%s','%s','%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%
 							  $row_invdatetime[0],
 							  $item['INVMAJ'],
 							  $item['INVMIN'],
-							  mysql_real_escape_string($item['INVDOC']),
-							  mysql_real_escape_string($item['INVSTAFF']),
+							  mysqli_real_escape_string($mysqli_link, $item['INVDOC']),
+							  mysqli_real_escape_string($mysqli_link, $item['INVSTAFF']),
 							  $item['INVUNITS'],
-							  mysql_real_escape_string($item['INVDESCR']),
+							  mysqli_real_escape_string($mysqli_link, $item['INVDESCR']),
 							  $item['INVPRICE'],
 							  $item['INVTOT'],
 							  $item['INVINCM'],
@@ -138,15 +138,15 @@ VALUES ('%s','%s','%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%
 							  $item['INVREVCAT'],
 							  $item['INVGST'],
 							  $item['INVTAX'],
-							  mysql_real_escape_string($item['REFCLIN']),
-							  mysql_real_escape_string($item['REFVET']),
+							  mysqli_real_escape_string($mysqli_link, $item['REFCLIN']),
+							  mysqli_real_escape_string($mysqli_link, $item['REFVET']),
 							  $item['INVUPDTE'],
 							  $item['INVFLAGS'],
 							  $item['INVDISP'],
 							  $item['INVGET'],
 							  $item['INVPERCNT'],
-							  mysql_real_escape_string($item['INVHYPE']),
-							  mysql_real_escape_string($item['AUTOCOMM']),
+							  mysqli_real_escape_string($mysqli_link, $item['INVHYPE']),
+							  mysqli_real_escape_string($mysqli_link, $item['AUTOCOMM']),
 							  $item['INVCOMM'],
 							  $item['HISTCOMM'],
 							  $item['MODICODE'],
@@ -163,8 +163,8 @@ VALUES ('%s','%s','%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%
 							  $item['INVSERUM'],
 							  $item['INVEST'],
 							  $item['INVDECLINE'],
-							  mysql_real_escape_string($item['PETNAME']),
-							  mysql_real_escape_string($item['INVOICECOMMENT']),
+							  mysqli_real_escape_string($mysqli_link, $item['PETNAME']),
+							  mysqli_real_escape_string($mysqli_link, $item['INVOICECOMMENT']),
 							  $item['INVPRU'],
 							  $item['XDISC'],
 							  $item['MTAXRATE'],
@@ -172,13 +172,13 @@ VALUES ('%s','%s','%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%
 							  $item['TFLOAT'],
 							  $item['INVSTAT'],
 							  $item['TENTER'],
-							  mysql_real_escape_string($item['LCODE']),
-							  mysql_real_escape_string($item['LCOMMENT']),
+							  mysqli_real_escape_string($mysqli_link, $item['LCODE']),
+							  mysqli_real_escape_string($mysqli_link, $item['LCOMMENT']),
 							  $item['INVNOHST'],
 							  $item['INVPAYDISC'],
 							  $item['INVHXCAT']
 							  );
-mysql_query($insertSQL2, $tryconnection) or die(mysql_error());
+mysqli_query($tryconnection, $insertSQL2) or die(mysqli_error($mysqli_link));
 		                      $iseq++ ;
 		}
 		
@@ -190,9 +190,9 @@ mysql_query($insertSQL2, $tryconnection) or die(mysql_error());
 							  substr($taxname,0,3),
 							  $_POST['xgst'],
 							  $row_xnow[0],
-							  mysql_real_escape_string($_SESSION['invline'][0]['PETNAME'])
+							  mysqli_real_escape_string($mysqli_link, $_SESSION['invline'][0]['PETNAME'])
 							  );
-mysql_query($insertSQL3, $tryconnection) or die(mysql_error());
+mysqli_query($tryconnection, $insertSQL3) or die(mysqli_error($mysqli_link));
                               $iseq++ ;
  $insertSQL4 = sprintf("INSERT INTO INVHOLD (INVNO, ISORTCODE,INVCUST, INVPET, INVDESCR, INVTOT, DATETIME, PETNAME) VALUES ('%s','%s','%s', '%s', '%s', '%s', '%s', '%s')",
  							  $_SESSION['invline'][0]['INVNO'],
@@ -202,9 +202,9 @@ mysql_query($insertSQL3, $tryconnection) or die(mysql_error());
 							  "PST",
 							  $_POST['xpst'],
 							  $row_xnow[0],
-							  mysql_real_escape_string($_SESSION['invline'][0]['PETNAME'])
+							  mysqli_real_escape_string($mysqli_link, $_SESSION['invline'][0]['PETNAME'])
 							  );
-mysql_query($insertSQL4, $tryconnection) or die(mysql_error());
+mysqli_query($tryconnection, $insertSQL4) or die(mysqli_error($mysqli_link));
 		                      $iseq++ ;
 
  $insertSQL5 = sprintf("INSERT INTO INVHOLD (INVNO, ISORTCODE,INVCUST, INVPET, INVDESCR, INVTOT, DATETIME, PETNAME) VALUES ('%s','%s','%s', '%s', '%s', '%s', '%s', '%s')",
@@ -215,12 +215,12 @@ mysql_query($insertSQL4, $tryconnection) or die(mysql_error());
 							  "TOTAL",
 							  $_POST['xtotal'],
 							  $row_xnow[0],
-							  mysql_real_escape_string($_SESSION['invline'][0]['PETNAME'])
+							  mysqli_real_escape_string($mysqli_link, $_SESSION['invline'][0]['PETNAME'])
 							  );
-  mysql_query($insertSQL5, $tryconnection) or die(mysql_error());
+  mysqli_query($tryconnection, $insertSQL5) or die(mysqli_error($mysqli_link));
 }
   $query_unlockc = "UNLOCK TABLES" ;
-  $let_it_go = mysql_query($query_unlockc, $tryconnection) or die(mysql_error()) ;
+  $let_it_go = mysqli_query($tryconnection, $query_unlockc) or die(mysqli_error($mysqli_link)) ;
 //if the number of nonestimate items = the number of invline items, go straight to the confirmation screen
 if ($howmany == count($_SESSION['invline'])){
 header("Location:PRINT_INVOICE.php");
@@ -249,27 +249,27 @@ unset($_SESSION['round']);
 else if (isset($_POST['cancel']))
 {
 $insertSQL="INSERT INTO REJECTIN (REJINV, REJDATE, DATETIME, CUSTNO, PETID, ITOTAL, STAFF, COMPANY) VALUES ($_SESSION[minvno], NOW(), NOW(),'$_SESSION[client]','$_SESSION[patient]','$_POST[itotal]','$_SESSION[staff]','$_POST[company]')";
-mysql_query($insertSQL, $tryconnection);
+mysqli_query($tryconnection, $insertSQL);
 
 //delete from INVHOLD
 $lock_it = "LOCK TABLES INVHOLD WRITE,RECEP WRITE,ARCUSTO WRITE" ;  
-$Qlock = mysql_query($lock_it, $tryconnection) or die(mysql_error()) ;
+$Qlock = mysqli_query($tryconnection, $lock_it) or die(mysqli_error($mysqli_link)) ;
 $deleteSQL = "DELETE FROM INVHOLD WHERE INVCUST='$_SESSION[client]'";
-mysql_query($deleteSQL, $tryconnection);
+mysqli_query($tryconnection, $deleteSQL);
 $optimize = "OPTIMIZE TABLE INVHOLD";
-mysql_query($optimize, $tryconnection);
+mysqli_query($tryconnection, $optimize);
 
 //DELETE FROM RECEP FILE
 $query_discharge="DELETE FROM RECEP WHERE RFPETID='$_SESSION[patient]'";
-$discharge=mysql_query($query_discharge,$tryconnection) or die(mysql_error());
+$discharge=mysqli_query($tryconnection, $query_discharge) or die(mysqli_error($mysqli_link));
 $query_optimize="OPTIMIZE TABLE RECEP ";
-$optimize=mysql_query($query_optimize, $tryconnection) or die(mysql_error());
+$optimize=mysqli_query($tryconnection, $query_optimize) or die(mysqli_error($mysqli_link));
 
 $query_LOCK = "UPDATE ARCUSTO SET LOCKED='0' WHERE CUSTNO = '$client' LIMIT 1";
-$LOCK = mysql_query($query_LOCK, $tryconnection) or die(mysql_error());
+$LOCK = mysqli_query($tryconnection, $query_LOCK) or die(mysqli_error($mysqli_link));
 
 $unlock_it = "UNLOCK TABLES" ;
-$Qunlock = mysql_query($unlock_it, $tryconnection) or die(mysql_error()) ;
+$Qunlock = mysqli_query($tryconnection, $unlock_it) or die(mysqli_error($mysqli_link)) ;
 $client = $_SESSION['client'];
 $patient = $_SESSION['patient'];
  unset($_SESSION['invline']) ;

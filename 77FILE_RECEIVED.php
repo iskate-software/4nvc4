@@ -2,14 +2,14 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $reqsupplier = $_GET['supplier'] ;
 $ALL_RECEIVED = "SELECT DISTINCT ORDERED FROM INVTHIST WHERE RECEIVED <> 1 AND SUPPLIER = '$reqsupplier' ORDER BY ORDERED ASC" ;
-$query_RECVD = mysql_query($ALL_RECEIVED, $tryconnection) or die(mysql_error()) ;
+$query_RECVD = mysqli_query($tryconnection, $ALL_RECEIVED) or die(mysqli_error($mysqli_link)) ;
 $row_RECVD = mysqli_fetch_assoc($query_RECVD) ;
 
 $count = "SELECT COUNT(CODE) AS TOTAL_ROWS FROM INVTHIST WHERE RECEIVED = 0 AND SUPPLIER = '$reqsupplier' AND ORDERED = '$row_RECVD[ORDERED]'" ;
-$query_count = mysql_query($count, $tryconnection) or die(mysql_error()) ;
+$query_count = mysqli_query($tryconnection, $count) or die(mysqli_error($mysqli_link)) ;
 $row_count = mysqli_fetch_assoc($query_count) ;
 $num_rows = $row_count['TOTAL_ROWS'] ;
 
@@ -26,24 +26,24 @@ echo ' filedate is ' . $filedate ;
  $indate = $_POST['ordered'] ;
 
  $filedate="SELECT STR_TO_DATE('$filedate','%m/%d/%Y') AS FILEDATE";
- $filedate=mysql_query($filedate, $tryconnection) or die(mysql_error());
+ $filedate=mysqli_query($tryconnection, $filedate) or die(mysqli_error($mysqli_link));
 
  $row_fd = mysqli_fetch_assoc($filedate);
 
  $hits = "SELECT SUPPLIER,VPCCODE,UNITS,ORDERED,BACKORDER,RECEIVED FROM INVTHIST WHERE ORDERED = '$indate' AND SUPPLIER = '$reqsupplier' AND BACKORDER <> 1 
         AND RECTDATE = '0000-00-00' " ;
- $query_hits = mysql_query($hits, $tryconnection) or die(mysql_error()) ;
+ $query_hits = mysqli_query($tryconnection, $hits) or die(mysqli_error($mysqli_link)) ;
  
  // now loop through and flag the new records as being received, and update the inventory as well
  
  while ($row_hits = mysqli_fetch_assoc($query_hits)) {
    $query_INVENTOR = "UPDATE INVTHIST SET RECEIVED = 1, RECTDATE = '$row_fd[FILEDATE]' 
        WHERE ORDERED = '$indate' AND BACKORDER !='1' AND VPCCODE = '$row_hits[VPCCODE]' AND SUPPLIER = '$reqsupplier' LIMIT 1 ";
-   $INVENTOR = mysql_query($query_INVENTOR, $tryconnection) or die(mysql_error());
+   $INVENTOR = mysqli_query($tryconnection, $query_INVENTOR) or die(mysqli_error($mysqli_link));
    
    $query_stockupdate  = "UPDATE ARINVT SET ONHAND = ONHAND + ('$row_hits[UNITS]' * PKGQTY), ORDERED = ORDERED - ('$row_hits[UNITS]' * PKGQTY) 
        WHERE VPARTNO = '$row_hits[VPCCODE]' LIMIT 1" ;
-   $do_stock = mysql_query($query_stockupdate, $tryconnection) or die(mysql_error()) ;
+   $do_stock = mysqli_query($tryconnection, $query_stockupdate) or die(mysqli_error($mysqli_link)) ;
    
  } //while ($row_hits = mysql_fetch_assoc($query_hits))
  
@@ -53,7 +53,7 @@ echo ' filedate is ' . $filedate ;
 
 
 $select_INVENTOR = "SELECT * FROM INVTHIST WHERE RECEIVED = 0 AND SUPPLIER = '$reqsupplier'  ORDER BY ORDERED, `DESCRIP` ASC";
-$INVENTOR = mysql_query($select_INVENTOR, $tryconnection) or die(mysql_error());
+$INVENTOR = mysqli_query($tryconnection, $select_INVENTOR) or die(mysqli_error($mysqli_link));
 //$row_INVENTOR = mysql_fetch_array($INVENTOR);
 
 $cogs = 0 ;
@@ -67,7 +67,7 @@ $cogs = 0 ;
 // repeat the query because of the num_rows. Use the group this time.
 
 $select_INVENTOR = "SELECT * FROM INVTHIST WHERE RECEIVED = 0 AND SUPPLIER = '$reqsupplier' GROUP BY `DESCRIP` ORDER BY ORDERED, `DESCRIP` ASC";
-$INVENTOR = mysql_query($select_INVENTOR, $tryconnection) or die(mysql_error());
+$INVENTOR = mysqli_query($tryconnection, $select_INVENTOR) or die(mysqli_error($mysqli_link));
 $row_INVENTOR = mysqli_fetch_assoc($INVENTOR);
 $totalRows_INVENTOR = mysqli_num_rows($INVENTOR);
 

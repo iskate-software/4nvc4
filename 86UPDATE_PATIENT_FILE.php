@@ -1,21 +1,21 @@
 <?php 
 require_once('../../tryconnection.php'); 
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $query_TFF = "SELECT * FROM VETCAN WHERE TFFID='$_GET[tffid]'";
-$TFF = mysql_query($query_TFF, $tryconnection) or die(mysql_error());
+$TFF = mysqli_query($tryconnection, $query_TFF) or die(mysqli_error($mysqli_link));
 $row_TFF = mysqli_fetch_assoc($TFF);
 
 $tflags=$row_TFF['TFLAGS'];
 $tvaccs=$row_TFF['TVACCS'];
 
 $query_SPECIES = "SELECT * FROM ANIMTYPE WHERE ANIMALID='$_GET[species]'";
-$SPECIES = mysql_query($query_SPECIES, $tryconnection) or die(mysql_error());
+$SPECIES = mysqli_query($tryconnection, $query_SPECIES) or die(mysqli_error($mysqli_link));
 $row_SPECIES = mysqli_fetch_assoc($SPECIES);
 $species=$row_SPECIES['ANIMAL'];
 
 $query_VACCINES = "SELECT * FROM VACCINES WHERE NAME LIKE '%$species%' ORDER BY SEQ ASC";
-$VACCINES = mysql_query($query_VACCINES, $tryconnection) or die(mysql_error());
+$VACCINES = mysqli_query($tryconnection, $query_VACCINES) or die(mysqli_error($mysqli_link));
 $row_VACCINES = mysqli_fetch_assoc($VACCINES);
 //$totalRows_VACCINES = mysql_num_rows($VACCINES);
 $vaccines=array();
@@ -266,7 +266,7 @@ opener.document.tff.tvaccs.value='<?php echo $tvaccs; ?>';
     <div style="border:thin solid #000000; width:310px; height:300px; <?php if ($_GET['tserum']=='0'){echo "display:none;";} ?>">
     <table width="300" border="0" cellspacing="0" cellpadding="0">
   <?php 
-  	$VACCINES = mysql_query($query_VACCINES, $tryconnection) or die(mysql_error());
+  	$VACCINES = mysqli_query($tryconnection, $query_VACCINES) or die(mysqli_error($mysqli_link));
 	$row_VACCINES = mysqli_fetch_assoc($VACCINES);
 	do{ ?>
   <tr class="Verdana11">

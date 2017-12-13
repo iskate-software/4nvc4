@@ -3,13 +3,13 @@ session_start();
 require_once('../../tryconnection.php');
 include("../../ASSETS/age.php");
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 
 $cat=$_GET['category'];
 $spec=$_GET['species'];
 
 $query_CAN1=sprintf("SELECT INVDESC, INVTOT, PROCID FROM PROCEDUR WHERE PROCODE = '%s' AND FEEFILE='%s' ORDER BY ISORTCODE ASC",$cat, $spec);
-$CAN1 = mysql_query($query_CAN1, $tryconnection) or die(mysql_error());
+$CAN1 = mysqli_query($tryconnection, $query_CAN1) or die(mysqli_error($mysqli_link));
 $row_CAN1 = mysqli_fetch_assoc($CAN1);
 $totalRows_CAN1 = mysqli_num_rows($CAN1);
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

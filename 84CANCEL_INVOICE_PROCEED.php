@@ -5,17 +5,17 @@ require_once('../../ASSETS/tax.php');
 
 $invno=$_GET['invno'];
 $unique1=$_GET['unique1'] ;
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $query_Staff = "SELECT STAFF, SIGNEDIN,PRIORITY FROM STAFF WHERE SIGNEDIN=1 ORDER BY PRIORITY";
-$Staff = mysql_query($query_Staff, $tryconnection) or die(mysql_error());
+$Staff = mysqli_query($tryconnection, $query_Staff) or die(mysqli_error($mysqli_link));
 $row_Staff = mysqli_fetch_assoc($Staff);
 
 $query_Doctor = "SELECT DOCTOR, SIGNEDIN, PRIORITY FROM DOCTOR WHERE SIGNEDIN=1 ORDER BY PRIORITY";
-$Doctor = mysql_query($query_Doctor, $tryconnection) or die(mysql_error());
+$Doctor = mysqli_query($tryconnection, $query_Doctor) or die(mysqli_error($mysqli_link));
 $row_Doctor = mysqli_fetch_assoc($Doctor);
 
 $query_ARARECV = "SELECT *, DATE_FORMAT(INVDTE, '%m/%d/%Y') AS INVDTE FROM ARARECV WHERE UNIQUE1='$unique1' AND CUSTNO='$_SESSION[client]' LIMIT 1";
-$ARARECV = mysql_query($query_ARARECV, $tryconnection) or die(mysql_error());
+$ARARECV = mysqli_query($tryconnection, $query_ARARECV) or die(mysqli_error($mysqli_link));
 $row_ARARECV = mysqli_fetch_assoc($ARARECV);
 
 
@@ -28,10 +28,10 @@ $invdte=$_POST['minvdte'].' '.date('H:i:s');
 //UPDATE ARCUSTO
 $adjust = $row_ARARECV['IBAL'] ;
 $update_ARCUSTO = "UPDATE ARCUSTO SET BALANCE=BALANCE-'$adjust' WHERE CUSTNO='$_SESSION[client]' LIMIT 1";
-$RESULT = mysql_query($update_ARCUSTO, $tryconnection) or die(mysql_error());
+$RESULT = mysqli_query($tryconnection, $update_ARCUSTO) or die(mysqli_error($mysqli_link));
 //UPDATE ARIVOI IF IT IS IN THE CURRENT MONTH -> if the unpaid invoice is from previous month, copy the record from ARRECV to ARINVOI with negative value
 $query_ARINVOIX = "SELECT * FROM ARINVOI WHERE UNIQUE1='$unique1' AND CUSTNO='$_SESSION[client]' LIMIT 1";
-$ARINVOIX = mysql_query($query_ARINVOIX, $tryconnection) or die(mysql_error());
+$ARINVOIX = mysqli_query($tryconnection, $query_ARINVOIX) or die(mysqli_error($mysqli_link));
 $row_ARINVOIX = mysqli_fetch_assoc($ARINVOIX);
 $ponum="CANC. ".$row_ARARECV['ITOTAL'];
 $refno = ' '; 
@@ -41,17 +41,17 @@ $invno = $row_ARARECV['INVNO'] ;
 	// To allow for partially paid invoices, if the user has not already cancelled the payment, just take the unpaid portion of the receivable.	if (empty($row_ARINVOI)){
 if (empty($row_ARINVOIX)){
 	$query_ARINVOI = "INSERT INTO ARINVOI (INVNO, INVDTE, INVTIME, CUSTNO, COMPANY, SALESMN, PONUM, REFNO, DTEPAID, TAX, PTAX, ITOTAL, DISCOUNT, AMTPAID, IBAL, DATETIME, UNIQUE1)
-	 SELECT INVNO, INVDTE, INVTIME, CUSTNO, '".mysql_real_escape_string($row_ARARECV['COMPANY'])."', SALESMN,  '".mysql_real_escape_string($row_ARARECV['PONUM'])."', 
+	 SELECT INVNO, INVDTE, INVTIME, CUSTNO, '".mysqli_real_escape_string($mysqli_link, $row_ARARECV['COMPANY'])."', SALESMN,  '".mysqli_real_escape_string($mysqli_link, $row_ARARECV['PONUM'])."', 
 	 REFNO, DTEPAID, 0 - TAX, 0 - PTAX, 0 - ITOTAL, 0- DISCOUNT, 0 - AMTPAID, 0 - IBAL, DATETIME, UNIQUE1 FROM ARARECV 
 	 WHERE UNIQUE1='$unique1' AND CUSTNO='$_SESSION[client]' LIMIT 1";	 
-	 $ARINVOI = mysql_query($query_ARINVOI, $tryconnection) or die(mysql_error());
+	 $ARINVOI = mysqli_query($tryconnection, $query_ARINVOI) or die(mysqli_error($mysqli_link));
 	
 	}
 	//if the invoice exists in the current ARINVOI, update the record by zeroing ITOTAL
 	else {
-	 $update_ARINVOI = "UPDATE ARINVOI SET PONUM='".mysql_real_escape_string($ponum)."', TAX=0.00, PTAX=0.00, AMTPAID=0.00, IBAL=0.00, ITOTAL=0.00 
+	 $update_ARINVOI = "UPDATE ARINVOI SET PONUM='".mysqli_real_escape_string($mysqli_link, $ponum)."', TAX=0.00, PTAX=0.00, AMTPAID=0.00, IBAL=0.00, ITOTAL=0.00 
 	                   WHERE UNIQUE1='$unique1' AND CUSTNO='$_SESSION[client]' LIMIT 1";
-	 $RESULT = mysql_query($update_ARINVOI, $tryconnection) or die(mysql_error());	
+	 $RESULT = mysqli_query($tryconnection, $update_ARINVOI) or die(mysqli_error($mysqli_link));	
 	}
 
 
@@ -60,22 +60,22 @@ if (empty($row_ARINVOIX)){
 if ($row_ARARECV['IBAL']==0.00){
 //If it was paid with split payments, too bad. There will only be one offsetting payment created for the total of what was paid, using the last-in method of payment.
 $insert_ARCASHR = "INSERT INTO ARCASHR (INVNO, INVDTE, CUSTNO, COMPANY, SALESMN, PONUM, REFNO, AMTPAID, DTEPAID) 
-                VALUES ('$row_ARARECV[INVNO]', STR_TO_DATE('$row_ARARECV[INVDTE]', '%m/%d/%Y %H:%i:%s'), '".mysql_real_escape_string($row_ARARECV['CUSTNO'])."',
-                '".mysql_real_escape_string($row_ARARECV['COMPANY'])."', '".mysql_real_escape_string($_POST['salesmn'])."',
-                '".mysql_real_escape_string($_POST['ponum'])."', '$row_ARARECV[REFNO]', '-$row_ARARECV[AMTPAID]', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'))  ";
+                VALUES ('$row_ARARECV[INVNO]', STR_TO_DATE('$row_ARARECV[INVDTE]', '%m/%d/%Y %H:%i:%s'), '".mysqli_real_escape_string($mysqli_link, $row_ARARECV['CUSTNO'])."',
+                '".mysqli_real_escape_string($mysqli_link, $row_ARARECV['COMPANY'])."', '".mysqli_real_escape_string($mysqli_link, $_POST['salesmn'])."',
+                '".mysqli_real_escape_string($mysqli_link, $_POST['ponum'])."', '$row_ARARECV[REFNO]', '-$row_ARARECV[AMTPAID]', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'))  ";
 //    $RESULT = mysql_query($insert_ARCASHR, $tryconnection) or die(mysql_error());
 	$update_ARINVOI = "UPDATE ARINVOI SET PONUM='$ponum', TAX=0.00, PTAX=0.00, AMTPAID=0.00, IBAL=0.00, ITOTAL=0.00 WHERE UNIQUE1='$unique1' LIMIT 1";
-	$RESULT1 = mysql_query($update_ARINVOI, $tryconnection) or die(mysql_error());	
+	$RESULT1 = mysqli_query($tryconnection, $update_ARINVOI) or die(mysqli_error($mysqli_link));	
 }
 
 //SALESCAT
  $query_SALESCAT = "SELECT INVNO FROM SALESCAT WHERE UNIQUE1='$unique1' LIMIT 1";
- $SALESCAT = mysql_query($query_SALESCAT, $tryconnection) or die(mysql_error());
+ $SALESCAT = mysqli_query($tryconnection, $query_SALESCAT) or die(mysqli_error($mysqli_link));
  $row_SALESCAT = mysqli_fetch_assoc($SALESCAT);
 if (!empty($row_SALESCAT)){
 //if it is CURRENT MONTH -> zero everything for this invoice
  $update_SALESCAT="UPDATE SALESCAT SET INVTOT=0.00 WHERE UNIQUE1='$unique1' AND INVCUST ='$_SESSION[client]'";
- $SALESCAT = mysql_query($update_SALESCAT, $tryconnection) or die(mysql_error());
+ $SALESCAT = mysqli_query($tryconnection, $update_SALESCAT) or die(mysqli_error($mysqli_link));
 }
 
 else {
@@ -87,15 +87,15 @@ else {
   $ptaxwas = - ($row_ARARECV['PTAX']) ;
   
  $insert_SALESCAT="INSERT INTO SALESCAT (INVMAJ, INVREVCAT, INVTOT, INVDOC, INVDESC, INVDTE, INVNO, INVCUST, UNIQUE1) VALUES ('97', '97', '$totalwas',
-          '".mysql_real_escape_string($_POST['salesmn'])."', 'CANCELLED' , STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'),  '$invno', '$row_ARARECV[CUSTNO]',  '$unique1')"; 
- $SALESCAT2 = mysql_query($insert_SALESCAT, $tryconnection) or die(mysql_error());
+          '".mysqli_real_escape_string($mysqli_link, $_POST['salesmn'])."', 'CANCELLED' , STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'),  '$invno', '$row_ARARECV[CUSTNO]',  '$unique1')"; 
+ $SALESCAT2 = mysqli_query($tryconnection, $insert_SALESCAT) or die(mysqli_error($mysqli_link));
  $insert_SALESCAT2="INSERT INTO SALESCAT (INVMAJ, INVREVCAT, INVTOT, INVDOC, INVDESC, INVDTE, INVNO, INVCUST,  UNIQUE1) VALUES ('90','90', '$taxwas', 
-          '".mysql_real_escape_string($_POST['salesmn'])."', 'CANCELLED', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'),  '$invno', '$row_ARARECV[CUSTNO]', '$unique1')";
- $SALESCAT3 = mysql_query($insert_SALESCAT2, $tryconnection) or die(mysql_error());
+          '".mysqli_real_escape_string($mysqli_link, $_POST['salesmn'])."', 'CANCELLED', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'),  '$invno', '$row_ARARECV[CUSTNO]', '$unique1')";
+ $SALESCAT3 = mysqli_query($tryconnection, $insert_SALESCAT2) or die(mysqli_error($mysqli_link));
   if ($row_ARARECV['PTAX'] != 0) {
     $insert_SALESCAT3="INSERT INTO SALESCAT (INVMAJ, INVREVCAT, INVTOT, INVDOC, INVDESC, INVDTE, INVNO, INVCUST,  UNIQUE1) VALUES ('92','92', '$ptaxwas' , 
-          '".mysql_real_escape_string($_POST['salesmn'])."', 'CANCELLED', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'),  '$invno', '$row_ARARECV[CUSTNO]', '$unique1')";
-    $SALESCAT4 = mysql_query($insert_SALESCAT3,$tryconnection) or die(mysql_error()) ;
+          '".mysqli_real_escape_string($mysqli_link, $_POST['salesmn'])."', 'CANCELLED', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'),  '$invno', '$row_ARARECV[CUSTNO]', '$unique1')";
+    $SALESCAT4 = mysqli_query($tryconnection, $insert_SALESCAT3) or die(mysqli_error($mysqli_link)) ;
     
   }
 }
@@ -104,13 +104,13 @@ if ($row_ARARECV['AMTPAID']!=0.00){
 
 //If it was paid with split payments, too bad. There will only be one offsetting payment created for the total of what was paid, using the last-in method of payment.
 $insert_ARCASHR = "INSERT INTO ARCASHR (INVNO, INVDTE, CUSTNO, COMPANY, SALESMN, PONUM, REFNO, AMTPAID, DTEPAID) 
-                VALUES ('$row_ARARECV[INVNO]', STR_TO_DATE('$row_ARARECV[INVDTE]', '%m/%d/%Y %H:%i:%s'), '".mysql_real_escape_string($row_ARARECV['CUSTNO'])."',
-                '".mysql_real_escape_string($row_ARARECV['COMPANY'])."', '".mysql_real_escape_string($_POST['salesmn'])."',
-                '".mysql_real_escape_string($_POST['ponum'])."', '$row_ARARECV[REFNO]', '-$row_ARARECV[AMTPAID]', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'))  ";
-    $RESULT = mysql_query($insert_ARCASHR, $tryconnection) or die(mysql_error());
+                VALUES ('$row_ARARECV[INVNO]', STR_TO_DATE('$row_ARARECV[INVDTE]', '%m/%d/%Y %H:%i:%s'), '".mysqli_real_escape_string($mysqli_link, $row_ARARECV['CUSTNO'])."',
+                '".mysqli_real_escape_string($mysqli_link, $row_ARARECV['COMPANY'])."', '".mysqli_real_escape_string($mysqli_link, $_POST['salesmn'])."',
+                '".mysqli_real_escape_string($mysqli_link, $_POST['ponum'])."', '$row_ARARECV[REFNO]', '-$row_ARARECV[AMTPAID]', STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'))  ";
+    $RESULT = mysqli_query($tryconnection, $insert_ARCASHR) or die(mysqli_error($mysqli_link));
 }
-$update_ARARECV = "UPDATE ARARECV SET SALESMN='".mysql_real_escape_string($_POST['salesmn'])."', PONUM='CANC.', REFNO='$_POST[refno]', AMTPAID=0.00, DTEPAID=STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'), IBAL=0.00, TAX = 0, PTAX = 0, ITOTAL=0.00 WHERE UNIQUE1='$unique1' AND CUSTNO='$_SESSION[client]' LIMIT 1";
-$RESULT = mysql_query($update_ARARECV, $tryconnection) or die(mysql_error());
+$update_ARARECV = "UPDATE ARARECV SET SALESMN='".mysqli_real_escape_string($mysqli_link, $_POST['salesmn'])."', PONUM='CANC.', REFNO='$_POST[refno]', AMTPAID=0.00, DTEPAID=STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s'), IBAL=0.00, TAX = 0, PTAX = 0, ITOTAL=0.00 WHERE UNIQUE1='$unique1' AND CUSTNO='$_SESSION[client]' LIMIT 1";
+$RESULT = mysqli_query($tryconnection, $update_ARARECV) or die(mysqli_error($mysqli_link));
 
 $closewin="opener.document.location.reload(); self.close();";
 

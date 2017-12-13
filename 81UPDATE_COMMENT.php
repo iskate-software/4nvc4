@@ -2,10 +2,10 @@
 session_start();
 require_once('../../tryconnection.php');
  
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 
 $query_COMMENTS = sprintf("SELECT * FROM ARSYSCOMM WHERE ARSYSCOMM.COMMID='%s'", $_GET['commid']);
-$COMMENTS = mysql_query($query_COMMENTS, $tryconnection) or die(mysql_error());
+$COMMENTS = mysqli_query($tryconnection, $query_COMMENTS) or die(mysqli_error($mysqli_link));
 $row_COMMENTS = mysqli_fetch_assoc($COMMENTS);
 
 $path=$_GET['path'];
@@ -13,11 +13,11 @@ $path=$_GET['path'];
 if ((isset($_POST["save"])) && ($_GET["commid"]!=0)) {
 $updateSQL = sprintf("UPDATE ARSYSCOMM SET COMMCODE='%s', `COMMENT`='%s', COMMTYPE='%s' WHERE COMMID='%s'",
                        $_POST['commcode'],
-                       mysql_real_escape_string($_POST['comment']),
+                       mysqli_real_escape_string($mysqli_link, $_POST['comment']),
                        $_POST['commtype'],
                        $_GET['commid']);
 
-$Result1 = mysql_query($updateSQL, $tryconnection) or die(mysql_error());
+$Result1 = mysqli_query($tryconnection, $updateSQL) or die(mysqli_error($mysqli_link));
 header("Location: COMMENTS_LIST.php?path=$path");
 }
 
@@ -25,16 +25,16 @@ elseif ((isset($_POST["save"])) && ($_GET["commid"]==0)){
 $insertSQL = sprintf("INSERT INTO ARSYSCOMM (COMMID, COMMCODE, `COMMENT`, COMMTYPE) VALUES ('%s', '%s', '%s', '%s')",
                        $_POST['commid'],
                        $_POST['commcode'],
-                       mysql_real_escape_string($_POST['comment']),
+                       mysqli_real_escape_string($mysqli_link, $_POST['comment']),
                        $_POST['commtype']);
-$Result1 = mysql_query($insertSQL, $tryconnection) or die(mysql_error());
+$Result1 = mysqli_query($tryconnection, $insertSQL) or die(mysqli_error($mysqli_link));
 header("Location: COMMENTS_LIST.php?path=$path");
 }
 
 elseif (isset($_POST["delete"])){
 $insertSQL = sprintf("DELETE FROM ARSYSCOMM WHERE COMMID='%s'",
                        $_GET['commid']);
-$Result1 = mysql_query($insertSQL, $tryconnection) or die(mysql_error());
+$Result1 = mysqli_query($tryconnection, $insertSQL) or die(mysqli_error($mysqli_link));
 header("Location: COMMENTS_LIST.php?path=$path");
 }
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

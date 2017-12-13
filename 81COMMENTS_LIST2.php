@@ -1,8 +1,8 @@
 <?php 
 require_once('../../tryconnection.php');
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $query_Recordset1 = "SELECT * FROM ARSCOM  WHERE COMMCODE LIKE '%' ORDER BY COMMCODE";
-$Recordset1 = mysql_query($query_Recordset1, $tryconnection) or die(mysql_error());
+$Recordset1 = mysqli_query($tryconnection, $query_Recordset1) or die(mysqli_error($mysqli_link));
 $row_Recordset1 = mysqli_fetch_assoc($Recordset1);
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

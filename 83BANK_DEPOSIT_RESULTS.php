@@ -2,7 +2,7 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 
 /* Define the searches for the totals of each payment type.*/
 $search_CashT = "SELECT SUM(AMTPAID) FROM ARCASHR WHERE REFNO = 'CASH' ";
@@ -16,15 +16,15 @@ $search_GET   = "SELECT SUM(AMTPAID) FROM ARCASHR WHERE REFNO = 'GE' ";
 $search_CELLT = "SELECT SUM(AMTPAID) FROM ARCASHR WHERE REFNO = 'CELL' ";
 
 /*  and execute them*/
-$CASHT = mysql_query($search_CashT, $tryconnection ) or die(mysql_error()) ;
-$CHEQUET = mysql_query($search_ChequeT, $tryconnection )  or die(mysql_error()) ;
-$DCRDT = mysql_query($search_DCRDT, $tryconnection ) or die(mysql_error()) ;
-$VISAT = mysql_query($search_VISAT, $tryconnection ) or die(mysql_error()) ;
-$MCRDT = mysql_query($search_MCRDT, $tryconnection ) or die(mysql_error()) ;
-$AMEXT = mysql_query($search_AMEXT, $tryconnection ) or die(mysql_error()) ;
-$DINET = mysql_query($search_DINET, $tryconnection ) or die(mysql_error()) ;
-$GET   = mysql_query($search_GET, $tryconnection )   or die(mysql_error()) ;
-$CELLT = mysql_query($search_CELLT, $tryconnection ) or die(mysql_error()) ;
+$CASHT = mysqli_query($tryconnection, $search_CashT) or die(mysqli_error($mysqli_link)) ;
+$CHEQUET = mysqli_query($tryconnection, $search_ChequeT)  or die(mysqli_error($mysqli_link)) ;
+$DCRDT = mysqli_query($tryconnection, $search_DCRDT) or die(mysqli_error($mysqli_link)) ;
+$VISAT = mysqli_query($tryconnection, $search_VISAT) or die(mysqli_error($mysqli_link)) ;
+$MCRDT = mysqli_query($tryconnection, $search_MCRDT) or die(mysqli_error($mysqli_link)) ;
+$AMEXT = mysqli_query($tryconnection, $search_AMEXT) or die(mysqli_error($mysqli_link)) ;
+$DINET = mysqli_query($tryconnection, $search_DINET) or die(mysqli_error($mysqli_link)) ;
+$GET   = mysqli_query($tryconnection, $search_GET)   or die(mysqli_error($mysqli_link)) ;
+$CELLT = mysqli_query($tryconnection, $search_CELLT) or die(mysqli_error($mysqli_link)) ;
 
 
 $row_CASHT = mysqli_fetch_array($CASHT) ;
@@ -50,15 +50,15 @@ $search_GE     ="SELECT * FROM ARCASHR WHERE REFNO = 'GE' ";
 $search_CELL   ="SELECT * FROM ARCASHR WHERE REFNO = 'CELL' ";
 
 
-$CASH=mysql_query($search_CASH, $tryconnection ) or die(mysql_error());
-$CHEQUE=mysql_query($search_CHEQUE, $tryconnection ) or die(mysql_error());
-$DCRD=mysql_query($search_DCRD, $tryconnection ) or die(mysql_error());
-$VISA=mysql_query($search_VISA, $tryconnection ) or die(mysql_error());
-$MC=mysql_query($search_MC, $tryconnection ) or die(mysql_error());
-$AMEX=mysql_query($search_AMEX, $tryconnection ) or die(mysql_error());
-$DINE=mysql_query($search_DINE, $tryconnection ) or die(mysql_error());
-$GE=mysql_query($search_GE, $tryconnection ) or die(mysql_error());
-$CELL=mysql_query($search_CELL, $tryconnection ) or die(mysql_error());
+$CASH=mysqli_query($tryconnection, $search_CASH) or die(mysqli_error($mysqli_link));
+$CHEQUE=mysqli_query($tryconnection, $search_CHEQUE) or die(mysqli_error($mysqli_link));
+$DCRD=mysqli_query($tryconnection, $search_DCRD) or die(mysqli_error($mysqli_link));
+$VISA=mysqli_query($tryconnection, $search_VISA) or die(mysqli_error($mysqli_link));
+$MC=mysqli_query($tryconnection, $search_MC) or die(mysqli_error($mysqli_link));
+$AMEX=mysqli_query($tryconnection, $search_AMEX) or die(mysqli_error($mysqli_link));
+$DINE=mysqli_query($tryconnection, $search_DINE) or die(mysqli_error($mysqli_link));
+$GE=mysqli_query($tryconnection, $search_GE) or die(mysqli_error($mysqli_link));
+$CELL=mysqli_query($tryconnection, $search_CELL) or die(mysqli_error($mysqli_link));
 
 
 $row_CASH = mysqli_fetch_assoc($CASH) ;
@@ -74,11 +74,11 @@ $row_CELL = mysqli_fetch_assoc($CELL) ;
 
 if (isset($_POST['printbd'])){
 $bank_deposit="INSERT INTO CASHDEP SELECT * FROM ARCASHR";
-mysql_query($bank_deposit, $tryconnection ) or die(mysql_error());
+mysqli_query($tryconnection, $bank_deposit) or die(mysqli_error($mysqli_link));
 $bank_deposit="DELETE FROM ARCASHR";
-mysql_query($bank_deposit, $tryconnection ) or die(mysql_error());
+mysqli_query($tryconnection, $bank_deposit) or die(mysqli_error($mysqli_link));
 $bank_deposit="TRUNCATE TABLE ARCASHR";
-mysql_query($bank_deposit, $tryconnection ) or die(mysql_error());
+mysqli_query($tryconnection, $bank_deposit) or die(mysqli_error($mysqli_link));
 $closewin="window.print(); document.location='../../INDEX.php';";
 }
 

@@ -23,9 +23,9 @@ if (!empty($_GET['sorting'])){
 $sortby = $_GET['sorting'];
 }
 //AND ARINVTYPE='$arinvtype'
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $query_INVENTORY = "SELECT *, DATE_FORMAT(EXPDATE, '%m/%d/%Y') AS EXPDATE FROM ARINVT WHERE (ITEM LIKE '$lookup%' OR DESCRIP LIKE '$lookup%' OR VPARTNO LIKE '$lookup%' OR BARCODE LIKE '$lookup%') AND ARINVTYPE LIKE '$arinvtype%' ORDER BY ".$sortby." ASC";
-$INVENTORY = mysql_query($query_INVENTORY, $tryconnection) or die(mysql_error());
+$INVENTORY = mysqli_query($tryconnection, $query_INVENTORY) or die(mysqli_error($mysqli_link));
 $row_INVENTORY = mysqli_fetch_assoc($INVENTORY);
 $totalRows_INVENTORY = mysqli_num_rows($INVENTORY);
 

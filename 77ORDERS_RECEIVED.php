@@ -2,20 +2,20 @@
 session_start();
 require_once('../../tryconnection.php');
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 $select_INVTHIST = "SELECT *, SUM(`UNITS`) AS `UNITS` FROM INVTHIST WHERE RECEIVED = 0 AND UNITS <> 0 AND BACKORDER <> 1 GROUP BY ORDERED,SUPPLIER,DESCRIP" ;
-$INVTHIST = mysql_query($select_INVTHIST) or die(mysql_error());
+$INVTHIST = mysqli_query($mysqli_link, $select_INVTHIST) or die(mysqli_error($mysqli_link));
 $row_INVTHIST = mysqli_fetch_assoc($INVTHIST);
 
 
 if (isset($_POST['zap'])){
 $delete_INVTHIST = "DELETE FROM INVTHIST WHERE RECEIVED = 0";
-$delete_INVTHIST = mysql_query($delete_INVTHIST) or die(mysql_error());
+$delete_INVTHIST = mysqli_query($mysqli_link, $delete_INVTHIST) or die(mysqli_error($mysqli_link));
 }
 else if (isset($_POST['finish'])){
 	foreach ($_POST['deleted'] as $deleted){
 	$delete_INVSOLD = "DELETE FROM INVTHIST WHERE VPCCODE='$deleted' AND RECEIVED = 0";
-	$delete_INVSOLD1 = mysql_query($delete_INVSOLD) or die(mysql_error());
+	$delete_INVSOLD1 = mysqli_query($mysqli_link, $delete_INVSOLD) or die(mysqli_error($mysqli_link));
 	}
 $closewin="window.open('../COMMON/INVENTORY_DIRECTORY.php','_self');";
 }

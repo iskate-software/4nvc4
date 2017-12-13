@@ -7,11 +7,11 @@ $tffid=$_GET['tffid'];
 $category=$_GET['category'];
 $species = $_GET['species'] ;
 
-mysql_select_db($database_tryconnection, $tryconnection);
+mysqli_select_db($tryconnection, $database_tryconnection);
 
 
 $tcats = "SELECT TCATGRY,TTYPE FROM VETCAN WHERE TNO = 1 AND TSPECIES = $species ORDER BY TCATGRY" ;
-$query_tcats = mysql_query($tcats, $tryconnection) or die(mysql_error()) ;
+$query_tcats = mysqli_query($tryconnection, $tcats) or die(mysqli_error($mysqli_link)) ;
 
 /* 
 if (!isset($_POST["save"])) {
@@ -30,9 +30,9 @@ if (isset($_POST["save"]) //&& $category != "0"
       	$latest = date('YmdHis') ;
 		$tblname = 'VETCAN'.$latest ;
 		$backup = "CREATE TABLE $tblname like VETCAN" ;
-		$query_back = mysql_query($backup, $tryconnection) or die(mysql_error()) ;
+		$query_back = mysqli_query($tryconnection, $backup) or die(mysqli_error($mysqli_link)) ;
 		$fill_it = "INSERT INTO $tblname SELECT * FROM VETCAN ORDER BY TSPECIES, TCATGRY, TNO" ;
-		$query_fill = mysql_query($fill_it, $tryconnection) or die(mysql_error()) ;
+		$query_fill = mysqli_query($tryconnection, $fill_it) or die(mysqli_error($mysqli_link)) ;
 
  
  if ($_POST['radio'] == 1) {
@@ -51,7 +51,7 @@ if (isset($_POST["save"]) //&& $category != "0"
  
  // now check to see which category(s) have been selected.
  
- $query_tcats = mysql_query($tcats, $tryconnection) or die(mysql_error()) ;
+ $query_tcats = mysqli_query($tryconnection, $tcats) or die(mysqli_error($mysqli_link)) ;
  $i = 1 ;
  
  while ($row_cats = mysqli_fetch_assoc($query_tcats)) {
@@ -60,14 +60,14 @@ if (isset($_POST["save"]) //&& $category != "0"
     if (!empty($_POST["$chk"])) {
       $category = $i ;
       $updateSQL = "UPDATE VETCAN SET TFEE = TFEE $function $amount WHERE TSPECIES = $species AND TCATGRY = $category " ;
-      $Result1 = mysql_query($updateSQL, $tryconnection) or die(mysql_error());
+      $Result1 = mysqli_query($tryconnection, $updateSQL) or die(mysqli_error($mysqli_link));
 
 // update any associated procedure 
 
 
        $QUERY_Proc = "UPDATE PROCEDUR JOIN VETCAN ON PROCEDUR.FEEFILE = VETCAN.TSPECIES AND PROCEDUR.INVMAJ = VETCAN.TCATGRY AND PROCEDUR.INVTNO = VETCAN.TNO SET INVPRICE = VETCAN.TFEE, INVTOT = VETCAN.TFEE * INVUNITS 
        WHERE PROCEDUR.INVMAJ = $category AND PROCEDUR.FEEFILE = $species AND PROCEDUR.FEEUPDTE = '1' ";
-    $UPDATE_Proc = mysql_query($QUERY_Proc, $tryconnection) or die(mysql_error()) ;
+    $UPDATE_Proc = mysqli_query($tryconnection, $QUERY_Proc) or die(mysqli_error($mysqli_link)) ;
     }
    $i++ ;
   }
