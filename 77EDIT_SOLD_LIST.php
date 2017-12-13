@@ -12,7 +12,7 @@ mysql_select_db($database_tryconnection, $tryconnection);
 	
 $select_INVSOLD = "SELECT *, SUM(INVUNITS) AS INVUNITS FROM INVSOLD WHERE INVVPC='$_GET[soldid]'";
 $INVSOLD = mysql_query($select_INVSOLD) or die(mysql_error());
-$row_INVSOLD = mysql_fetch_assoc($INVSOLD);
+$row_INVSOLD = mysqli_fetch_assoc($INVSOLD);
 
 if (isset($_POST['save'])){
 

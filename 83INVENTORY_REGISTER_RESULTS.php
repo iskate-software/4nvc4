@@ -13,7 +13,7 @@ $stdum = $startdate ;
 mysql_select_db($database_tryconnection, $tryconnection);
 $startdate="SELECT STR_TO_DATE('$startdate','%m/%d/%Y')";
 $startdate=mysql_query($startdate, $tryconnection) or die(mysql_error());
-$startdate=mysql_fetch_array($startdate);
+$startdate=mysqli_fetch_array($startdate);
 
 if (!empty($_GET['enddate'])){
 $enddate=$_GET['enddate'];
@@ -24,7 +24,7 @@ $enddate=date('m/d/Y');
 $enddum = $enddate ;
 $enddate="SELECT STR_TO_DATE('$enddate','%m/%d/%Y')";
 $enddate=mysql_query($enddate, $tryconnection) or die(mysql_error());
-$enddate=mysql_fetch_array($enddate);
+$enddate=mysqli_fetch_array($enddate);
 
 
 $can = $_GET['checkcanbox'] ;
@@ -39,7 +39,7 @@ if ($can == 1) {
 $canc = " AND INVUNITS < 0 " ;
 $get_Canc = "SELECT SUM(INVTOT) as CANCEL from $file2search where INVUNITS < 0 AND INVDATETIME >= '$startdate[0]' AND INVDATETIME <= '$enddate[0]' " ;
 $Cancget = mysql_query($get_Canc, $tryconnection) or die(mysql_error()) ;
-$row_cancsum = mysql_fetch_assoc($Cancget) ;
+$row_cancsum = mysqli_fetch_assoc($Cancget) ;
 $cancsum = $row_cancsum['CANCEL'] ;   
 }
 
@@ -50,12 +50,12 @@ $search_NET = "SELECT SUM(INVTOT) AS Total_NET FROM $file2search WHERE INVVPC <>
 $search_TAX = "SELECT SUM(INVTOT) AS Total_TAX FROM $file2search WHERE INVVPC <> '       ' $canc AND  INVDATETIME >= '$startdate[0]' AND INVDATETIME <= '$enddate[0]'";
 //$search_PST = "SELECT SUM(PTAX) AS Total_PST FROM $file2search WHERE INVVPC <> '       ' $canc  INVDATETIME >= '$startdate[0]' AND INVDATETIME <= '$enddate[0]'";
 $DVMINV=mysql_query($search_DVMINV, $tryconnection ) or die(mysql_error());
-$row_DVMINV=mysql_fetch_assoc($DVMINV);
+$row_DVMINV=mysqli_fetch_assoc($DVMINV);
 $NET = mysql_query($search_NET, $tryconnection ) or die(mysql_error()) ;
 $TAX = mysql_query($search_TAX, $tryconnection ) or die(mysql_error()) ;
 //$PST = mysql_query($search_PST, $tryconnection ) or die(mysql_error()) ;
-$row_NET = mysql_fetch_array($NET) ;
-$row_TAX = mysql_fetch_array($TAX) ;
+$row_NET = mysqli_fetch_array($NET) ;
+$row_TAX = mysqli_fetch_array($TAX) ;
 //$row_PST = mysql_fetch_array($PST) ;
 
 
@@ -257,7 +257,7 @@ document.getElementById(x).style.backgroundColor="#FFFFFF";
   
   </tr>';
   }
-  while ($row_DVMINV=mysql_fetch_assoc($DVMINV));
+  while ($row_DVMINV=mysqli_fetch_assoc($DVMINV));
   
   ?>
   

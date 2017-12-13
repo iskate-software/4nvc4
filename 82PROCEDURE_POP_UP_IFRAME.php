@@ -9,8 +9,8 @@ $pettype=$_GET['pettype'];
 mysql_select_db($database_tryconnection, $tryconnection);
 $query_PROCEDURE = "SELECT * FROM PROCEDUR WHERE PROCODE LIKE '$procode%' AND FEEFILE='$pettype' ORDER BY PROCODE,ISORTCODE ASC";
 $PROCEDURE = mysql_query($query_PROCEDURE, $tryconnection) or die(mysql_error());
-$row_PROCEDURE = mysql_fetch_assoc($PROCEDURE);
-$totalRows_PROCEDURE = mysql_num_rows($PROCEDURE);
+$row_PROCEDURE = mysqli_fetch_assoc($PROCEDURE);
+$totalRows_PROCEDURE = mysqli_num_rows($PROCEDURE);
 
 $_SESSION['procode']=$_GET['procode'];
 
@@ -18,19 +18,19 @@ if (isset($_POST['selectedcode'])){
 
 $query_PATIENT_CLIENT = "SELECT * FROM ARCUSTO WHERE CUSTNO='$_SESSION[client]' LIMIT 1";
 $PATIENT_CLIENT = mysql_query($query_PATIENT_CLIENT, $tryconnection) or die(mysql_error());
-$row_PATIENT_CLIENT = mysql_fetch_assoc($PATIENT_CLIENT);
+$row_PATIENT_CLIENT = mysqli_fetch_assoc($PATIENT_CLIENT);
 $discpcnt = round($row_PATIENT_CLIENT['DISC'] * .01,2) ;
 
 $query_PROCEDURE = "SELECT * FROM PROCEDUR WHERE PROCODE='$_POST[selectedcode]' AND FEEFILE='$pettype'";
 $PROCEDURE = mysql_query($query_PROCEDURE, $tryconnection) or die(mysql_error());
-$row_PROCEDURE = mysql_fetch_assoc($PROCEDURE);
+$row_PROCEDURE = mysqli_fetch_assoc($PROCEDURE);
 $taxvalue=($_POST['taxvalue']/100);
 
 			do {
 				$autcomm=$row_PROCEDURE['AUTOCOMM'];
 				$query_TAUTOCOMM = "SELECT * FROM ARSYSCOMM WHERE COMMCODE='$autcomm'";
 				$TAUTOCOMM = mysql_query($query_TAUTOCOMM, $tryconnection) or die(mysql_error());
-				$row_TAUTOCOMM = mysql_fetch_assoc($TAUTOCOMM);
+				$row_TAUTOCOMM = mysqli_fetch_assoc($TAUTOCOMM);
 				$invoicecomment=str_replace('$PETNAME', $_SESSION['petname'], $row_TAUTOCOMM['COMMENT']);
 						   
 						   //CREATE AN ARRAY FROM ENTIRE RECORD FROM VETCAN FOR SELECTED ITEM 			
@@ -89,7 +89,7 @@ $taxvalue=($_POST['taxvalue']/100);
 										 );
 						$_SESSION['invline'][] = $item;
 						
-				} while ($row_PROCEDURE = mysql_fetch_assoc($PROCEDURE));
+				} while ($row_PROCEDURE = mysqli_fetch_assoc($PROCEDURE));
 $closewindow="parent.window.close();";
 }?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/IFRAME.dwt" codeOutsideHTMLIsLocked="false" -->
@@ -205,7 +205,7 @@ document.select_procode.submit();
 			
 			$xrepeat=$row_PROCEDURE['PROCODE'];
 			
-			 } while ($row_PROCEDURE = mysql_fetch_assoc($PROCEDURE)); ?>
+			 } while ($row_PROCEDURE = mysqli_fetch_assoc($PROCEDURE)); ?>
             </table></div>            </td>
     </tr>
       </table></td>

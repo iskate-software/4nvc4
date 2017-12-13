@@ -6,31 +6,31 @@ include("../../ASSETS/tax.php");
 mysql_select_db($database_tryconnection, $tryconnection);
 $query_CRITDATA = "SELECT ESTEXP FROM CRITDATA LIMIT 1";
 $CRITDATA = mysql_query($query_CRITDATA, $tryconnection) or die(mysql_error());
-$row_CRITDATA = mysql_fetch_assoc($CRITDATA);
+$row_CRITDATA = mysqli_fetch_assoc($CRITDATA);
 
 
 $intervquery1="SELECT CURRENT_DATE() + INTERVAL $row_CRITDATA[ESTEXP] DAY";
 $interval1= mysql_unbuffered_query($intervquery1, $tryconnection) or die(mysql_error());
-$interval=mysql_fetch_array($interval1);
+$interval=mysqli_fetch_array($interval1);
 $intervquery2="SELECT DATE_FORMAT('$interval[0]','%m/%d/%Y');";
 $interval2= mysql_unbuffered_query($intervquery2, $tryconnection) or die(mysql_error());
-$interval=mysql_fetch_array($interval2);
+$interval=mysqli_fetch_array($interval2);
 
 
 if (isset($_POST['save'])) {
 
 $expquery="SELECT STR_TO_DATE('$_POST[estexp]','%m/%d/%Y');";
 $expdate1= mysql_unbuffered_query($expquery, $tryconnection) or die(mysql_error());
-$expdate=mysql_fetch_array($expdate1);
+$expdate=mysqli_fetch_array($expdate1);
 //format the date into the mysql format
 $query_invdatetime="SELECT STR_TO_DATE('$_SESSION[minvdte]','%m/%d/%Y %H:%i:%s')";
 $invdatetime= mysql_unbuffered_query($query_invdatetime, $tryconnection) or die(mysql_error());
-$row_invdatetime=mysql_fetch_array($invdatetime);
+$row_invdatetime=mysqli_fetch_array($invdatetime);
 
 
 $query_PREFER="SELECT TRTMCOUNT FROM PREFER LIMIT 1";
 $PREFER= mysql_query($query_PREFER, $tryconnection) or die(mysql_error());
-$row_PREFER = mysql_fetch_assoc($PREFER);
+$row_PREFER = mysqli_fetch_assoc($PREFER);
 
 $treatmxx=$_SESSION['client']/$row_PREFER['TRTMCOUNT'];
 $treatmxx="TREATM".floor($treatmxx);

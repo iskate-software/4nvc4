@@ -26,8 +26,8 @@ $sortby = $_GET['sorting'];
 mysql_select_db($database_tryconnection, $tryconnection);
 $query_INVENTORY = "SELECT ITEM, CLASS, DESCRIP, COST, PRICE, UPRICE, ONHAND, SEQ, VPARTNO, DISPFEE, BDISPFEE, PRESCRIP, TAXRATE, PKGQTY, LABEL, TYPE, BULK, MARKUP, DFYES, BULK, MONITOR, BARCODE, COMMENT AS AUTOCOMM, ARINVTYPE, DATE_FORMAT(EXPDATE, '%m/%d/%Y') AS EXPDATE, ARINVTYPE FROM ARINVT WHERE (ITEM LIKE '$lookup%' OR DESCRIP LIKE '$lookup%' OR VPARTNO LIKE '$lookup%' OR BARCODE LIKE '$lookup%') AND ARINVTYPE LIKE '$arinvtype%' ORDER BY ITEM,DESCRIP ASC";
 $INVENTORY = mysql_query($query_INVENTORY, $tryconnection) or die(mysql_error());
-$row_INVENTORY = mysql_fetch_assoc($INVENTORY);
-$totalRows_INVENTORY = mysql_num_rows($INVENTORY);
+$row_INVENTORY = mysqli_fetch_assoc($INVENTORY);
+$totalRows_INVENTORY = mysqli_num_rows($INVENTORY);
 
 $_SESSION['lookup'] = $_GET['lookup'];
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -133,7 +133,7 @@ parent.window.self.close();
       <td height="15" align="left"><?php echo $row_INVENTORY['BARCODE']; ?></td>
     </tr>
     
-    <?php } while ($row_INVENTORY = mysql_fetch_assoc($INVENTORY)); ?>
+    <?php } while ($row_INVENTORY = mysqli_fetch_assoc($INVENTORY)); ?>
 </table>
 
 </form>
@@ -143,5 +143,5 @@ parent.window.self.close();
 </body>
 <!-- InstanceEnd --></html>
 <?php
-mysql_free_result($INVENTORY);
+mysqli_free_result($INVENTORY);
 ?>

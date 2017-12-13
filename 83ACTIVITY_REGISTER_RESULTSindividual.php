@@ -13,7 +13,7 @@ $stdum = $startdate ;
 mysql_select_db($database_tryconnection, $tryconnection);
 $startdate="SELECT STR_TO_DATE('$startdate','%m/%d/%Y')";
 $startdate=mysql_query($startdate, $tryconnection) or die(mysql_error());
-$startdate=mysql_fetch_array($startdate);
+$startdate=mysqli_fetch_array($startdate);
 
 if (!empty($_GET['enddate'])){
 $enddate=$_GET['enddate'];
@@ -25,17 +25,17 @@ $enddum = $enddate ;
 
 $enddate="SELECT STR_TO_DATE('$enddate','%m/%d/%Y')";
 $enddate=mysql_query($enddate, $tryconnection) or die(mysql_error());
-$enddate=mysql_fetch_array($enddate);
+$enddate=mysqli_fetch_array($enddate);
 
 $file2search=$_GET['file2search'];
 
 $search_DVMINV="SELECT *, DATE_FORMAT(INVDATETIME, '%m/%d/%Y') AS INVDTE FROM $file2search WHERE invcust = 413 and INVDATETIME >= '$startdate[0]' AND INVDATETIME <= '$enddate[0]' ORDER BY INVNO,INVSEQ";
 $DVMINV=mysql_query($search_DVMINV, $tryconnection ) or die(mysql_error());
-$row_DVMINV=mysql_fetch_assoc($DVMINV);
+$row_DVMINV=mysqli_fetch_assoc($DVMINV);
 
 $search_GRANDTOTAL="SELECT SUM(INVTOT) AS GRANDTOTAL FROM $file2search WHERE  invcust = 413 and INVDATETIME >= '$startdate[0]' AND INVDATETIME <= '$enddate[0]'";
 $GRANDTOTAL=mysql_query($search_GRANDTOTAL, $tryconnection ) or die(mysql_error());
-$row_GRANDTOTAL=mysql_fetch_assoc($GRANDTOTAL);
+$row_GRANDTOTAL=mysqli_fetch_assoc($GRANDTOTAL);
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/DVMBasicTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
@@ -248,7 +248,7 @@ echo '>
 		else {
 	$query_CLIENT = "SELECT * FROM ARCUSTO WHERE CUSTNO = '".$row_DVMINV['INVCUST']."' LIMIT 1";
 	$CLIENT = mysql_query($query_CLIENT, $tryconnection) or die(mysql_error());
-	$row_CLIENT = mysql_fetch_assoc($CLIENT);
+	$row_CLIENT = mysqli_fetch_assoc($CLIENT);
 echo substr($row_CLIENT['COMPANY'].", ".$row_CLIENT['CONTACT'],0,29);
 $newpet = 0 ;
 		}
@@ -302,7 +302,7 @@ echo '<tr>
 }  
   $totals[]=$row_DVMINV['INVTOT'];
   }
-  while ($row_DVMINV=mysql_fetch_assoc($DVMINV));
+  while ($row_DVMINV=mysqli_fetch_assoc($DVMINV));
 
 echo '<tr class="Verdana11B">
 <td colspan="3" align="right"></td>

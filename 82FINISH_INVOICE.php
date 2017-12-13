@@ -26,7 +26,7 @@ $taxname=taxname($database_tryconnection, $tryconnection, $_SESSION['minvdte']);
 mysql_select_db($database_tryconnection, $tryconnection);
 $query_PATIENT_CLIENT = "SELECT *, DATE_FORMAT(PDOB,'%m/%d/%Y') AS PDOB FROM PETMAST JOIN ARCUSTO ON (ARCUSTO.CUSTNO=PETMAST.CUSTNO) WHERE PETID = '$patient' LIMIT 1";
 $PATIENT_CLIENT = mysql_query($query_PATIENT_CLIENT, $tryconnection) or die(mysql_error());
-$row_PATIENT_CLIENT = mysql_fetch_assoc($PATIENT_CLIENT);
+$row_PATIENT_CLIENT = mysqli_fetch_assoc($PATIENT_CLIENT);
 $pdob=$row_PATIENT_CLIENT['PDOB'];
 $psex=$row_PATIENT_CLIENT['PSEX'];
 
@@ -71,7 +71,7 @@ $let_it_go = mysql_query($query_unlockc, $tryconnection) or die(mysql_error()) ;
 //check if there is any such patient in the RECEP
 $query_RECEP = "SELECT * FROM RECEP WHERE RFPETID='$patient' LIMIT 1";
 $RECEP = mysql_query($query_RECEP, $tryconnection) or die(mysql_error());
-$row_RECEP = mysql_fetch_assoc($RECEP);
+$row_RECEP = mysqli_fetch_assoc($RECEP);
 
 //if there is NO such patient, insert into the DISCHARGED section
 if (empty($row_RECEP)){
@@ -86,7 +86,7 @@ $admit=mysql_query($query_admit,$tryconnection) or die(mysql_error());
 
 $query_xnow="SELECT NOW()";
 $xnow= mysql_unbuffered_query($query_xnow, $tryconnection) or die(mysql_error());
-$row_xnow=mysql_fetch_array($xnow);
+$row_xnow=mysqli_fetch_array($xnow);
 
 //if there is at least ONE item that is NOT an estimate, insert into invhold
 if ($howmany!=0){
@@ -109,7 +109,7 @@ foreach ($foundnonestimate as $item) {
 //format the date into the mysql format
 $query_invdatetime="SELECT STR_TO_DATE('$item[INVDATETIME]','%m/%d/%Y %H:%i:%s')";
 $invdatetime= mysql_unbuffered_query($query_invdatetime, $tryconnection) or die(mysql_error());
-$row_invdatetime=mysql_fetch_array($invdatetime);
+$row_invdatetime=mysqli_fetch_array($invdatetime);
 
 $insertSQL2 = sprintf("INSERT INTO INVHOLD (INVNO,ISORTCODE, INVCUST, INVPET, INVDATETIME, INVMAJ, INVMIN, INVDOC, INVSTAFF, INVUNITS, INVDESCR, 
 INVPRICE, INVTOT, INVINCM, INVDISC, INVLGSM, INVREVCAT, INVGST, INVTAX, REFCLIN, REFVET, INVUPDTE, INVFLAGS, INVDISP, INVGET, INVPERCNT, 

@@ -5,11 +5,11 @@ require_once('../../tryconnection.php');
 mysql_select_db($database_tryconnection, $tryconnection);
 $select_FAXREP = "SELECT * FROM FAXREP LIMIT 1";
 $FAXREP = mysql_query($select_FAXREP) or die(mysql_error());
-$row_FAXREP = mysql_fetch_assoc($FAXREP);
+$row_FAXREP = mysqli_fetch_assoc($FAXREP);
 
 $select_INVENTOR = "SELECT *, SUM(`UNITS`) AS `UNITS` FROM INVENTOR WHERE UNITS <> 0 AND SUPPLIER = '$_SESSION[supplier]' GROUP BY `DESCRIP` ORDER BY `DESCRIP` ASC";
 $INVENTOR = mysql_query($select_INVENTOR) or die(mysql_error());
-$row_INVENTOR = mysql_fetch_assoc($INVENTOR);
+$row_INVENTOR = mysqli_fetch_assoc($INVENTOR);
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/POP UP WINDOWS TEMPLATE.dwt" codeOutsideHTMLIsLocked="false" -->
@@ -29,7 +29,7 @@ $row_INVENTOR = mysql_fetch_assoc($INVENTOR);
 function bodyonload(){
 <?php  $select_INVENTOR = "SELECT *, SUM(`UNITS`) AS `UNITS` FROM INVENTOR WHERE UNITS <> 0 AND BACKORDER <> 1 AND SUPPLIER = '$_SESSION[supplier]' GROUP BY `DESCRIP` ORDER BY `DESCRIP` ASC";
 $INVENTOR = mysql_query($select_INVENTOR) or die(mysql_error());
-$row_INVENTOR = mysql_fetch_assoc($INVENTOR);?>
+$row_INVENTOR = mysqli_fetch_assoc($INVENTOR);?>
 window.print();
 //self.close();
 }
@@ -92,7 +92,7 @@ overflow:auto;
   
  <?php 
 $cogs = $cogs + ($row_INVENTOR['DRUGCOST']*$row_INVENTOR['UNITS']);
-} while ($row_INVENTOR = mysql_fetch_assoc($INVENTOR)); ?>  
+} while ($row_INVENTOR = mysqli_fetch_assoc($INVENTOR)); ?>  
   <tr>
     <td colspan="3" align="right" class="style2 Courier11"><strong>** TOTAL COST **</strong><strong></strong></td>
     <td width="19%" align="center" class="style2 Courier11">&nbsp;</td>

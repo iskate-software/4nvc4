@@ -53,7 +53,7 @@ $DISCOUNT = mysql_query($query_DISCOUNT, $tryconnection) or die(mysql_error());
 
 $query_PATIENT_CLIENT = "SELECT *, DATE_FORMAT(PDOB,'%m/%d/%Y') AS PDOB FROM PETMAST JOIN ARCUSTO ON (ARCUSTO.CUSTNO=PETMAST.CUSTNO) WHERE PETID = '$patient' LIMIT 1";
 $PATIENT_CLIENT = mysql_query($query_PATIENT_CLIENT, $tryconnection) or die(mysql_error());
-$row_PATIENT_CLIENT = mysql_fetch_assoc($PATIENT_CLIENT);
+$row_PATIENT_CLIENT = mysqli_fetch_assoc($PATIENT_CLIENT);
 
 $pdob=$row_PATIENT_CLIENT['PDOB'];
 $psex=$row_PATIENT_CLIENT['PSEX'];
@@ -64,7 +64,7 @@ $previousbalance=0;
 $custno = $_SESSION['client'] ;
 $GET_BAL1 = "SELECT SUM(IBAL) AS RECVBL FROM ARARECV WHERE CUSTNO = '$custno' " ;
 $QUERY_BAL = mysql_query($GET_BAL1, $tryconnection) or die(mysql_error()) ;
-$row_QUERY_BAL = mysql_fetch_assoc($QUERY_BAL) ;
+$row_QUERY_BAL = mysqli_fetch_assoc($QUERY_BAL) ;
 
 //if (isset($_POST['save']) || isset($_POST['prtsave'])){
 //$_SESSION['prevbal'] = $row_PATIENT_CLIENT['BALANCE'];	
@@ -120,7 +120,7 @@ $TOTAL=round($TOTAL,2);
 
 $paydisc = array() ;
 $xi = 0 ;
-while ($row_DISCOUNT = mysql_fetch_assoc($DISCOUNT)) {
+while ($row_DISCOUNT = mysqli_fetch_assoc($DISCOUNT)) {
  if (strlen($row_DISCOUNT['METHOD'] < 4 )) {$paydisc[$xi][1] = '&nbsp;'.$row_DISCOUNT['METHOD'] ;} else {}$paydisc[$xi][1] = $row_DISCOUNT['METHOD'] ;
 //  $paydisc[$xi][1] = $row_DISCOUNT['METHOD'] ;
   if ($calc_disc == 1) {

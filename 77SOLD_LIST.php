@@ -7,7 +7,7 @@ mysql_select_db($database_tryconnection, $tryconnection);
 
 $select_INVSOLD = "SELECT INVSOLD.INVVPC,INVSOLD.INVDESC,SUPPLIER, SUM(INVUNITS) AS INVUNITS FROM INVSOLD LEFT JOIN ARINVT ON INVSOLD.INVVPC = ARINVT.VPARTNO  GROUP BY INVDESC ORDER BY SUPPLIER,INVDESC ASC";
 $INVSOLD = mysql_query($select_INVSOLD) or die(mysql_error());
-$row_INVSOLD = mysql_fetch_assoc($INVSOLD);
+$row_INVSOLD = mysqli_fetch_assoc($INVSOLD);
 
 
 if (isset($_POST['zap'])){
@@ -231,7 +231,7 @@ return valid;
     <img src="../../IMAGES/e3 copy.jpg" alt="e" id="e<?php echo $row_INVSOLD['INVVPC']; ?>" width="15" height="15" onclick="window.open('EDIT_SOLD_LIST.php?soldid=<?php echo $row_INVSOLD['INVVPC']; ?>','_blank','toolbar=no, status=no, width=400, height=300')" onmouseover="CursorToPointer(this.id)" title="EDIT"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <img src="../../IMAGES/v copy.jpg" alt="v" id="v<?php echo $row_INVSOLD['INVVPC']; ?>" width="15" height="15" onclick="window.open('VIEW_SOLD_LIST.php?soldid=<?php echo $row_INVSOLD['INVVPC']; ?>','_blank','toolbar=no, status=no, width=400, height=300')" onmouseover="CursorToPointer(this.id)" title="VIEW DETAIL"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
   </tr>
-<?php } while ($row_INVSOLD = mysql_fetch_assoc($INVSOLD)); ?>  
+<?php } while ($row_INVSOLD = mysqli_fetch_assoc($INVSOLD)); ?>  
 </table>
     </div>
     </td>

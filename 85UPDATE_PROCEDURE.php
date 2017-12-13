@@ -29,7 +29,7 @@ $category=$_SESSION['category'];
 
 $query_PROCEDURE=sprintf("SELECT * FROM PROCEDUR WHERE PROCODE = '%s' AND FEEFILE='%s' ORDER BY ISORTCODE ASC",$category, $spec);
 $PROCEDURE = mysql_query($query_PROCEDURE, $tryconnection) or die(mysql_error());
-$row_PROCEDURE = mysql_fetch_assoc($PROCEDURE);
+$row_PROCEDURE = mysqli_fetch_assoc($PROCEDURE);
 
 if (!isset($_SESSION['procname'])){
 $_SESSION['procname']=$row_PROCEDURE['PROCEDURE'];
@@ -42,7 +42,7 @@ $procname=$_SESSION['procname'];
 				$autcomm=$row_PROCEDURE['AUTOCOMM'];
 				$query_TAUTOCOMM = "SELECT * FROM ARSYSCOMM WHERE COMMCODE='$autcomm'";
 				$TAUTOCOMM = mysql_query($query_TAUTOCOMM, $tryconnection) or die(mysql_error());
-				$row_TAUTOCOMM = mysql_fetch_assoc($TAUTOCOMM);
+				$row_TAUTOCOMM = mysqli_fetch_assoc($TAUTOCOMM);
 				$invoicecomment=$row_TAUTOCOMM['COMMENT'];
 						   
 						   //CREATE AN ARRAY FROM ENTIRE RECORD FROM PROCEDUR FOR SELECTED ITEM 			
@@ -82,7 +82,7 @@ $procname=$_SESSION['procname'];
 										 );
 						$_SESSION['procline'][] = $item;
 						
-				} while ($row_PROCEDURE = mysql_fetch_assoc($PROCEDURE));
+				} while ($row_PROCEDURE = mysqli_fetch_assoc($PROCEDURE));
 		}
 
 
@@ -113,15 +113,15 @@ function categ($tryconnection,$spec)
 {
 $query_CATEGORY ="SELECT DISTINCT TCATGRY, TTYPE FROM VETCAN WHERE TSPECIES='$spec' ORDER BY TCATGRY ASC";
 $CATEGORY = mysql_query($query_CATEGORY, $tryconnection) or die(mysql_error());
-$row_CATEGORY = mysql_fetch_assoc($CATEGORY);
-$totalRows_CATEGORY = mysql_num_rows($CATEGORY);
+$row_CATEGORY = mysqli_fetch_assoc($CATEGORY);
+$totalRows_CATEGORY = mysqli_num_rows($CATEGORY);
 
 echo"<select name='category1' class='SelectList' id='category1' multiple='multiple' onchange='category();' >";
 do {
 echo"<option value='".$row_CATEGORY['TCATGRY']."'>";
 echo $row_CATEGORY['TTYPE'];
 echo"</option>";
-} while ($row_CATEGORY = mysql_fetch_assoc($CATEGORY));
+} while ($row_CATEGORY = mysqli_fetch_assoc($CATEGORY));
 echo"</select>";		 
 
 }
@@ -131,15 +131,15 @@ function subcateg($tryconnection,$cat, $spec)
 {
 $query_PRODUCTSERVICE = sprintf("SELECT TFFID, TNO, TDESCR, TTYPE, TFEE, TCATGRY, TDISCOUNT FROM VETCAN WHERE TCATGRY = '%s' AND  TSPECIES='$spec' ORDER BY TNO ASC",mysql_real_escape_string($cat));
 $PRODUCTSERVICE = mysql_query($query_PRODUCTSERVICE, $tryconnection) or die(mysql_error());
-$row_PRODUCTSERVICE = mysql_fetch_assoc($PRODUCTSERVICE);
-$totalRows_PRODUCTSERVICE = mysql_num_rows($PRODUCTSERVICE);
+$row_PRODUCTSERVICE = mysqli_fetch_assoc($PRODUCTSERVICE);
+$totalRows_PRODUCTSERVICE = mysqli_num_rows($PRODUCTSERVICE);
 
 echo"<select name='prodser' id='prodser' multiple='multiple' class='SelectList' onchange='modifyitem()' >";
 do {
 echo"<option value='".$row_PRODUCTSERVICE['TFFID']."' id='".$row_PRODUCTSERVICE['TFFID']."'>";
 echo $row_PRODUCTSERVICE['TDESCR'];
 echo"</option>";
-} while ($row_PRODUCTSERVICE = mysql_fetch_assoc($PRODUCTSERVICE));
+} while ($row_PRODUCTSERVICE = mysqli_fetch_assoc($PRODUCTSERVICE));
 echo"</select>";		 
 
 }
@@ -148,14 +148,14 @@ echo"</select>";
 //$query_SELECTEDITEM = sprintf("SELECT * FROM VETCAN WHERE TNO = '%s' AND TCATGRY = '%s'",mysql_real_escape_string($ps),mysql_real_escape_string($cat));
 $query_SELECTEDITEM = sprintf("SELECT * FROM VETCAN WHERE TFFID = '%s'",$ps);
 $SELECTEDITEM = mysql_query($query_SELECTEDITEM, $tryconnection) or die(mysql_error());
-$row_SELECTEDITEM = mysql_fetch_assoc($SELECTEDITEM);
+$row_SELECTEDITEM = mysqli_fetch_assoc($SELECTEDITEM);
 
 
 
 if (!empty($row_SELECTEDITEM['TAUTOCOMM'])){
 $query_TAUTOCOMM = "SELECT * FROM ARSYSCOMM WHERE COMMCODE='$row_SELECTEDITEM[TAUTOCOMM]'";
 $TAUTOCOMM = mysql_query($query_TAUTOCOMM, $tryconnection) or die(mysql_error());
-$row_TAUTOCOMM = mysql_fetch_assoc($TAUTOCOMM);
+$row_TAUTOCOMM = mysqli_fetch_assoc($TAUTOCOMM);
 }
 
 
@@ -608,7 +608,7 @@ document.forms[0].invtot.value = resultfull;
 		
 		$query_VACCINES = "SELECT * FROM VACCINES WHERE NAME='$value'";
 		$VACCINES = mysql_query($query_VACCINES, $tryconnection) or die(mysql_error());
-		$row_VACCINES = mysql_fetch_assoc($VACCINES);
+		$row_VACCINES = mysqli_fetch_assoc($VACCINES);
 
 			echo '	<tr>
 					<td colspan="3" class="Verdana11">';

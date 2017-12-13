@@ -27,15 +27,15 @@ $GET   = mysql_query($search_GET, $tryconnection )   or die(mysql_error()) ;
 $CELLT = mysql_query($search_CELLT, $tryconnection ) or die(mysql_error()) ;
 
 
-$row_CASHT = mysql_fetch_array($CASHT) ;
-$row_CHEQUET = mysql_fetch_array($CHEQUET) ;
-$row_DCRDT = mysql_fetch_array($DCRDT) ;
-$row_VISAT = mysql_fetch_array($VISAT) ;
-$row_MCRDT = mysql_fetch_array($MCRDT) ;
-$row_AMEXT = mysql_fetch_array($AMEXT) ;
-$row_DINET = mysql_fetch_array($DINET) ;
-$row_GET = mysql_fetch_array($GET) ;
-$row_CELLT = mysql_fetch_array($CELLT) ;
+$row_CASHT = mysqli_fetch_array($CASHT) ;
+$row_CHEQUET = mysqli_fetch_array($CHEQUET) ;
+$row_DCRDT = mysqli_fetch_array($DCRDT) ;
+$row_VISAT = mysqli_fetch_array($VISAT) ;
+$row_MCRDT = mysqli_fetch_array($MCRDT) ;
+$row_AMEXT = mysqli_fetch_array($AMEXT) ;
+$row_DINET = mysqli_fetch_array($DINET) ;
+$row_GET = mysqli_fetch_array($GET) ;
+$row_CELLT = mysqli_fetch_array($CELLT) ;
 
 
 // Define the individual row data for each type here.
@@ -61,15 +61,15 @@ $GE=mysql_query($search_GE, $tryconnection ) or die(mysql_error());
 $CELL=mysql_query($search_CELL, $tryconnection ) or die(mysql_error());
 
 
-$row_CASH = mysql_fetch_assoc($CASH) ;
-$row_CHEQUE = mysql_fetch_assoc($CHEQUE) ;
-$row_DCRD = mysql_fetch_assoc($DCRD) ;
-$row_VISA = mysql_fetch_assoc($VISA) ;
-$row_MCRD = mysql_fetch_assoc($MC) ;
-$row_AMEX = mysql_fetch_assoc($AMEX) ;
-$row_DINE = mysql_fetch_assoc($DINE) ;
-$row_GE = mysql_fetch_assoc($GE) ;
-$row_CELL = mysql_fetch_assoc($CELL) ;
+$row_CASH = mysqli_fetch_assoc($CASH) ;
+$row_CHEQUE = mysqli_fetch_assoc($CHEQUE) ;
+$row_DCRD = mysqli_fetch_assoc($DCRD) ;
+$row_VISA = mysqli_fetch_assoc($VISA) ;
+$row_MCRD = mysqli_fetch_assoc($MC) ;
+$row_AMEX = mysqli_fetch_assoc($AMEX) ;
+$row_DINE = mysqli_fetch_assoc($DINE) ;
+$row_GE = mysqli_fetch_assoc($GE) ;
+$row_CELL = mysqli_fetch_assoc($CELL) ;
 
 
 if (isset($_POST['printbd'])){
@@ -281,7 +281,7 @@ document.getElementById(x).style.backgroundColor="#FFFFFF";
     <td align="center" class="Verdana13" width="150"></td>
   </tr>';
   }
-  while ($row_CASH=mysql_fetch_assoc($CASH));
+  while ($row_CASH=mysqli_fetch_assoc($CASH));
   
   ?>
   <tr<?php if (empty($row_CASHT)){echo " class='hidden'";} ?>>
@@ -324,7 +324,7 @@ document.getElementById(x).style.backgroundColor="#FFFFFF";
     <td align="center" class="Verdana13" width="150"></td>
   </tr>';
   }
-  while ($row_CHEQUE=mysql_fetch_assoc($CHEQUE));
+  while ($row_CHEQUE=mysqli_fetch_assoc($CHEQUE));
   
   ?>
   <tr<?php if (empty($row_CHEQUET)){echo " class='hidden'";} ?>>
@@ -382,7 +382,7 @@ document.getElementById(x).style.backgroundColor="#FFFFFF";
     <td align="center" class="Verdana13" width="150"></td>
   </tr>';
   }
-  while ($row_VISA=mysql_fetch_assoc($VISA));
+  while ($row_VISA=mysqli_fetch_assoc($VISA));
   
   ?>
   <tr<?php if (empty($row_VISAT)){echo " class='hidden'";} ?>>
@@ -425,7 +425,7 @@ document.getElementById(x).style.backgroundColor="#FFFFFF";
     <td align="center" class="Verdana13" width="150"></td>
   </tr>';
   }
-  while ($row_MCRD=mysql_fetch_assoc($MC));
+  while ($row_MCRD=mysqli_fetch_assoc($MC));
   
   ?>
   <tr<?php if (empty($row_MCRDT)){echo " class='hidden'";} ?>>
@@ -469,7 +469,7 @@ document.getElementById(x).style.backgroundColor="#FFFFFF";
     <td align="center" class="Verdana13" width="150"></td>
   </tr>';
   }
-  while ($row_AMEX=mysql_fetch_assoc($AMEX));
+  while ($row_AMEX=mysqli_fetch_assoc($AMEX));
   
   ?>
   <tr<?php if (empty($row_AMEXT)){echo " class='hidden'";} ?>>
@@ -511,7 +511,7 @@ document.getElementById(x).style.backgroundColor="#FFFFFF";
     <td align="center" class="Verdana13" width="150"></td>
   </tr>';
   }
-  while ($row_DCRD=mysql_fetch_assoc($DCRD));
+  while ($row_DCRD=mysqli_fetch_assoc($DCRD));
   
   ?>
   <tr<?php if (empty($row_DCRDT)){echo " class='hidden'";} ?>>
@@ -556,7 +556,7 @@ document.getElementById(x).style.backgroundColor="#FFFFFF";
     <td align="center" class="Verdana13" width="150"></td>
   </tr>';
   }
-  while ($row_DINE=mysql_fetch_assoc($DINE));
+  while ($row_DINE=mysqli_fetch_assoc($DINE));
   
   ?>
   <tr<?php if (empty($row_DINET)){echo " class='hidden'";} ?>>
@@ -600,7 +600,7 @@ document.getElementById(x).style.backgroundColor="#FFFFFF";
     <td align="center" class="Verdana13" width="150"></td>
   </tr>';
   }
-  while ($row_GE=mysql_fetch_assoc($GE));
+  while ($row_GE=mysqli_fetch_assoc($GE));
   
   ?>
   <tr <?php if (empty($row_GET)){echo "class='hidden'";} ?>>
@@ -647,7 +647,7 @@ document.getElementById(x).style.backgroundColor="#FFFFFF";
     <td align="center" class="Verdana13" width="150"></td>
   </tr>';
   }
-  while ($row_CELL=mysql_fetch_assoc($CELL));
+  while ($row_CELL=mysqli_fetch_assoc($CELL));
   
   ?>
   <tr <?php if (empty($row_CELLT)){echo "class='hidden'";} ?>>

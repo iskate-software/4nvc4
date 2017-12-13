@@ -5,7 +5,7 @@ require_once('../../tryconnection.php');
 mysql_select_db($database_tryconnection, $tryconnection);
 $select_INVTHIST = "SELECT *, SUM(`UNITS`) AS `UNITS` FROM INVTHIST WHERE RECEIVED = 0 AND UNITS <> 0 AND BACKORDER <> 1 GROUP BY ORDERED,SUPPLIER,DESCRIP" ;
 $INVTHIST = mysql_query($select_INVTHIST) or die(mysql_error());
-$row_INVTHIST = mysql_fetch_assoc($INVTHIST);
+$row_INVTHIST = mysqli_fetch_assoc($INVTHIST);
 
 
 if (isset($_POST['zap'])){
@@ -240,7 +240,7 @@ overflow:auto;
         </tr>
         <?php 
 $cogs = $cogs + ($row_INVTHIST['DRUGCOST']*$row_INVTHIST['UNITS']);
-} while ($row_INVTHIST = mysql_fetch_assoc($INVTHIST)); ?>
+} while ($row_INVTHIST = mysqli_fetch_assoc($INVTHIST)); ?>
       </table>
     </div></td>
   </tr>

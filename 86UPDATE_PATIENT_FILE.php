@@ -4,24 +4,24 @@ require_once('../../tryconnection.php');
 mysql_select_db($database_tryconnection, $tryconnection);
 $query_TFF = "SELECT * FROM VETCAN WHERE TFFID='$_GET[tffid]'";
 $TFF = mysql_query($query_TFF, $tryconnection) or die(mysql_error());
-$row_TFF = mysql_fetch_assoc($TFF);
+$row_TFF = mysqli_fetch_assoc($TFF);
 
 $tflags=$row_TFF['TFLAGS'];
 $tvaccs=$row_TFF['TVACCS'];
 
 $query_SPECIES = "SELECT * FROM ANIMTYPE WHERE ANIMALID='$_GET[species]'";
 $SPECIES = mysql_query($query_SPECIES, $tryconnection) or die(mysql_error());
-$row_SPECIES = mysql_fetch_assoc($SPECIES);
+$row_SPECIES = mysqli_fetch_assoc($SPECIES);
 $species=$row_SPECIES['ANIMAL'];
 
 $query_VACCINES = "SELECT * FROM VACCINES WHERE NAME LIKE '%$species%' ORDER BY SEQ ASC";
 $VACCINES = mysql_query($query_VACCINES, $tryconnection) or die(mysql_error());
-$row_VACCINES = mysql_fetch_assoc($VACCINES);
+$row_VACCINES = mysqli_fetch_assoc($VACCINES);
 //$totalRows_VACCINES = mysql_num_rows($VACCINES);
 $vaccines=array();
 do {
 $vaccines[]=$row_VACCINES['VACID'];
-} while ($row_VACCINES = mysql_fetch_assoc($VACCINES));
+} while ($row_VACCINES = mysqli_fetch_assoc($VACCINES));
 
 if (isset($_POST['save']) || isset($_POST['check'])){
 
@@ -267,7 +267,7 @@ opener.document.tff.tvaccs.value='<?php echo $tvaccs; ?>';
     <table width="300" border="0" cellspacing="0" cellpadding="0">
   <?php 
   	$VACCINES = mysql_query($query_VACCINES, $tryconnection) or die(mysql_error());
-	$row_VACCINES = mysql_fetch_assoc($VACCINES);
+	$row_VACCINES = mysqli_fetch_assoc($VACCINES);
 	do{ ?>
   <tr class="Verdana11">
     <td height="25" width="51"><input type="text" id="<?php echo $row_VACCINES['VACID']; ?>" name="x<?php echo $row_VACCINES['VACID']; ?>" size="6" class="Input" onfocus="InputOnFocus(this.id)" onblur="InputOnBlur(this.id)" value="<?php echo $row_VACCINES['VDECODE']; ?>" /></td>
@@ -278,7 +278,7 @@ opener.document.tff.tvaccs.value='<?php echo $tvaccs; ?>';
 		{echo "CHECKED";} 
 		?>/> <?php echo $row_VACCINES['NAME']; ?></label></td>
   </tr>
-  <?php } while ($row_VACCINES = mysql_fetch_assoc($VACCINES)); ?>
+  <?php } while ($row_VACCINES = mysqli_fetch_assoc($VACCINES)); ?>
 </table>
     </div>    </td>
   </tr>

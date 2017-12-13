@@ -27,7 +27,7 @@ $query_LOCK_CLIENT = "LOCK TABLES ARCUSTO WRITE" ;
 $LOCK_CLIENT = mysql_query($query_LOCK_CLIENT) or die(mysql_error());
 $query_CLIENT = "SELECT LOCKED FROM ARCUSTO WHERE CUSTNO = '$client' LIMIT 1";
 $CLIENT = mysql_query($query_CLIENT, $tryconnection) or die(mysql_error());
-$row_CLIENT = mysql_fetch_assoc($CLIENT);
+$row_CLIENT = mysqli_fetch_assoc($CLIENT);
 
 if ($row_CLIENT['LOCKED']=='1' && $_GET['refID']!='EST' && !isset($_SESSION['round'])){
 $query_UNLOCK = "UNLOCK TABLES" ;
@@ -44,8 +44,8 @@ $UNLOCK = mysql_query($query_UNLOCK, $tryconnection) or die(mysql_error()) ;
 
 $query_Doctor = "SELECT * FROM DOCTOR WHERE SIGNEDIN=1";
 $Doctor = mysql_query($query_Doctor, $tryconnection) or die(mysql_error());
-$row_Doctor = mysql_fetch_assoc($Doctor);
-$totalRows_Doctor = mysql_num_rows($Doctor);
+$row_Doctor = mysqli_fetch_assoc($Doctor);
+$totalRows_Doctor = mysqli_num_rows($Doctor);
 
 
 if (isset($_POST['cancel']) && $_GET['refID']!='EST'){
@@ -415,7 +415,7 @@ do {
 ?>
       <option value="<?php echo $row_Doctor['DOCTOR']?>" ><?php echo $row_Doctor['DOCTOR']?></option>
       <?php
-} while ($row_Doctor = mysql_fetch_assoc($Doctor));
+} while ($row_Doctor = mysqli_fetch_assoc($Doctor));
 //  $rows = mysql_num_rows($Doctor);
 //  if($rows > 0) {
 //      mysql_data_seek($Doctor, 0);

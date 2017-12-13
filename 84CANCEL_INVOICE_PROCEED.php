@@ -8,15 +8,15 @@ $unique1=$_GET['unique1'] ;
 mysql_select_db($database_tryconnection, $tryconnection);
 $query_Staff = "SELECT STAFF, SIGNEDIN,PRIORITY FROM STAFF WHERE SIGNEDIN=1 ORDER BY PRIORITY";
 $Staff = mysql_query($query_Staff, $tryconnection) or die(mysql_error());
-$row_Staff = mysql_fetch_assoc($Staff);
+$row_Staff = mysqli_fetch_assoc($Staff);
 
 $query_Doctor = "SELECT DOCTOR, SIGNEDIN, PRIORITY FROM DOCTOR WHERE SIGNEDIN=1 ORDER BY PRIORITY";
 $Doctor = mysql_query($query_Doctor, $tryconnection) or die(mysql_error());
-$row_Doctor = mysql_fetch_assoc($Doctor);
+$row_Doctor = mysqli_fetch_assoc($Doctor);
 
 $query_ARARECV = "SELECT *, DATE_FORMAT(INVDTE, '%m/%d/%Y') AS INVDTE FROM ARARECV WHERE UNIQUE1='$unique1' AND CUSTNO='$_SESSION[client]' LIMIT 1";
 $ARARECV = mysql_query($query_ARARECV, $tryconnection) or die(mysql_error());
-$row_ARARECV = mysql_fetch_assoc($ARARECV);
+$row_ARARECV = mysqli_fetch_assoc($ARARECV);
 
 
 //OK TO CANCEL INVOICE
@@ -32,7 +32,7 @@ $RESULT = mysql_query($update_ARCUSTO, $tryconnection) or die(mysql_error());
 //UPDATE ARIVOI IF IT IS IN THE CURRENT MONTH -> if the unpaid invoice is from previous month, copy the record from ARRECV to ARINVOI with negative value
 $query_ARINVOIX = "SELECT * FROM ARINVOI WHERE UNIQUE1='$unique1' AND CUSTNO='$_SESSION[client]' LIMIT 1";
 $ARINVOIX = mysql_query($query_ARINVOIX, $tryconnection) or die(mysql_error());
-$row_ARINVOIX = mysql_fetch_assoc($ARINVOIX);
+$row_ARINVOIX = mysqli_fetch_assoc($ARINVOIX);
 $ponum="CANC. ".$row_ARARECV['ITOTAL'];
 $refno = ' '; 
 $invno = $row_ARARECV['INVNO'] ;
@@ -71,7 +71,7 @@ $insert_ARCASHR = "INSERT INTO ARCASHR (INVNO, INVDTE, CUSTNO, COMPANY, SALESMN,
 //SALESCAT
  $query_SALESCAT = "SELECT INVNO FROM SALESCAT WHERE UNIQUE1='$unique1' LIMIT 1";
  $SALESCAT = mysql_query($query_SALESCAT, $tryconnection) or die(mysql_error());
- $row_SALESCAT = mysql_fetch_assoc($SALESCAT);
+ $row_SALESCAT = mysqli_fetch_assoc($SALESCAT);
 if (!empty($row_SALESCAT)){
 //if it is CURRENT MONTH -> zero everything for this invoice
  $update_SALESCAT="UPDATE SALESCAT SET INVTOT=0.00 WHERE UNIQUE1='$unique1' AND INVCUST ='$_SESSION[client]'";
@@ -268,9 +268,9 @@ function bodyonunload()
                     <select name="salesmn" id="salesmn">
       		<?php
 			do { echo '<option value="'.$row_Staff['STAFF'].'">'.$row_Staff['STAFF'].'</option>'; 
-					} while ($row_Staff = mysql_fetch_assoc($Staff));
+					} while ($row_Staff = mysqli_fetch_assoc($Staff));
 			do { echo '<option value="'.$row_Doctor['DOCTOR'].'">'.$row_Doctor['DOCTOR'].'</option>';
-					} while ($row_Doctor = mysql_fetch_assoc($Doctor));
+					} while ($row_Doctor = mysqli_fetch_assoc($Doctor));
 			?>
     		</select>		</td>
       </tr>

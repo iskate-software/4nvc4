@@ -14,11 +14,11 @@ $client=$_SESSION['client'];
 mysql_select_db($database_tryconnection, $tryconnection);
 $query_Staff = "SELECT * FROM STAFF WHERE SIGNEDIN=1 ORDER BY PRIORITY";
 $Staff = mysql_query($query_Staff, $tryconnection) or die(mysql_error());
-$row_Staff = mysql_fetch_assoc($Staff);
+$row_Staff = mysqli_fetch_assoc($Staff);
 
 $query_Doctor = "SELECT * FROM DOCTOR WHERE SIGNEDIN=1 AND (SUBSTR(DOCTOR,1,3) = 'Dr ' OR INSTR(DOCTOR,'DVM')<> 0) ORDER BY PRIORITY";
 $Doctor = mysql_query($query_Doctor, $tryconnection) or die(mysql_error());
-$row_Doctor = mysql_fetch_assoc($Doctor);
+$row_Doctor = mysqli_fetch_assoc($Doctor);
 
 
 if (isset($_POST['check']) && !isset($_POST['cancel'])) {
@@ -27,7 +27,7 @@ if (isset($_POST['check']) && !isset($_POST['cancel'])) {
 //create an empty row in PETHOLD 
 $query_PETHOLD = "SELECT * FROM PETHOLD WHERE PHPETID='$_SESSION[patient]'";
 $PETHOLD = mysql_query($query_PETHOLD, $tryconnection) or die(mysql_error());
-$row_PETHOLD = mysql_fetch_assoc($PETHOLD);
+$row_PETHOLD = mysqli_fetch_assoc($PETHOLD);
 //if there is no record in PETHOLD for this patient, create one
 if (empty($row_PETHOLD['PHPETID'])){
 $query_PETHOLD="INSERT INTO PETHOLD (PHCUSTNO, PHPETID, PHPETNAME) VALUES ('$_SESSION[client]','$_SESSION[patient]','$_SESSION[petname]')";
@@ -40,19 +40,19 @@ $PETHOLD = mysql_unbuffered_query($query_PETHOLD, $tryconnection) or die(mysql_e
 //select the estimates from ESTHOLD where the INVCUST = custno
 $query_ESTHOLD = "SELECT DISTINCT INVHYPE FROM ESTHOLD WHERE INVCUST=$_SESSION[client]";
 $ESTHOLD = mysql_query($query_ESTHOLD, $tryconnection) or die(mysql_error());
-$row_ESTHOLD = mysql_fetch_assoc($ESTHOLD);
-$totalRows_ESTHOLD = mysql_num_rows($ESTHOLD);
+$row_ESTHOLD = mysqli_fetch_assoc($ESTHOLD);
+$totalRows_ESTHOLD = mysqli_num_rows($ESTHOLD);
 $query_INVHOLD = "SELECT INVNO FROM INVHOLD WHERE INVCUST=$_SESSION[client] LIMIT 1";
 $INVHOLD = mysql_query($query_INVHOLD, $tryconnection) or die(mysql_error());
-$row_INVHOLD = mysql_fetch_assoc($INVHOLD);
-$totalRows_INVHOLD = mysql_num_rows($INVHOLD);
+$row_INVHOLD = mysqli_fetch_assoc($INVHOLD);
+$totalRows_INVHOLD = mysqli_num_rows($INVHOLD);
 
    if (!isset($_SESSION['round']) && $_SESSION['refID']!='EST' && $totalRows_INVHOLD==0) {     
     $query_lockc = "LOCK TABLES CRITDATA WRITE" ;
     $get_it = mysql_query($query_lockc, $tryconnection) or die(mysql_error()) ;    
 	$query_INVNO = "SELECT LASTINV FROM CRITDATA LIMIT 1";
 	$INVNO = mysql_query($query_INVNO, $tryconnection) or die(mysql_error());
-	$row_INVNO = mysql_fetch_assoc($INVNO);
+	$row_INVNO = mysqli_fetch_assoc($INVNO);
 	$_SESSION['minvno'] = $row_INVNO['LASTINV'] + 1 ;
 	$query_INVNO = "UPDATE CRITDATA SET LASTINV = '$_SESSION[minvno]'" ;
 	$INVNO = mysql_query($query_INVNO,$tryconnection) or die(mysql_error()) ;
@@ -348,14 +348,14 @@ document.Staff.submit();
       <?php
 do {  
       echo '<option value="'.$row_Doctor['DOCTOR'].'">'.$row_Doctor['DOCTOR'].'</option>';
-} while ($row_Doctor = mysql_fetch_assoc($Doctor));
+} while ($row_Doctor = mysqli_fetch_assoc($Doctor));
 // Is this where the doctors double up with the staff?  - YES :)
 	  
 do {  
 ?>
       <option value="<?php echo $row_Staff['STAFF']?>" ><?php echo $row_Staff['STAFF']?></option>
       <?php
-} while ($row_Staff = mysql_fetch_assoc($Staff));
+} while ($row_Staff = mysqli_fetch_assoc($Staff));
 //  $rows = mysql_num_rows($Staff);
 //  if($rows > 0) {
 //      mysql_data_seek($Staff, 0);

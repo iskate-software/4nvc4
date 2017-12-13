@@ -9,23 +9,23 @@ $unique1=$_GET['unique1'];
 mysql_select_db($database_tryconnection, $tryconnection);
 $query_Staff = "SELECT * FROM STAFF WHERE SIGNEDIN=1";
 $Staff = mysql_query($query_Staff, $tryconnection) or die(mysql_error());
-$row_Staff = mysql_fetch_assoc($Staff);
+$row_Staff = mysqli_fetch_assoc($Staff);
 
 $query_Doctor = "SELECT * FROM DOCTOR WHERE SIGNEDIN=1 AND INSTR(DOCTOR,'TBA') = 0 AND INSTR(DOCTOR,'TECHNICIAN') = 0 AND INSTR(DOCTOR,'HOSPITAL') = 0 ";
 $Doctor = mysql_query($query_Doctor, $tryconnection) or die(mysql_error());
-$row_Doctor = mysql_fetch_assoc($Doctor);
+$row_Doctor = mysqli_fetch_assoc($Doctor);
 
 
 if ($_GET['todo']=='create' || $_GET['todo']=='apply'){
 //$query_ARARECV = "SELECT *, DATE_FORMAT(INVDTE, '%m/%d/%Y') AS INVDTE FROM ARARECV WHERE UNIQUE1 = '$unique1' AND CUSTNO='$_SESSION[client]'";
 $query_ARARECV = "SELECT *, DATE_FORMAT(INVDTE, '%m/%d/%Y') AS INVDTE FROM ARARECV WHERE UNIQUE1 = '$unique1' ";
 $ARARECV = mysql_query($query_ARARECV, $tryconnection) or die(mysql_error());
-$row_ARARECV = mysql_fetch_assoc($ARARECV);
+$row_ARARECV = mysqli_fetch_assoc($ARARECV);
 
 	if ($_GET['todo']=='apply'){
 	$query_ARCUSTO = "SELECT BALANCE, CREDIT FROM ARCUSTO WHERE CUSTNO='$_SESSION[client]'";
 	$ARCUSTO = mysql_query($query_ARCUSTO, $tryconnection) or die(mysql_error());
-	$row_ARCUSTO = mysql_fetch_assoc($ARCUSTO);
+	$row_ARCUSTO = mysqli_fetch_assoc($ARCUSTO);
 	$dep2payment = 0 ;
 		if ($row_ARCUSTO['CREDIT'] <= $row_ARARECV['IBAL']){
 		$dep2payment = $row_ARCUSTO['CREDIT'];
@@ -44,7 +44,7 @@ $file2look=$_GET['file2look'];
 	if ($file2look=='ARRECHS'){
 		$query_ARARECV = "SELECT * FROM ARARECV WHERE  CUSTNO='$_SESSION[client]'AND UNIQUE1 = '$unique1' ";
 		$ARARECV = mysql_query($query_ARARECV, $tryconnection) or die(mysql_error());
-		$row_ARARECV = mysql_fetch_assoc($ARARECV);
+		$row_ARARECV = mysqli_fetch_assoc($ARARECV);
 		
 		if (empty($row_ARARECV)){
 		$copy_ARRECHS="INSERT INTO ARARECV SELECT * FROM ARRECHS WHERE UNIQUE1 = '$unique1' AND CUSTNO='$_SESSION[client]'";
@@ -54,7 +54,7 @@ $file2look=$_GET['file2look'];
 		
 $query_ARARECV = "SELECT *, DATE_FORMAT(INVDTE, '%m/%d/%Y') AS INVDTE FROM $file2look WHERE UNIQUE1 = '$unique1' AND CUSTNO='$_SESSION[client]'";
 $ARARECV = mysql_query($query_ARARECV, $tryconnection) or die(mysql_error());
-$row_ARARECV = mysql_fetch_assoc($ARARECV);
+$row_ARARECV = mysqli_fetch_assoc($ARARECV);
 
 }//else if ($_GET['todo']=='cancel')
 
@@ -65,7 +65,7 @@ if (isset($_POST['ok'])){
 $invdte=$_POST['minvdte'].' '.date('H:i:s');
 $convt_date = "SELECT STR_TO_DATE('$invdte', '%m/%d/%Y %H:%i:%s')" ;
 $get_date = mysql_query($convt_date, $tryconnection) or die(mysql_error()) ;
-$row_datex = mysql_fetch_array($get_date) ;
+$row_datex = mysqli_fetch_array($get_date) ;
 $ibal=$row_ARARECV['IBAL']-$_POST['amtpaid'];
 //$amtpaid=$row_ARARECV['AMTPAID']+$_POST['amtpaid'];
 $amtpaid = $_POST['amtpaid'];
@@ -106,7 +106,7 @@ $RESULT = mysql_query($update_ARARECV, $tryconnection) or die(mysql_error());
 		  $refno = $_POST['refno'] ;
 		  $query_ARARECV2="SELECT * FROM ARARECV WHERE CUSTNO='$_SESSION[client]' AND IBAL > 0 ORDER BY invdte, UNIQUE1 ASC";
 				$ARARECV2=mysql_query($query_ARARECV2, $tryconnection) or die(mysql_error());
-				$row_ARARECV2=mysql_fetch_assoc($ARARECV2);
+				$row_ARARECV2=mysqli_fetch_assoc($ARARECV2);
 // AND AUTOPAY
 				do {
 					
@@ -139,7 +139,7 @@ $RESULT = mysql_query($update_ARARECV, $tryconnection) or die(mysql_error());
 					$remainingpayment=$remainingpayment - $amtpaid;
 
 					}//if ($remainingpayment > 0){
-				} while ($row_ARARECV2=mysql_fetch_assoc($ARARECV2) AND $remainingpayment > 0 );
+				} while ($row_ARARECV2=mysqli_fetch_assoc($ARARECV2) AND $remainingpayment > 0 );
 			
 		}
 
@@ -163,7 +163,7 @@ if ($remainingpayment > 0 ) {
 
 $query_ARCUSTO = "SELECT BALANCE, CREDIT FROM ARCUSTO WHERE CUSTNO='$_SESSION[client]' LIMIT 1";
 $ARCUSTO = mysql_query($query_ARCUSTO, $tryconnection) or die(mysql_error());
-$row_ARCUSTO = mysql_fetch_assoc($ARCUSTO);
+$row_ARCUSTO = mysqli_fetch_assoc($ARCUSTO);
 
 $balance=$row_ARCUSTO['BALANCE']-$realamt;
 
@@ -208,7 +208,7 @@ $RESULT = mysql_query($insert_ARCASHR, $tryconnection) or die(mysql_error());
 	
 $query_ARCUSTO = "SELECT BALANCE, CREDIT FROM ARCUSTO WHERE CUSTNO='$_SESSION[client]' LIMIT 1";
 $ARCUSTO = mysql_query($query_ARCUSTO, $tryconnection) or die(mysql_error());
-$row_ARCUSTO = mysql_fetch_assoc($ARCUSTO);
+$row_ARCUSTO = mysqli_fetch_assoc($ARCUSTO);
 
 $balance=$row_ARCUSTO['BALANCE']+$amtpaid;
 $credit=$row_ARCUSTO['CREDIT']-$amtpaid;
@@ -376,9 +376,9 @@ function bodyonunload()
                     <select name="salesmn" id="salesmn">
       		<?php
 			do { echo '<option value="'.$row_Staff['STAFF'].'">'.$row_Staff['STAFF'].'</option>'; 
-					} while ($row_Staff = mysql_fetch_assoc($Staff));
+					} while ($row_Staff = mysqli_fetch_assoc($Staff));
 			do { echo '<option value="'.$row_Doctor['DOCTOR'].'">'.$row_Doctor['DOCTOR'].'</option>';
-					} while ($row_Doctor = mysql_fetch_assoc($Doctor));
+					} while ($row_Doctor = mysqli_fetch_assoc($Doctor));
 			?>
     		</select>		</td>
       </tr>

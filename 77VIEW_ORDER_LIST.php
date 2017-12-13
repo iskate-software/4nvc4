@@ -5,11 +5,11 @@ require_once('../../tryconnection.php');
 mysql_select_db($database_tryconnection, $tryconnection);
 $select_INVENTOR = "SELECT * FROM INVENTOR WHERE VPCCODE=$_GET[soldid]";
 $INVENTOR = mysql_query($select_INVENTOR) or die(mysql_error());
-$row_INVENTOR = mysql_fetch_assoc($INVENTOR);
+$row_INVENTOR = mysqli_fetch_assoc($INVENTOR);
 
 $select_ARINVT = "SELECT * FROM ARINVT WHERE VPARTNO=$row_INVENTOR[VPCCODE] LIMIT 1";
 $ARINVT = mysql_query($select_ARINVT) or die(mysql_error());
-$row_ARINVT = mysql_fetch_assoc($ARINVT);
+$row_ARINVT = mysqli_fetch_assoc($ARINVT);
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/POP UP WINDOWS TEMPLATE.dwt" codeOutsideHTMLIsLocked="false" -->

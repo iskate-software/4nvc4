@@ -10,20 +10,20 @@ mysql_select_db($database_tryconnection, $tryconnection);
 if ($_GET['todo']=='create' || $_GET['todo']=='apply'){
 $query_ARARECV = "SELECT *, DATE_FORMAT(INVDTE, '%m/%d/%Y') AS INVDTE, DATE_FORMAT(DTEPAID, '%m/%d/%Y') AS DTEPAID FROM ARARECV WHERE CUSTNO='$client'";
 $ARARECV = mysql_query($query_ARARECV, $tryconnection) or die(mysql_error());
-$row_ARARECV = mysql_fetch_assoc($ARARECV);
+$row_ARARECV = mysqli_fetch_assoc($ARARECV);
 }
 
 else if ($_GET['todo']=='cancel'){
 $file2look='ARRECHS';
 $query_ARARECV = "SELECT *, DATE_FORMAT(INVDTE, '%m/%d/%Y') AS INVDTE, DATE_FORMAT(DTEPAID, '%m/%d/%Y') AS DTEPAID FROM ARARECV WHERE CUSTNO='$client'";
 $ARARECV = mysql_query($query_ARARECV, $tryconnection) or die(mysql_error());
-$row_ARARECV = mysql_fetch_assoc($ARARECV);
+$row_ARARECV = mysqli_fetch_assoc($ARARECV);
 	
 	if ($_GET['tea']=='1'){
 	$file2look=$_GET['file2look'];
 	$query_ARARECV = "SELECT *, DATE_FORMAT(INVDTE, '%m/%d/%Y') AS INVDTE, DATE_FORMAT(DTEPAID, '%m/%d/%Y') AS DTEPAID FROM $file2look WHERE CUSTNO='$client'";
 	$ARARECV = mysql_query($query_ARARECV, $tryconnection) or die(mysql_error());
-	$row_ARARECV = mysql_fetch_assoc($ARARECV);
+	$row_ARARECV = mysqli_fetch_assoc($ARARECV);
 		if ($_GET['file2look']=='ARARECV'){
 		$file2look='ARRECHS';
 		}
@@ -155,7 +155,7 @@ document.location="CASH_REC_IFRAME.php?todo=cancel&tea=1&file2look="+file2look;
 			echo "<td width='110'>".$row_ARARECV['PONUM']."</td>";
 			echo "<td width=''>".$row_ARARECV['UNIQUE1']."</td>";
 			echo "</tr>";
-			} while ($row_ARARECV = mysql_fetch_assoc($ARARECV));
+			} while ($row_ARARECV = mysqli_fetch_assoc($ARARECV));
 		?>
     	</table>
     </div>

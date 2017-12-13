@@ -7,7 +7,7 @@ $spec=$_GET['species'];
 
 $query_HXFILTER = "SELECT * FROM HXFILTER WHERE HXCNAME!='Diagnostics'";
 $HXFILTER = mysql_query($query_HXFILTER, $tryconnection) or die(mysql_error());
-$row_HXFILTER = mysql_fetch_assoc($HXFILTER);
+$row_HXFILTER = mysqli_fetch_assoc($HXFILTER);
 
 if (isset($_POST['save']))
 {
@@ -84,7 +84,7 @@ opener.document.location.reload();
       <option value=""></option>
        	<?php do {
 		echo '<option id="'.$row_HXFILTER['HXCAT'],'" value="'.$row_HXFILTER['HXCAT'],'">'.$row_HXFILTER['HXCNAME'].'</option>';
-		} while ($row_HXFILTER = mysql_fetch_assoc($HXFILTER));
+		} while ($row_HXFILTER = mysqli_fetch_assoc($HXFILTER));
 		 ?>
       </select>	</td>
     </tr>

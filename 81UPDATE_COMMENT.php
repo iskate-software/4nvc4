@@ -6,7 +6,7 @@ mysql_select_db($database_tryconnection, $tryconnection);
 
 $query_COMMENTS = sprintf("SELECT * FROM ARSYSCOMM WHERE ARSYSCOMM.COMMID='%s'", $_GET['commid']);
 $COMMENTS = mysql_query($query_COMMENTS, $tryconnection) or die(mysql_error());
-$row_COMMENTS = mysql_fetch_assoc($COMMENTS);
+$row_COMMENTS = mysqli_fetch_assoc($COMMENTS);
 
 $path=$_GET['path'];
 
@@ -118,5 +118,5 @@ function bodyonload()
 </body>
 <!-- InstanceEnd --></html>
 <?php
-mysql_free_result($COMMENTS);
+mysqli_free_result($COMMENTS);
 ?>

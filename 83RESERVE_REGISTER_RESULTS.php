@@ -5,11 +5,11 @@ require_once('../../tryconnection.php');
 mysql_select_db($database_tryconnection, $tryconnection);
 $search_INVHOLD="SELECT *, DATE_FORMAT(INVDATETIME, '%m/%d/%Y') AS INVDTE FROM INVHOLD";
 $INVHOLD=mysql_query($search_INVHOLD, $tryconnection ) or die(mysql_error());
-$row_INVHOLD=mysql_fetch_assoc($INVHOLD);
+$row_INVHOLD=mysqli_fetch_assoc($INVHOLD);
 
 $search_GRANDTOTAL="SELECT SUM(INVTOT) AS GRANDTOTAL FROM INVHOLD WHERE INVDESCR='TOTAL'";
 $GRANDTOTAL=mysql_query($search_GRANDTOTAL, $tryconnection ) or die(mysql_error());
-$row_GRANDTOTAL=mysql_fetch_assoc($GRANDTOTAL);
+$row_GRANDTOTAL=mysqli_fetch_assoc($GRANDTOTAL);
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/DVMBasicTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
@@ -190,7 +190,7 @@ echo '>
 	if ($newcust!=$row_INVHOLD['INVCUST']){
 	$query_CLIENT = "SELECT * FROM ARCUSTO WHERE CUSTNO = '".$row_INVHOLD['INVCUST']."'";
 	$CLIENT = mysql_query($query_CLIENT, $tryconnection) or die(mysql_error());
-	$row_CLIENT = mysql_fetch_assoc($CLIENT);
+	$row_CLIENT = mysqli_fetch_assoc($CLIENT);
 echo substr($row_CLIENT['COMPANY'].", ".$row_CLIENT['CONTACT'],0,29);
 	}
 echo '&nbsp;</td>
@@ -234,7 +234,7 @@ echo '<tr>
 }  
   
   }
-  while ($row_INVHOLD=mysql_fetch_assoc($INVHOLD));
+  while ($row_INVHOLD=mysqli_fetch_assoc($INVHOLD));
 
 
 echo '<tr>

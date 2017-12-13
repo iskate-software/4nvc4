@@ -12,7 +12,7 @@ mysql_select_db($database_tryconnection, $tryconnection);
 if (!isset($_SESSION['tea'])){
 $query_INVNO = "SELECT LASTINV FROM CRITDATA ";
 $INVNO = mysql_query($query_INVNO, $tryconnection) or die(mysql_error());
-$row_INVNO = mysql_fetch_assoc($INVNO);
+$row_INVNO = mysqli_fetch_assoc($INVNO);
 $_SESSION['minvno'] = $row_INVNO['LASTINV'] + 1 ;
 $query_INVNO = "UPDATE CRITDATA SET LASTINV = '$_SESSION[minvno]'" ;
 $INVNO = mysql_query($query_INVNO,$tryconnection) or die(mysql_error()) ;
@@ -22,21 +22,21 @@ $_SESSION['amtpaid'] = 0 ;
 
 $query_Staff = "SELECT * FROM STAFF WHERE SIGNEDIN=1";
 $Staff = mysql_query($query_Staff, $tryconnection) or die(mysql_error());
-$row_Staff = mysql_fetch_assoc($Staff);
+$row_Staff = mysqli_fetch_assoc($Staff);
 
 $query_Doctor = "SELECT * FROM DOCTOR WHERE SIGNEDIN=1";
 $Doctor = mysql_query($query_Doctor, $tryconnection) or die(mysql_error());
-$row_Doctor = mysql_fetch_assoc($Doctor);
+$row_Doctor = mysqli_fetch_assoc($Doctor);
 
 // use today's date to figure out the taxname and rate.
 
 $STRUC_TAX = "SELECT DATE_FORMAT(NOW(),'%m/%d/%Y') AS TODAY" ;
 $get_Date = mysql_query($STRUC_TAX, $tryconnection) or die(mysql_error()) ;
-$minvdte = mysql_fetch_array($get_Date) ;
+$minvdte = mysqli_fetch_array($get_Date) ;
 
 $query_TAX = "SELECT HTAXNAME, HOTAXNAME, HGST, HOGST, DATE_FORMAT(HGSTDATE,'%m/%d/%Y') AS HGSTDATE, HGSTNO FROM CRITDATA";
 $TAX = mysql_query($query_TAX, $tryconnection) or die(mysql_error());
-$row_TAX = mysql_fetch_assoc($TAX);
+$row_TAX = mysqli_fetch_assoc($TAX);
 
 $hgstdate=strtotime($row_TAX['HGSTDATE']);
 
@@ -123,7 +123,7 @@ if ($_POST['amtpaid'] <> 0 ) {
 			// now get the unique number the system has assigned to this receivable, so that it can be put into the invoice record.
 		     $GET_UNIQUE1 = "SELECT UNIQUE1 FROM ARARECV WHERE INVNO = '$_SESSION[csminvno] '" ;
 		     $FOR_INVOICE = mysql_query($GET_UNIQUE1, $tryconnection) or die(mysql_error()) ;
-		     $row_ARFORIN = mysql_fetch_assoc($FOR_INVOICE) ;
+		     $row_ARFORIN = mysqli_fetch_assoc($FOR_INVOICE) ;
 		     $uni = $row_ARFORIN['UNIQUE1'] ;
 		     
 $insert_ARINVOI = "INSERT INTO ARINVOI (INVNO, INVDTE, CUSTNO, COMPANY, SALESMN, PONUM, REFNO, TAX, ITOTAL,DISCOUNT,PTAX, AMTPAID,DTEPAID, IBAL, INVPET, UNIQUE1) 
@@ -478,9 +478,9 @@ document.getElementById('inuse').innerText=localStorage.xdatabase;
             <select name="salesmn" id="salesmn">
       		<?php
 			do { echo '<option value="'.$row_Staff['STAFF'].'">'.$row_Staff['STAFF'].'</option>'; 
-					} while ($row_Staff = mysql_fetch_assoc($Staff));
+					} while ($row_Staff = mysqli_fetch_assoc($Staff));
 			do { echo '<option value="'.$row_Doctor['DOCTOR'].'">'.$row_Doctor['DOCTOR'].'</option>';
-					} while ($row_Doctor = mysql_fetch_assoc($Doctor));
+					} while ($row_Doctor = mysqli_fetch_assoc($Doctor));
 			?>
     		</select>
             

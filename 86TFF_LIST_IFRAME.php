@@ -10,8 +10,8 @@ $spec=$_GET['species'];
 
 $query_CAN1=sprintf("SELECT TFFID, TNO, TDESCR, TTYPE, TCATGRY FROM VETCAN WHERE TCATGRY = '%s' AND TSPECIES='%s' ORDER BY TNO ASC",$cat, $spec);
 $CAN1 = mysql_query($query_CAN1, $tryconnection) or die(mysql_error());
-$row_CAN1 = mysql_fetch_assoc($CAN1);
-$totalRows_CAN1 = mysql_num_rows($CAN1);
+$row_CAN1 = mysqli_fetch_assoc($CAN1);
+$totalRows_CAN1 = mysqli_num_rows($CAN1);
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/IFRAME.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
@@ -88,7 +88,7 @@ echo"<option value='".$row_CAN1['TFFID']."'>";
 if ($row_CAN1['TNO']<10){echo "&nbsp;&nbsp;";}
 echo $row_CAN1['TNO']."&nbsp;".$row_CAN1['TDESCR'];
 echo"</option>";
-} while ($row_CAN1 = mysql_fetch_assoc($CAN1));
+} while ($row_CAN1 = mysqli_fetch_assoc($CAN1));
 echo"</select>";		 
 ?>
 <input type="hidden" name="category" value="<?php echo $_GET['category']; ?>"/>

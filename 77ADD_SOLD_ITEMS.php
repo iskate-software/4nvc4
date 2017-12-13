@@ -7,25 +7,25 @@ $reqsupplier = $_SESSION['supplier'] ;
 
 $select_INVSOLD = "SELECT INVVPC, INVDESC, SUPPLIER, SUM(INVUNITS) AS INVUNITS FROM INVSOLD JOIN ARINVT ON (INVVPC = VPARTNO) WHERE ARINVT.SUPPLIER ='$reqsupplier' GROUP BY INVVPC ";
 $INVSOLD = mysql_query($select_INVSOLD) or die(mysql_error());
-$row_INVSOLD = mysql_fetch_assoc($INVSOLD);
+$row_INVSOLD = mysqli_fetch_assoc($INVSOLD);
 
 // Now go through the list, check against the inventory, and order it if the sold amount >= minimum qty
 
-while ($row_INVSOLD = mysql_fetch_assoc($INVSOLD)) {
+while ($row_INVSOLD = mysqli_fetch_assoc($INVSOLD)) {
  $id = $row_INVSOLD['INVVPC'] ;
  $qty = $row_INVSOLD['INVUNITS'] ;
  
  if ($id <> '       ') {
    $chk_Qty = "SELECT ITEM, ONHAND, ONORDER, ORDERPT, ORDERQTY, ORDERED, MONITOR, SAFETY, PKGQTY, COST, SEQ, DESCRIP, SUPPLIER, VPARTNO FROM ARINVT WHERE VPARTNO = '$id' LIMIT 1" ;
    $query_Qty = mysql_query($chk_Qty, $tryconnection) or die(mysql_error()) ;
-   $row_Qty = mysql_fetch_assoc($query_Qty) ;
+   $row_Qty = mysqli_fetch_assoc($query_Qty) ;
  
  // is it to be monitored, and if so, is the sold quantity >= orderqty?
  // take into consideration there may already be an outstanding order for this.
  
    $chk_Ordered = "SELECT CODE, VPCCODE, UNITS, RECEIVED FROM INVTHIST WHERE VPCCODE = '$id' AND RECEIVED = 0 " ;
    $query_hx = mysql_query($chk_Ordered, $tryconnection) or die(mysql_error()) ;
-   $row_hx = mysql_fetch_assoc($query_hx) ;
+   $row_hx = mysqli_fetch_assoc($query_hx) ;
    if (!empty($row_hx)) {
      $oldorder = $row_hx['UNITS'] ;
    }
@@ -38,7 +38,7 @@ while ($row_INVSOLD = mysql_fetch_assoc($INVSOLD)) {
    // Just in case some trigger happy fool has already done this, then a bunch more have been sold, check to see if already on the Current Order list
      $is_Order = "SELECT CODE, VPCCODE, SUM(UNITS) AS UNITS FROM INVENTOR WHERE VPCCODE = '$id' GROUP BY VPCCODE " ;
      $query_Order = mysql_query($is_Order, $tryconnection) or die(mysql_error()) ;
-     $row_Order = mysql_fetch_assoc($query_Order) ;
+     $row_Order = mysqli_fetch_assoc($query_Order) ;
     
      if (!empty($row_Order)) {
      // now to clean up the mess, trash all the existing orders for this product, to be replaced by this new one.

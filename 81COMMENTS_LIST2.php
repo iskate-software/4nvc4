@@ -3,7 +3,7 @@ require_once('../../tryconnection.php');
 mysql_select_db($database_tryconnection, $tryconnection);
 $query_Recordset1 = "SELECT * FROM ARSCOM  WHERE COMMCODE LIKE '%' ORDER BY COMMCODE";
 $Recordset1 = mysql_query($query_Recordset1, $tryconnection) or die(mysql_error());
-$row_Recordset1 = mysql_fetch_assoc($Recordset1);
+$row_Recordset1 = mysqli_fetch_assoc($Recordset1);
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -157,7 +157,7 @@ function bodyonload()
         <td align="left" class="Labels"><a href="UPDATE_COMMENT2.php?recordID=<?php echo $row_Recordset1['COMMCODE']; ?>"><?php echo $row_Recordset1['COMMCODE']; ?></a></td>
         <td align="left" class="Labels"><?php echo $row_Recordset1['COMMENT']; ?></td>
       </tr>
-      <?php } while ($row_Recordset1 = mysql_fetch_assoc($Recordset1)); ?>
+      <?php } while ($row_Recordset1 = mysqli_fetch_assoc($Recordset1)); ?>
   </table>
 </div>
 </body>

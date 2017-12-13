@@ -105,5 +105,5 @@ function bodyonblur()
 </body>
 <!-- InstanceEnd --></html>
 <?php
-mysql_free_result($commlist);
+mysqli_free_result($commlist);
 ?>

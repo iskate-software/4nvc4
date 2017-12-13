@@ -7,7 +7,7 @@ include("../../ASSETS/tax.php");
 ////////// One-timer for the tracker for BBAH
     $query_invdatetime="SELECT STR_TO_DATE('$_SESSION[minvdte]','%m/%d/%Y')";
 	$invdatetime= mysql_query($query_invdatetime, $tryconnection) or die(mysql_error());
-	$row_invdatetime=mysql_fetch_array($invdatetime);
+	$row_invdatetime=mysqli_fetch_array($invdatetime);
 /////////////////////CLIENT + PATIENT INFO/////////////////////////
 if (isset($_GET['patient'])){
 $patient=$_GET['patient'];
@@ -39,7 +39,7 @@ $ps = "j";
 mysql_select_db($database_tryconnection, $tryconnection);
 $query_PATIENT_CLIENT = "SELECT *, DATE_FORMAT(PDOB,'%m/%d/%Y') AS PDOB FROM PETMAST JOIN ARCUSTO ON (ARCUSTO.CUSTNO=PETMAST.CUSTNO) WHERE PETID = '$patient' LIMIT 1";
 $PATIENT_CLIENT = mysql_query($query_PATIENT_CLIENT, $tryconnection) or die(mysql_error());
-$row_PATIENT_CLIENT = mysql_fetch_assoc($PATIENT_CLIENT);
+$row_PATIENT_CLIENT = mysqli_fetch_assoc($PATIENT_CLIENT);
 
 $pettype=$row_PATIENT_CLIENT['PETTYPE'];
 $_SESSION['pettype'] = $pettype ;
@@ -59,15 +59,15 @@ function categ($tryconnection,$pettype)
 {
 $query_CATEGORY ="SELECT DISTINCT TCATGRY, TTYPE FROM VETCAN WHERE TSPECIES='$pettype' ORDER BY TCATGRY ASC";
 $CATEGORY = mysql_query($query_CATEGORY, $tryconnection) or die(mysql_error());
-$row_CATEGORY = mysql_fetch_assoc($CATEGORY);
-$totalRows_CATEGORY = mysql_num_rows($CATEGORY);
+$row_CATEGORY = mysqli_fetch_assoc($CATEGORY);
+$totalRows_CATEGORY = mysqli_num_rows($CATEGORY);
 
 echo"<select name='category1' class='SelectList' id='category1' multiple='multiple' onchange='category();' >";
 do {
 echo"<option value='".$row_CATEGORY['TCATGRY']."'>";
 echo $row_CATEGORY['TTYPE'];
 echo"</option>\n";
-} while ($row_CATEGORY = mysql_fetch_assoc($CATEGORY));
+} while ($row_CATEGORY = mysqli_fetch_assoc($CATEGORY));
 echo"</select>";		 
 
 }
@@ -77,15 +77,15 @@ function subcateg($tryconnection,$cat, $pettype)
 {
 $query_PRODUCTSERVICE = sprintf("SELECT TFFID, TNO, TDESCR, TTYPE, TFEE, TCATGRY, TDISCOUNT, TSTAT, TNOHST FROM VETCAN WHERE TCATGRY = '%s' AND  TSPECIES='$pettype' ORDER BY TNO ASC",mysql_real_escape_string($cat));
 $PRODUCTSERVICE = mysql_query($query_PRODUCTSERVICE, $tryconnection) or die(mysql_error());
-$row_PRODUCTSERVICE = mysql_fetch_assoc($PRODUCTSERVICE);
-$totalRows_PRODUCTSERVICE = mysql_num_rows($PRODUCTSERVICE);
+$row_PRODUCTSERVICE = mysqli_fetch_assoc($PRODUCTSERVICE);
+$totalRows_PRODUCTSERVICE = mysqli_num_rows($PRODUCTSERVICE);
 
 echo"<select name='prodser' id='prodser' multiple='multiple' class='SelectList' onchange='modifyitem()' >";
 do {
 echo"<option value='".$row_PRODUCTSERVICE['TFFID']."' id='".$row_PRODUCTSERVICE['TFFID']."'>";
 echo $row_PRODUCTSERVICE['TDESCR'];
 echo"</option>";
-} while ($row_PRODUCTSERVICE = mysql_fetch_assoc($PRODUCTSERVICE));
+} while ($row_PRODUCTSERVICE = mysqli_fetch_assoc($PRODUCTSERVICE));
 echo"</select>";		 
 
 }
@@ -94,14 +94,14 @@ echo"</select>";
 
 $query_SELECTEDITEM = sprintf("SELECT * FROM VETCAN WHERE TFFID = '%s' LIMIT 1",$ps);
 $SELECTEDITEM = mysql_query($query_SELECTEDITEM, $tryconnection) or die(mysql_error());
-$row_SELECTEDITEM = mysql_fetch_assoc($SELECTEDITEM);
+$row_SELECTEDITEM = mysqli_fetch_assoc($SELECTEDITEM);
 
 
 
 if (!empty($row_SELECTEDITEM['TAUTOCOMM'])){
 $query_TAUTOCOMM = "SELECT * FROM ARSYSCOMM WHERE COMMCODE='$row_SELECTEDITEM[TAUTOCOMM]'";
 $TAUTOCOMM = mysql_query($query_TAUTOCOMM, $tryconnection) or die(mysql_error());
-$row_TAUTOCOMM = mysql_fetch_assoc($TAUTOCOMM);
+$row_TAUTOCOMM = mysqli_fetch_assoc($TAUTOCOMM);
 }
 
 
@@ -136,14 +136,14 @@ $row_TAUTOCOMM = mysql_fetch_assoc($TAUTOCOMM);
 							$lcode=$dosage.$_POST['xtype'];
 $query_TAUTOCOMM = "SELECT * FROM ARSYSCOMM WHERE COMMCODE='$lcode'";
 $TAUTOCOMM = mysql_query($query_TAUTOCOMM, $tryconnection) or die(mysql_error());
-$row_TAUTOCOMM = mysql_fetch_assoc($TAUTOCOMM);
+$row_TAUTOCOMM = mysqli_fetch_assoc($TAUTOCOMM);
 							$lcomment=$row_TAUTOCOMM['COMMENT'];
 							$lcomment=str_replace('XXX', $invunits/$_POST['dosage']/$_POST['days'], $lcomment);
 							$lcomment=str_replace('YYY', $_POST['days'], $lcomment);
 							$autcomm=$_POST['autocomm'];
 $query_TAUTOCOMM = "SELECT * FROM ARSYSCOMM WHERE COMMCODE='$autcomm'";
 $TAUTOCOMM = mysql_query($query_TAUTOCOMM, $tryconnection) or die(mysql_error());
-$row_TAUTOCOMM = mysql_fetch_assoc($TAUTOCOMM);
+$row_TAUTOCOMM = mysqli_fetch_assoc($TAUTOCOMM);
 							$invoicecomment=str_replace('$PETNAME', $_SESSION['petname'], $row_TAUTOCOMM['COMMENT']);
 							if (!empty($invoicecomment)){$memo='3';}
 						   }
@@ -890,7 +890,7 @@ sessionStorage.setItem('iwrite',iwrite);
 		
 		$query_VACCINES = "SELECT * FROM VACCINES WHERE NAME='$value'";
 		$VACCINES = mysql_query($query_VACCINES, $tryconnection) or die(mysql_error());
-		$row_VACCINES = mysql_fetch_assoc($VACCINES);
+		$row_VACCINES = mysqli_fetch_assoc($VACCINES);
 		$isitkitpup = strpos($row_SELECTEDITEM['TTYPE'],' WK ') ;
 		$isitlast = strpos($row_SELECTEDITEM['TTYPE'],'16 ') ;
 		$isit3yr = strpos($row_SELECTEDITEM['TDESCR'],'3 year') ;
@@ -926,7 +926,7 @@ sessionStorage.setItem('iwrite',iwrite);
          <?php if ($row_SELECTEDITEM['TSERUM']=='1' && substr($row_SELECTEDITEM['TFLAGS'],0,1) == '1'){
 		 	$q_critdata="SELECT HRABTAG FROM CRITDATA LIMIT 1";
 			$critdata=mysql_query($q_critdata, $tryconnection) or die (mysql_error());
-			$row_critdata=mysql_fetch_array($critdata);
+			$row_critdata=mysqli_fetch_array($critdata);
 		 		if ($row_critdata[0]=='0'){
 				echo "<label>&nbsp;Rabies tag&nbsp;<input type='text' class='Input' name='xrabtag' id='xrabtag' size='14' onfocus='InputOnFocus(this.id)' onblur='InputOnBlur(this.id)' /></label>";
 				}

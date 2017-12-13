@@ -14,7 +14,7 @@ $startdate='00/00/0000';
 mysql_select_db($database_tryconnection, $tryconnection);
 $startdate="SELECT STR_TO_DATE('$startdate','%m/%d/%Y')";
 $startdate=mysql_query($startdate, $tryconnection) or die(mysql_error());
-$startdate=mysql_fetch_array($startdate);
+$startdate=mysqli_fetch_array($startdate);
 
 if (!empty($_POST['enddate'])){
 $enddate=$_POST['enddate'];
@@ -25,7 +25,7 @@ $enddate=date('m/d/Y');
 
 $enddate="SELECT STR_TO_DATE('$enddate','%m/%d/%Y')";
 $enddate=mysql_query($enddate, $tryconnection) or die(mysql_error());
-$enddate=mysql_fetch_array($enddate);
+$enddate=mysqli_fetch_array($enddate);
 
 // This code examines the detailed invoicing files to determine which clients were
 // sold a particular inventory item. It uses the variable minvvpc as a key.
@@ -53,12 +53,12 @@ $Setup_4 = mysql_query($Setup_4, $tryconnection ) or die(mysql_error()) ;
 
 $Get_History = "SELECT LASTCLOSE FROM PRACTICE WHERE LASTCLOSE > $startdate[0]" ;
 $Is_History = mysql_query($Get_History, $tryconnection ) or die(mysql_error()) ;
-$row_Is_History = mysql_fetch_array($Is_History);
+$row_Is_History = mysqli_fetch_array($Is_History);
 
 $i=1;
 $Use_Hist = 0 ;
 
-while($i<=3 && $row_Is_History = mysql_fetch_array($Is_History)){
+while($i<=3 && $row_Is_History = mysqli_fetch_array($Is_History)){
 
   if ( $row_Is_History['LASTCLOSE'] > $startdate[0] ) {
     $Use_Hist = 1 ;
@@ -74,11 +74,11 @@ $i++;
 
 $select_SALESEARCH = "SELECT *, DATE_FORMAT(INVDATETIME, '%m/%d/%Y') AS INVDATETIME  FROM SALESEARCH JOIN ARCUSTO ON (ARCUSTO.CUSTNO=SALESEARCH.INVCUST)";
 $SALESEARCH = mysql_query($select_SALESEARCH) or die(mysql_error());
-$row_SALESEARCH = mysql_fetch_assoc($SALESEARCH);
+$row_SALESEARCH = mysqli_fetch_assoc($SALESEARCH);
 
 $select_CASUAL = "SELECT *, DATE_FORMAT(INVDATETIME, '%m/%d/%Y') AS INVDATETIME  FROM SALESEARCH WHERE INVCUST = '0'";
 $CASUAL = mysql_query($select_CASUAL) or die(mysql_error());
-$row_CASUAL = mysql_fetch_assoc($CASUAL);
+$row_CASUAL = mysqli_fetch_assoc($CASUAL);
 
 
 //$select_INVSOLD = "SELECT * FROM INVSOLD WHERE SOLDID=$_GET[soldid]";
@@ -154,7 +154,7 @@ document.editsl.invunits.focus();
         <td align="right" class="Verdana12"><?php echo $row_CASUAL['INVTOT']; ?></td>
         <td align="right" class="Verdana12"><?php echo number_format($row_CASUAL['INVTOT']-($row_CASUAL['INVPRICE']*$row_CASUAL['INVUNITS']), 2); ?>&nbsp;</td>
       </tr>
-  <?php } while ($row_CASUAL = mysql_fetch_assoc($CASUAL)); } ?> 
+  <?php } while ($row_CASUAL = mysqli_fetch_assoc($CASUAL)); } ?> 
      <?php do { ?>   
       <tr>
         <td height="18" align="center" class="Verdana12">&nbsp;<?php echo $row_SALESEARCH['INVDATETIME']; ?></td>
@@ -166,7 +166,7 @@ document.editsl.invunits.focus();
         <td align="right" class="Verdana12"><?php echo $row_SALESEARCH['INVTOT']; ?></td>
         <td align="right" class="Verdana12"><?php echo number_format($row_SALESEARCH['INVTOT']-($row_SALESEARCH['INVPRICE']*$row_SALESEARCH['INVUNITS']), 2); ?>&nbsp;</td>
       </tr>
-  <?php } while ($row_SALESEARCH = mysql_fetch_assoc($SALESEARCH)); ?> 
+  <?php } while ($row_SALESEARCH = mysqli_fetch_assoc($SALESEARCH)); ?> 
         </table> 
         </div> 
        </td>

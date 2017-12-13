@@ -59,7 +59,7 @@ $ref='Lookup Food';
 
 $query_SELECTEDITEM = "SELECT * FROM VETCAN WHERE TDESCR = '$ref' LIMIT 1";
 $SELECTEDITEM = mysql_query($query_SELECTEDITEM, $tryconnection) or die(mysql_error());
-$row_SELECTEDITEM = mysql_fetch_assoc($SELECTEDITEM);
+$row_SELECTEDITEM = mysqli_fetch_assoc($SELECTEDITEM);
 
 
 //INSERT THE SELECTED AND MODIFIED ITEM INTO ITEM LIST
@@ -68,7 +68,7 @@ $row_SELECTEDITEM = mysql_fetch_assoc($SELECTEDITEM);
 							$autcomm=$_POST['autocomm'];
 $query_TAUTOCOMM = "SELECT * FROM ARSYSCOMM WHERE COMMCODE='$autcomm'";
 $TAUTOCOMM = mysql_query($query_TAUTOCOMM, $tryconnection) or die(mysql_error());
-$row_TAUTOCOMM = mysql_fetch_assoc($TAUTOCOMM);
+$row_TAUTOCOMM = mysqli_fetch_assoc($TAUTOCOMM);
 							$invoicecomment=str_replace('$PETNAME', $_SESSION['petname'], $row_TAUTOCOMM['COMMENT']);
 
 						    $invunits=$_POST['invunits'];

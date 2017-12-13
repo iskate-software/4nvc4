@@ -16,7 +16,7 @@ $filedate='00/00/0000';
 
 $filedate="SELECT STR_TO_DATE('$filedate','%m/%d/%Y')";
 $filedate=mysql_query($filedate, $tryconnection) or die(mysql_error());
-$filedate=mysql_fetch_array($filedate);
+$filedate=mysqli_fetch_array($filedate);
 
 $query_INVENTOR = "INSERT INTO INVTHIST (`UNITS`, `CODE`, `DESCRIP`, SUPPLIER, VPCCODE, DRUGCOST, PACKAGE, LOCN, BACKORDER, ORDERED, RECEIVED) SELECT `UNITS`, `CODE`, `DESCRIP`, SUPPLIER, VPCCODE, DRUGCOST, PKGQTY, LOCN, BACKORDER, '$filedate[0]', RECEIVED FROM INVENTOR WHERE BACKORDER!='1' AND UNITS <> 0";
 $INVENTOR = mysql_query($query_INVENTOR) or die(mysql_error());
@@ -30,8 +30,8 @@ $winclose = "self.close();";
 
 $select_INVENTOR = "SELECT * FROM INVENTOR GROUP BY `VPCCODE` ORDER BY `DESCRIP` ASC";
 $INVENTOR = mysql_query($select_INVENTOR) or die(mysql_error());
-$row_INVENTOR = mysql_fetch_array($INVENTOR);
-$totalRows_INVENTOR = mysql_num_rows($INVENTOR);
+$row_INVENTOR = mysqli_fetch_array($INVENTOR);
+$totalRows_INVENTOR = mysqli_num_rows($INVENTOR);
 
 do {
 $cogs = $cogs + ($row_INVENTOR['DRUGCOST']*$row_INVENTOR['UNITS']);
@@ -39,7 +39,7 @@ $vpartno = $row_INVENTOR['VPCCODE'] ;
 $UPDinvt = "UPDATE ARINVT SET LDATE = DATE(NOW()) WHERE VPARTNO = '$vpartno' " ;
 $UPLDATE = mysql_query($UPDinvt, $tryconnection) or die(mysql_error()) ;
 $backorder = $backorder + $row_INVENTOR['BACKORDER'];
-} while ($row_INVENTOR = mysql_fetch_assoc($INVENTOR));
+} while ($row_INVENTOR = mysqli_fetch_assoc($INVENTOR));
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/POP UP WINDOWS TEMPLATE.dwt" codeOutsideHTMLIsLocked="false" -->

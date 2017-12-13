@@ -9,15 +9,15 @@ $GETcategory=$_GET['category'];
 
 $query_SPECIES = "SELECT DISTINCT `PROCEDURE`, PROCODE FROM PROCEDUR WHERE FEEFILE='$spec'";
 $SPECIES = mysql_query($query_SPECIES, $tryconnection) or die(mysql_error());
-$row_SPECIES = mysql_fetch_assoc($SPECIES);
+$row_SPECIES = mysqli_fetch_assoc($SPECIES);
 
 $query_NAME = "SELECT `PROCEDURE`, PROCODE, INVHXCAT FROM PROCEDUR WHERE FEEFILE='$spec' AND PROCODE='$GETcategory'";
 $NAME = mysql_query($query_NAME, $tryconnection) or die(mysql_error());
-$row_NAME = mysql_fetch_assoc($NAME);
+$row_NAME = mysqli_fetch_assoc($NAME);
 
 $query_HXFILTER = "SELECT * FROM HXFILTER WHERE HXCNAME!='Diagnostics'";
 $HXFILTER = mysql_query($query_HXFILTER, $tryconnection) or die(mysql_error());
-$row_HXFILTER = mysql_fetch_assoc($HXFILTER);
+$row_HXFILTER = mysqli_fetch_assoc($HXFILTER);
 
 
 //UPDATE
@@ -128,7 +128,7 @@ self.location='RENUMBER_PROCEDURE.php?species=<?php echo $_GET['species']; ?>&ca
       <option value=""></option>
        	<?php do {
 		echo '<option id="'.$row_HXFILTER['HXCAT'],'" value="'.$row_HXFILTER['HXCAT'],'">'.$row_HXFILTER['HXCNAME'].'</option>';
-		} while ($row_HXFILTER = mysql_fetch_assoc($HXFILTER));
+		} while ($row_HXFILTER = mysqli_fetch_assoc($HXFILTER));
 		 ?>
       </select>
      </td>
@@ -137,7 +137,7 @@ self.location='RENUMBER_PROCEDURE.php?species=<?php echo $_GET['species']; ?>&ca
      <?php do { ?>
      <option value="<?php echo $row_SPECIES['PROCODE']; ?>">&nbsp;<?php echo $row_SPECIES['PROCODE']." ".$row_SPECIES['PROCEDURE']; ?></option>
    
-    <?php } while ($row_SPECIES = mysql_fetch_assoc($SPECIES)); ?>
+    <?php } while ($row_SPECIES = mysqli_fetch_assoc($SPECIES)); ?>
     </select>    </td>
   </tr>
   <tr>

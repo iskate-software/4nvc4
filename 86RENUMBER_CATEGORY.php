@@ -9,15 +9,15 @@ $GETcategory=$_GET['category'];
 
 $query_SPECIES = "SELECT DISTINCT TCATGRY, TTYPE FROM VETCAN WHERE TSPECIES='$spec' ORDER BY TCATGRY ASC";
 $SPECIES = mysql_query($query_SPECIES, $tryconnection) or die(mysql_error());
-$row_SPECIES = mysql_fetch_assoc($SPECIES);
+$row_SPECIES = mysqli_fetch_assoc($SPECIES);
 
 $query_NAME = "SELECT TTYPE, THXCAT FROM VETCAN WHERE TSPECIES='$spec' AND TCATGRY='$GETcategory' ORDER BY TCATGRY ASC";
 $NAME = mysql_query($query_NAME, $tryconnection) or die(mysql_error());
-$row_NAME = mysql_fetch_assoc($NAME);
+$row_NAME = mysqli_fetch_assoc($NAME);
 
 $query_HXFILTER = "SELECT * FROM HXFILTER WHERE HXCNAME!='Diagnostics'";
 $HXFILTER = mysql_query($query_HXFILTER, $tryconnection) or die(mysql_error());
-$row_HXFILTER = mysql_fetch_assoc($HXFILTER);
+$row_HXFILTER = mysqli_fetch_assoc($HXFILTER);
 
 
 //UPDATE
@@ -144,7 +144,7 @@ self.location='RENUMBER_CATEGORY.php?species=<?php echo $_GET['species']; ?>&cat
       <option value=""></option>
        	<?php do {
 		echo '<option id="'.$row_HXFILTER['HXCAT'],'" value="'.$row_HXFILTER['HXCAT'],'">'.$row_HXFILTER['HXCNAME'].'</option>';
-		} while ($row_HXFILTER = mysql_fetch_assoc($HXFILTER));
+		} while ($row_HXFILTER = mysqli_fetch_assoc($HXFILTER));
 		 ?>
       </select>
      </td>
@@ -153,7 +153,7 @@ self.location='RENUMBER_CATEGORY.php?species=<?php echo $_GET['species']; ?>&cat
      <?php do { ?>
      <option value="<?php echo $row_SPECIES['TCATGRY']; ?>">&nbsp;<?php if ($row_SPECIES['TCATGRY']<10){echo "&nbsp;&nbsp;";} echo $row_SPECIES['TCATGRY']." ".$row_SPECIES['TTYPE']; ?></option>
    
-    <?php } while ($row_SPECIES = mysql_fetch_assoc($SPECIES)); ?>
+    <?php } while ($row_SPECIES = mysqli_fetch_assoc($SPECIES)); ?>
     </select>    </td>
   </tr>
   <tr>

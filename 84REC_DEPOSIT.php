@@ -8,15 +8,15 @@ $client=$_SESSION['client'];
 mysql_select_db($database_tryconnection, $tryconnection);
 $query_Staff = "SELECT * FROM STAFF WHERE SIGNEDIN=1";
 $Staff = mysql_query($query_Staff, $tryconnection) or die(mysql_error());
-$row_Staff = mysql_fetch_assoc($Staff);
+$row_Staff = mysqli_fetch_assoc($Staff);
 
 $query_Doctor = "SELECT * FROM DOCTOR WHERE SIGNEDIN=1";
 $Doctor = mysql_query($query_Doctor, $tryconnection) or die(mysql_error());
-$row_Doctor = mysql_fetch_assoc($Doctor);
+$row_Doctor = mysqli_fetch_assoc($Doctor);
 
 $query_CLIENT = "SELECT * FROM ARCUSTO WHERE CUSTNO = '$client'";
 $CLIENT = mysql_query($query_CLIENT, $tryconnection) or die(mysql_error());
-$row_CLIENT = mysql_fetch_assoc($CLIENT);
+$row_CLIENT = mysqli_fetch_assoc($CLIENT);
 
 
 if (isset($_POST['ok'])){
@@ -25,7 +25,7 @@ $RESULT = mysql_query($insert_ARCASHR, $tryconnection) or die(mysql_error());
 
 $query_ARCUSTO = "SELECT BALANCE, CREDIT FROM ARCUSTO WHERE CUSTNO='$_SESSION[client]'";
 $ARCUSTO = mysql_query($query_ARCUSTO, $tryconnection) or die(mysql_error());
-$row_ARCUSTO = mysql_fetch_assoc($ARCUSTO);
+$row_ARCUSTO = mysqli_fetch_assoc($ARCUSTO);
 
 $balance=$row_ARCUSTO['BALANCE']-$_POST['amtpaid'];
 
@@ -168,9 +168,9 @@ function MM_swapImgRestore() { //v3.0
     <td height="35" class="Verdana12"><select name="salesmn" id="salesmn">
       <?php
 			do { echo '<option value="'.$row_Staff['STAFF'].'">'.$row_Staff['STAFF'].'</option>'; 
-					} while ($row_Staff = mysql_fetch_assoc($Staff));
+					} while ($row_Staff = mysqli_fetch_assoc($Staff));
 			do { echo '<option value="'.$row_Doctor['DOCTOR'].'">'.$row_Doctor['DOCTOR'].'</option>';
-					} while ($row_Doctor = mysql_fetch_assoc($Doctor));
+					} while ($row_Doctor = mysqli_fetch_assoc($Doctor));
 			?>
     </select></td>
   </tr>

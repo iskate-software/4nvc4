@@ -6,7 +6,7 @@ mysql_select_db($database_tryconnection, $tryconnection);
 
 $get_SUMM = "SELECT ITEM,SUPPLIER,VPARTNO FROM DVManager.ARINVT WHERE SUPPLIER = 'SUMMIT' ORDER BY ITEM" ;
 $query_SUMM = mysql_query($get_SUMM, $tryconnection) or die(mysql_error()) ;
-$row_SUMM = mysql_fetch_assoc($query_SUMM) ;
+$row_SUMM = mysqli_fetch_assoc($query_SUMM) ;
 
 $sum = 'SUMM' ;
 $start = 1001 ;
@@ -16,7 +16,7 @@ echo substr(strval($start),1,3) ;
 
 reset($row_SUMM) ;
 
-while ($row_SUMM = mysql_fetch_assoc($query_SUMM) ) {
+while ($row_SUMM = mysqli_fetch_assoc($query_SUMM) ) {
 echo '  got into loop ' ;
   $item = $row_SUMM['ITEM'] ;
   $newit = substr(strval($start),1,3) ;

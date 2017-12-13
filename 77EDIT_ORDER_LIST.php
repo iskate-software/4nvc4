@@ -4,7 +4,7 @@ require_once('../../tryconnection.php');
 mysql_select_db($database_tryconnection, $tryconnection);
 $select_INVENTOR = "SELECT *, SUM(`UNITS`) AS `UNITS` FROM INVENTOR WHERE VPCCODE=$_GET[soldid]";
 $INVENTOR = mysql_query($select_INVENTOR) or die(mysql_error());
-$row_INVENTOR = mysql_fetch_assoc($INVENTOR);
+$row_INVENTOR = mysqli_fetch_assoc($INVENTOR);
 
 if (isset($_POST['save'])){
 

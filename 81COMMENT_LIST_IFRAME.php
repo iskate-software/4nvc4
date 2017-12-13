@@ -15,7 +15,7 @@ else {$filter="";}
 
 $query_COMMENTS = "SELECT * FROM ARSYSCOMM WHERE COMMCODE LIKE '$commcode%' ".$filter." ORDER BY COMMCODE ASC";
 $COMMENTS = mysql_query($query_COMMENTS, $tryconnection) or die(mysql_error());
-$row_COMMENTS = mysql_fetch_assoc($COMMENTS);
+$row_COMMENTS = mysqli_fetch_assoc($COMMENTS);
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/IFRAME.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
@@ -95,12 +95,12 @@ display:none;
     <td colspan="2" align="left" valign="top" class="Labels"><?php echo $row_COMMENTS['COMMENT']; ?></td>
     <td width="30" align="center" valign="top" class="Andale13B"><?php if ($row_COMMENTS['COMMTYPE']=='2'){echo '*';} else {echo '';}?>    </td>
   </tr>
-  <?php } while ($row_COMMENTS = mysql_fetch_assoc($COMMENTS)); ?>
+  <?php } while ($row_COMMENTS = mysqli_fetch_assoc($COMMENTS)); ?>
 </table>
 </form>
 <!-- InstanceEndEditable -->
 </body>
 <!-- InstanceEnd --></html>
 <?php
-mysql_free_result($COMMENTS);
+mysqli_free_result($COMMENTS);
 ?>

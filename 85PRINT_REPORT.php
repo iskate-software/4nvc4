@@ -5,7 +5,7 @@ require_once('../../tryconnection.php');
 mysql_select_db($database_tryconnection, $tryconnection);
 $query_CRITDATA = "SELECT * FROM CRITDATA LIMIT 1";
 $CRITDATA = mysql_query($query_CRITDATA, $tryconnection) or die(mysql_error());
-$row_CRITDATA = mysql_fetch_assoc($CRITDATA);
+$row_CRITDATA = mysqli_fetch_assoc($CRITDATA);
 
 $spec=$_GET['species'];
 
@@ -111,8 +111,8 @@ foreach ($categories as $value){
 
 $query_CAN1=sprintf("SELECT * FROM VETCAN WHERE TCATGRY='$value' AND TSPECIES='%s' ORDER BY TNO ASC", $spec);
 $CAN1 = mysql_query($query_CAN1, $tryconnection) or die(mysql_error());
-$row_CAN1 = mysql_fetch_assoc($CAN1);
-$totalRows_CAN1 = mysql_num_rows($CAN1);
+$row_CAN1 = mysqli_fetch_assoc($CAN1);
+$totalRows_CAN1 = mysqli_num_rows($CAN1);
   
 echo '<tr class="Courier12B">
       <td>&nbsp;</td>
@@ -137,7 +137,7 @@ do {
       <td align="right">&nbsp;</td>
     </tr>
   <?php }
-while ($row_CAN1 = mysql_fetch_assoc($CAN1));
+while ($row_CAN1 = mysqli_fetch_assoc($CAN1));
 echo  '<tr>
       <td height="10" colspan="9"></td>
     </tr>';

@@ -32,7 +32,7 @@ $stdum = $startdate ;
 
 $startdate="SELECT STR_TO_DATE('$startdate','%m/%d/%Y')";
 $startdate=mysql_query($startdate, $tryconnection) or die(mysql_error());
-$startdate=mysql_fetch_array($startdate);
+$startdate=mysqli_fetch_array($startdate);
 
 if (!empty($_GET['enddate'])){
 $enddate=$_GET['enddate'];
@@ -44,7 +44,7 @@ $enddum = $enddate ;
 
 $enddate="SELECT STR_TO_DATE('$enddate','%m/%d/%Y')";
 $enddate=mysql_query($enddate, $tryconnection) or die(mysql_error());
-$enddate=mysql_fetch_array($enddate);
+$enddate=mysqli_fetch_array($enddate);
 // Create a temporary table
 
 if ($type == 1) { // the detailed report option.
@@ -117,23 +117,23 @@ $CELL = mysql_query($search_CELL, $tryconnection ) or die(mysql_error()) ;
 $PND = mysql_query($search_PND, $tryconnection ) or die(mysql_error()) ;
 
 $ARCASHR=mysql_query($search_ARCASHR, $tryconnection ) or die(mysql_error());
-$row_ARCASHR=mysql_fetch_assoc($ARCASHR);
+$row_ARCASHR=mysqli_fetch_assoc($ARCASHR);
 
-$row_CASH = mysql_fetch_array($CASH) ;
-$row_CHQ = mysql_fetch_array($CHQ) ;
-$row_DCRD = mysql_fetch_array($DCRD) ;
-$row_VISA = mysql_fetch_array($VISA) ;
-$row_MCRD = mysql_fetch_array($MCRD) ;
-$row_AMEX = mysql_fetch_array($AMEX) ;
-$row_DINE = mysql_fetch_array($DINE) ;
-$row_GE = mysql_fetch_array($GE) ;
-$row_CELL = mysql_fetch_array($CELL) ;
-$row_PND = mysql_fetch_array($PND) ;
+$row_CASH = mysqli_fetch_array($CASH) ;
+$row_CHQ = mysqli_fetch_array($CHQ) ;
+$row_DCRD = mysqli_fetch_array($DCRD) ;
+$row_VISA = mysqli_fetch_array($VISA) ;
+$row_MCRD = mysqli_fetch_array($MCRD) ;
+$row_AMEX = mysqli_fetch_array($AMEX) ;
+$row_DINE = mysqli_fetch_array($DINE) ;
+$row_GE = mysqli_fetch_array($GE) ;
+$row_CELL = mysqli_fetch_array($CELL) ;
+$row_PND = mysqli_fetch_array($PND) ;
 
 
 $query_EXPENSE="SELECT SUM(AMTPAID) AS EXPENSE FROM ARCASHR WHERE INVNO='EXPENSE' AND DTEPAID >= '$startdate[0]' AND DTEPAID <= '$enddate[0]'";
 $EXPENSE=mysql_query($query_EXPENSE, $tryconnection) or die(mysql_error());
-$row_EXPENSE=mysql_fetch_assoc($EXPENSE);
+$row_EXPENSE=mysqli_fetch_assoc($EXPENSE);
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/DVMBasicTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
@@ -338,7 +338,7 @@ document.getElementById(x).style.backgroundColor="#FFFFFF";
     <td align="right" class="Verdana13">'.$row_ARCASHR['AMTPAID'].'</td>
   </tr>';
   }
-  while ($row_ARCASHR=mysql_fetch_assoc($ARCASHR));
+  while ($row_ARCASHR=mysqli_fetch_assoc($ARCASHR));
   
   ?>
 </table>

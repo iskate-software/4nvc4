@@ -14,7 +14,7 @@ $closewindow='self.close() ;';
 
 $query_PETHOLD = "SELECT * FROM PETHOLD WHERE PHPETID=$_SESSION[patient]";
 $PETHOLD = mysql_query($query_PETHOLD, $tryconnection) or die(mysql_error());
-$row_PETHOLD = mysql_fetch_assoc($PETHOLD);
+$row_PETHOLD = mysqli_fetch_assoc($PETHOLD);
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

@@ -54,7 +54,7 @@ if (isset($_POST["save"]) //&& $category != "0"
  $query_tcats = mysql_query($tcats, $tryconnection) or die(mysql_error()) ;
  $i = 1 ;
  
- while ($row_cats = mysql_fetch_assoc($query_tcats)) {
+ while ($row_cats = mysqli_fetch_assoc($query_tcats)) {
     $chk = 'C'.$i ;
     echo $chk . ' ' ;
     if (!empty($_POST["$chk"])) {
@@ -288,7 +288,7 @@ window.open('UPDATE_PATIENT_FILE.php?species=<?php echo $row_TFF['TSPECIES']; ?>
           <td height="25" colspan="6" align="left" class="Verdana11Blue">Enter the amount by which to modify</td>
           </tr>
         <tr>
-        <?php while ($row_tcat = mysql_fetch_assoc($query_tcats)) {$tid = 'C'.$row_tcat['TCATGRY'] ;
+        <?php while ($row_tcat = mysqli_fetch_assoc($query_tcats)) {$tid = 'C'.$row_tcat['TCATGRY'] ;
                     echo '<td height="25" align="right" class="Verdana11Blue"><input type="checkbox" name="'.$tid.'"' . ' id="'.$tid.'" value="1"/>
                     <td height="25" colspan="5" align="left" valign="middle" class="Labels2">'; 
                     echo $row_tcat['TCATGRY'] . '&nbsp;&nbsp;' .$row_tcat['TTYPE'].'</td></tr>' ;

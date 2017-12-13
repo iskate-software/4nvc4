@@ -15,7 +15,7 @@ $_SESSION['species'] = $species ;
 mysql_select_db($database_tryconnection, $tryconnection);
 $query_TFF = "SELECT * FROM VETCAN WHERE TFFID='$tffid' LIMIT 1";
 $TFF = mysql_query($query_TFF, $tryconnection) or die(mysql_error());
-$row_TFF = mysql_fetch_assoc($TFF);
+$row_TFF = mysqli_fetch_assoc($TFF);
 
 $tno = $row_TFF['TNO'] ;
 
@@ -27,7 +27,7 @@ $VIEW= mysql_query($query_VIEW, $tryconnection) or die(mysql_error());
 
 $query_INVOICE2="SELECT * FROM INVOICE2";
 $INVOICE2= mysql_query($query_INVOICE2, $tryconnection) or die(mysql_error());
-$row_INVOICE2 = mysql_fetch_assoc($INVOICE2);
+$row_INVOICE2 = mysqli_fetch_assoc($INVOICE2);
 
 $ids= array();
 $maxtno = 0 ;
@@ -36,7 +36,7 @@ do {
  $ids[]=$row_INVOICE2['TFFID'];
  $maxtno = $row_INVOICE2['TNO'];
 }
-while ($row_INVOICE2 = mysql_fetch_assoc($INVOICE2));
+while ($row_INVOICE2 = mysqli_fetch_assoc($INVOICE2));
 
 $key=array_search($_GET['tffid'],$ids);
 $next = $key + 1 ;
@@ -49,20 +49,20 @@ $_SESSION['key'] = $key ;
 
 $query_TFFNO = "SELECT TCATGRY, TTYPE, MAX(TNO) AS TNO FROM VETCAN WHERE TCATGRY='$category' AND TSPECIES = '$species' ";
 $TFFNO = mysql_query($query_TFFNO, $tryconnection) or die(mysql_error());
-$row_TFFNO = mysql_fetch_assoc($TFFNO);
+$row_TFFNO = mysqli_fetch_assoc($TFFNO);
 
 $query_TCATGRY = "SELECT MAX(TCATGRY) AS TCATGRY FROM VETCAN WHERE TSPECIES='$_GET[species]'";
 $TCATGRY = mysql_query($query_TCATGRY, $tryconnection) or die(mysql_error());
-$row_TCATGRY = mysql_fetch_assoc($TCATGRY);
+$row_TCATGRY = mysqli_fetch_assoc($TCATGRY);
 
 $commcode=$row_TFF['TAUTOCOMM'];
 $query_COMMENTS = "SELECT * FROM ARSYSCOMM WHERE COMMCODE='$commcode' LIMIT 1";
 $COMMENTS = mysql_query($query_COMMENTS, $tryconnection) or die(mysql_error());
-$row_COMMENTS = mysql_fetch_assoc($COMMENTS);
+$row_COMMENTS = mysqli_fetch_assoc($COMMENTS);
 
 $query_VACCINES = "SELECT * FROM VACCINES";
 $VACCINES = mysql_query($query_VACCINES, $tryconnection) or die(mysql_error());
-$row_VACCINES = mysql_fetch_assoc($VACCINES);
+$row_VACCINES = mysqli_fetch_assoc($VACCINES);
 
 
 if (isset($_POST["save"])  && $_GET["tffid"] == "0") {

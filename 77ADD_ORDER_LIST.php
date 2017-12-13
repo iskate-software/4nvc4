@@ -7,7 +7,7 @@ $reqsupplier = $_SESSION['supplier'] ;
 
 $query_INVENTORY = "SELECT * FROM ARINVT WHERE ITEMID='$_GET[itemid]' LIMIT 1";
 $INVENTORY = mysql_query($query_INVENTORY, $tryconnection) or die(mysql_error());
-$row_INVENTORY = mysql_fetch_assoc($INVENTORY);
+$row_INVENTORY = mysqli_fetch_assoc($INVENTORY);
 
 if (isset($_POST['save'])){
 $insert_INVENTOR = "INSERT INTO INVENTOR (`UNITS`, `CODE`, `DESCRIP`, SUPPLIER, VPCCODE, DRUGCOST, PKGQTY) VALUES ('$_POST[units]', '$row_INVENTORY[ITEM]', '$row_INVENTORY[DESCRIP]', '$row_INVENTORY[SUPPLIER]', '$row_INVENTORY[VPARTNO]', '$row_INVENTORY[COST]', '$row_INVENTORY[PKGQTY]')";

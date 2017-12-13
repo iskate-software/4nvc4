@@ -11,7 +11,7 @@ $heading = $reqsupplier ;
 mysql_select_db($database_tryconnection, $tryconnection);
 $select_INVENTOR = "SELECT CODE,DESCRIP,SUPPLIER,VPCCODE,DRUGCOST,BACKORDER,PACKAGE,PKGQTY,LOCN, SUM(UNITS) AS UNITS FROM INVENTOR WHERE SUPPLIER = '$reqsupplier' AND UNITS <> 0 GROUP BY VPCCODE ORDER BY DESCRIP";
 $INVENTOR = mysql_query($select_INVENTOR) or die(mysql_error());
-$row_INVENTOR = mysql_fetch_assoc($INVENTOR);
+$row_INVENTOR = mysqli_fetch_assoc($INVENTOR);
 
 
 if (isset($_POST['zap'])){
@@ -246,7 +246,7 @@ overflow:auto;
   </tr>
 <?php 
 $cogs = $cogs + ($row_INVENTOR['DRUGCOST']*$row_INVENTOR['UNITS']);
-} while ($row_INVENTOR = mysql_fetch_assoc($INVENTOR)); ?>  
+} while ($row_INVENTOR = mysqli_fetch_assoc($INVENTOR)); ?>  
 </table>
     </div>    </td>
   </tr>

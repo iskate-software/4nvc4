@@ -7,7 +7,7 @@ $procid=$_GET['procid'];
 
 $query_PROCEDUR = "SELECT * FROM PROCEDUR WHERE PROCID=$procid";
 $PROCEDUR = mysql_query($query_PROCEDUR, $tryconnection) or die(mysql_error());
-$row_PROCEDUR = mysql_fetch_assoc($PROCEDUR);
+$row_PROCEDUR = mysqli_fetch_assoc($PROCEDUR);
 
 if (isset($_POST['save'])){
 $query_QUICKUPDATE = "UPDATE PROCEDUR SET INVPRICE='$_POST[invprice]', INVUNITS='$_POST[invunits]', INVTOT='$_POST[invtot]', INVDISP='$_POST[invdisp]' WHERE PROCID=$procid";

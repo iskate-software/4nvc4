@@ -5,7 +5,7 @@ require_once('../../tryconnection.php');
 mysql_select_db($database_tryconnection, $tryconnection);
 $select_FAXREP = "SELECT * FROM FAXREP LIMIT 1";
 $FAXREP = mysql_query($select_FAXREP) or die(mysql_error());
-$row_FAXREP = mysql_fetch_assoc($FAXREP);
+$row_FAXREP = mysqli_fetch_assoc($FAXREP);
 
 if (!empty($_POST['area'])) {$area=$_POST['area'];}
 if (!empty($_POST['phonea'])){$phone=$_POST['phonea'].'-'.$_POST['phoneb'];}
